@@ -31,7 +31,7 @@ Brand direction: Warm Coffee Meets Modern Tech.
 
 ## Current Repo Audit
 
-Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages. Milestone 04 completed the post management layer with editor, upload, preview, and public visibility guard.
+Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages. Milestone 04 completed the post management layer with editor, upload, preview, and public visibility guard. Milestone 05 completed the public Blade blog with featured fallback, taxonomy pages, search, public theme, robots, and branded 404.
 
 - Laravel runtime: `Laravel Framework 13.7.0`
 - `composer.json`: `laravel/framework:^13.5`, `laravel/tinker:^3.0`, `laravel/boost:^2.4`, Laravel Pint, Sail, Pail, Pest 5 dev branch
@@ -41,8 +41,8 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 - Vite 8 dependency: present and build verified
 - TailAdmin status: TailAdmin Laravel Blade template is still the base admin layout system, with warm Ngopi Dulur branding layered on top
 - Admin Vue SPA status: foundation shell present at `/admin/{any?}` with Vue mount in `resources/js/admin.js`
-- Public Blade blog status: foundation shell present at `/` with a public layout and homepage placeholder
-- Routes status: admin auth/session routes, protected dashboard route, public home route, and SPA catchall routes are present
+- Public Blade blog status: Blade public homepage, post detail, category, tag, search, theme toggle, robots, and branded 404 are present
+- Routes status: admin auth/session routes, protected dashboard route, public blog routes, robots.txt, and SPA catchall routes are present
 - Models status: `User`, `Post`, `Category`, `Tag`, and `SiteSetting` models exist with core relationships and scopes
 - Migrations status: user blog fields plus `posts`, `categories`, `tags`, `post_tag`, and `site_settings` tables are present
 - Git status: available in this checkout; current worktree contains modified and untracked files for this milestone
@@ -99,6 +99,12 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 - Use RTK for verbose terminal output.
 - Use Laravel Boost MCP when available.
 - Use Context7 only when current documentation is needed for a package/framework decision.
+
+## Milestone 05 Notes
+
+- Public blog pages are now implemented with Blade and use published-only queries.
+- Theme preference supports light and dark espresso through a local browser preference with a default pulled from site settings.
+- `robots.txt` is in place, but `sitemap.xml` and fuller SEO treatment are still left for the SEO milestone.
 
 ## Known Risks
 

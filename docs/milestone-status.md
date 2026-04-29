@@ -18,7 +18,7 @@ Last updated: 2026-04-29
 | 02 Database & Models | DONE | 2026-04-29 | Users, posts, categories, tags, pivot, site settings, model relationships, scopes, and seed data completed and verified |
 | 03 Dashboard, Category, Tag | DONE | 2026-04-29 | Admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages completed and verified |
 | 04 Post CRUD, Editor, Upload, Preview | DONE | 2026-04-29 | Post management MVP, editor, upload WebP, secure preview, and public visibility guard completed and verified |
-| 05 Public Blog | NOT_STARTED | - | - |
+| 05 Public Blog | DONE | 2026-04-29 | Public Blade blog, featured article, taxonomy pages, search, public theme, robots, and branded 404 completed and verified |
 | 06 Settings, Media, SEO, Sitemap, Robots | NOT_STARTED | - | - |
 | 07 Tests, Hardening, Polish | NOT_STARTED | - | - |
 | 08 Final Verification | NOT_STARTED | - | - |
@@ -245,6 +245,74 @@ Requested scope completed: admin post management API, posts list and editor page
 - Wayfinder is still not installed, so the Vue shell continues to call same-origin admin API URLs directly.
 - Public blog remains incomplete beyond the minimal post detail route needed for visibility checks.
 - TailAdmin chunk-size warning remains at build time.
+
+## Milestone 05 Summary
+
+Status: DONE
+
+Requested scope completed: public blog berbasis Blade dengan homepage editorial, featured article fallback, post detail, category page, tag page, full-text search, pagination, theme light/dark espresso, robots.txt, dan branded 404.
+
+### Milestone 05 Files Changed
+
+- Added `app/Support/BlogSettings.php`
+- Added `app/Http/Controllers/PublicCategoryController.php`
+- Added `app/Http/Controllers/PublicTagController.php`
+- Added `app/Http/Controllers/PublicSearchController.php`
+- Added `app/Http/Controllers/PublicRobotsController.php`
+- Updated `app/Http/Controllers/PublicHomeController.php`
+- Updated `app/Http/Controllers/PublicPostController.php`
+- Updated `app/Providers/AppServiceProvider.php`
+- Updated `database/seeders/DatabaseSeeder.php`
+- Updated `routes/web.php`
+- Updated `vite.config.js`
+- Added `resources/js/public.js`
+- Updated `resources/css/app.css`
+- Updated `resources/views/layouts/public.blade.php`
+- Added `resources/views/public/category.blade.php`
+- Added `resources/views/public/home.blade.php`
+- Added `resources/views/public/post.blade.php`
+- Added `resources/views/public/search.blade.php`
+- Added `resources/views/public/tag.blade.php`
+- Added `resources/views/public/partials/post-card.blade.php`
+- Added `resources/views/public/partials/empty-state.blade.php`
+- Added `resources/views/errors/404.blade.php`
+- Added `tests/Feature/PublicBlogTest.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+- Updated `public/build/*` via `npm run build`
+
+### Milestone 05 Commands Run
+
+- `php -l app/Support/BlogSettings.php`
+- `php -l app/Providers/AppServiceProvider.php`
+- `php -l app/Http/Controllers/PublicHomeController.php`
+- `php -l app/Http/Controllers/PublicPostController.php`
+- `php -l app/Http/Controllers/PublicCategoryController.php`
+- `php -l app/Http/Controllers/PublicTagController.php`
+- `php -l app/Http/Controllers/PublicSearchController.php`
+- `php -l app/Http/Controllers/PublicRobotsController.php`
+- `php -l tests/Feature/PublicBlogTest.php`
+- `php artisan route:list --path=robots`
+- `php artisan test tests/Feature/PublicBlogTest.php --compact`
+- `php artisan test --compact`
+- `npm run build`
+
+### Milestone 05 Tests / Build
+
+- `php artisan test tests/Feature/PublicBlogTest.php --compact`: passed with warnings about `.env` file reads; homepage featured fallback, visibility, taxonomy pages, search, robots, 404, and theme default assertions passed
+- `php artisan test --compact`: passed with warnings about `.env` file reads; all tests passed
+- `npm run build`: passed with Vite `8.0.10`; `resources/js/public.js` is now included in the manifest and TailAdmin chunk warning remains
+- `php artisan route:list --path=robots`: passed, `robots.txt` route registered
+
+### Milestone 05 Known Gaps
+
+- `sitemap.xml` is still deferred to the SEO milestone.
+- Public SEO metadata beyond the placeholders in post detail remains for milestone 06.
+- TailAdmin admin bundle still produces a large-chunk warning at build time.
+
+## Milestone 05 Stop Point
+
+Milestone 05 is complete. Do not continue to Milestone 06 unless explicitly requested.
 
 ## Files Changed
 

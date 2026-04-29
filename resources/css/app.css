@@ -205,6 +205,77 @@
   }
 }
 
+@layer components {
+  .post-content {
+    @apply space-y-6 text-base leading-8 text-neutralwarm-500 dark:text-neutralwarm-100/85;
+  }
+
+  .post-content h2 {
+    @apply mt-10 font-lora text-3xl font-semibold leading-tight text-coffee-900 dark:text-neutralwarm-50;
+  }
+
+  .post-content h3 {
+    @apply mt-8 font-lora text-2xl font-semibold leading-tight text-coffee-900 dark:text-neutralwarm-50;
+  }
+
+  .post-content p {
+    @apply text-base leading-8 text-neutralwarm-500 dark:text-neutralwarm-100/85;
+  }
+
+  .post-content a {
+    @apply text-coffee-700 underline decoration-coffee-300 decoration-2 underline-offset-4 transition hover:text-coffee-900 dark:text-coffee-100 dark:decoration-coffee-500;
+  }
+
+  .post-content ul,
+  .post-content ol {
+    @apply ml-6 space-y-3;
+  }
+
+  .post-content ul {
+    @apply list-disc;
+  }
+
+  .post-content ol {
+    @apply list-decimal;
+  }
+
+  .post-content blockquote {
+    @apply border-l-4 border-coffee-300 bg-coffee-50 px-5 py-4 font-medium text-coffee-900 dark:border-coffee-500 dark:bg-coffee-500/10 dark:text-neutralwarm-50;
+  }
+
+  .post-content img {
+    @apply my-8 rounded-[1.5rem] border border-coffee-100 shadow-soft dark:border-coffee-700/40;
+  }
+
+  .post-content pre {
+    @apply my-8 overflow-x-auto rounded-[1.5rem] bg-neutralwarm-900 px-5 py-4 text-sm text-neutralwarm-50 shadow-soft;
+  }
+
+  .post-content code {
+    @apply rounded bg-coffee-100 px-1.5 py-0.5 text-sm text-coffee-900 dark:bg-white/10 dark:text-coffee-100;
+  }
+
+  .post-content pre code {
+    @apply bg-transparent p-0 text-inherit;
+  }
+
+  .post-content table {
+    @apply my-8 w-full overflow-hidden rounded-[1.5rem] border border-coffee-100 text-left dark:border-coffee-700/40;
+  }
+
+  .post-content th,
+  .post-content td {
+    @apply border-b border-coffee-100 px-4 py-3 dark:border-coffee-700/40;
+  }
+}
+
+@utility line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
 @utility menu-item {
   @apply relative flex items-center w-full gap-3 px-3 py-2 font-medium rounded-lg text-theme-sm;
 }

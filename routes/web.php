@@ -6,8 +6,12 @@ use App\Http\Controllers\AdminApi\CategoryController as AdminCategoryApiControll
 use App\Http\Controllers\AdminApi\DashboardController as AdminDashboardApiController;
 use App\Http\Controllers\AdminApi\TagController as AdminTagApiController;
 use App\Http\Controllers\AdminShellController;
+use App\Http\Controllers\PublicCategoryController;
+use App\Http\Controllers\PublicRobotsController;
+use App\Http\Controllers\PublicSearchController;
 use App\Http\Controllers\PublicPostController;
 use App\Http\Controllers\PublicHomeController;
+use App\Http\Controllers\PublicTagController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +23,10 @@ Route::bind('post', function (string $value) {
 
 Route::get('/', [PublicHomeController::class, 'index'])->name('home');
 Route::get('/posts/{slug}', [PublicPostController::class, 'show'])->name('posts.show');
+Route::get('/category/{category}', [PublicCategoryController::class, 'show'])->name('category.show');
+Route::get('/tag/{tag}', [PublicTagController::class, 'show'])->name('tag.show');
+Route::get('/search', [PublicSearchController::class, 'index'])->name('search');
+Route::get('/robots.txt', [PublicRobotsController::class, 'show'])->name('robots');
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AdminAuthController::class, 'create'])->name('login');

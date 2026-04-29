@@ -48,6 +48,7 @@ class DatabaseSeeder extends Seeder
             'site_name' => 'Ngopi Dulur',
             'site_tagline' => 'Warm Coffee Meets Modern Tech',
             'site_description' => 'Blog pribadi hangat untuk catatan, ide, dan tulisan santai.',
+            'default_theme' => 'light',
             'hero_badge' => 'Ngopi Dulur',
             'hero_heading' => 'Cerita, catatan, dan pikiran ringan yang enak dibaca sambil ngopi.',
             'hero_subheading' => 'Seduh bacaan terbaru dari ruang tulis pribadi yang modern dan hangat.',
