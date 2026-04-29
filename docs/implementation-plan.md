@@ -31,7 +31,7 @@ Brand direction: Warm Coffee Meets Modern Tech.
 
 ## Current Repo Audit
 
-Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work.
+Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages.
 
 - Laravel runtime: `Laravel Framework 13.7.0`
 - `composer.json`: `laravel/framework:^13.5`, `laravel/tinker:^3.0`, `laravel/boost:^2.4`, Laravel Pint, Sail, Pail, Pest 5 dev branch
@@ -43,8 +43,8 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 - Admin Vue SPA status: foundation shell present at `/admin/{any?}` with Vue mount in `resources/js/admin.js`
 - Public Blade blog status: foundation shell present at `/` with a public layout and homepage placeholder
 - Routes status: admin auth/session routes, protected dashboard route, public home route, and SPA catchall routes are present
-- Models status: only default `User` model exists
-- Migrations status: default users, cache, and jobs migrations only
+- Models status: `User`, `Post`, `Category`, `Tag`, and `SiteSetting` models exist with core relationships and scopes
+- Migrations status: user blog fields plus `posts`, `categories`, `tags`, `post_tag`, and `site_settings` tables are present
 - Git status: available in this checkout; current worktree contains modified and untracked files for this milestone
 - Laravel Boost package status: `laravel/boost v2.4.6` is installed and `boost.json` has `"mcp": true`, but Laravel Boost MCP tools are not available in this Codex session and `php artisan boost:*` commands are not registered
 - Context7 usage: used during Milestone 00 to verify Laravel Boost install/MCP role
@@ -79,7 +79,7 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 | 00 Bootstrap & Audit | Repo audit, agent guidelines, implementation plan, milestone status |
 | 01 Foundation | Align stack to PRD, setup Laravel 13 target, Vue 3 SPA foundation, Vite 8 target, TailAdmin admin shell, public Blade shell |
 | 02 Database & Models | Users future fields, posts, categories, tags, settings, relationships, factories, seeders |
-| 03 Dashboard, Category, Tag | Admin dashboard data, category CRUD, tag CRUD |
+| 03 Dashboard, Category, Tag | Admin dashboard stats, category CRUD, tag CRUD, admin Vue pages, and delete-rule handling |
 | 04 Post CRUD, Editor, Upload, Preview | Post CRUD, rich text and markdown storage, validation, featured image, secure preview |
 | 05 Public Blog | Homepage, post detail, category, tag, search, pagination, public theme |
 | 06 Settings, Media, SEO, Sitemap, Robots | Settings, Media MVP, SEO metadata, sitemap, robots/noindex policy |
@@ -102,7 +102,7 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 
 ## Known Risks
 
-- Current repo stack still does not fully match the eventual PRD target because the current environment still uses SQLite instead of MySQL.
+- Current repo stack still does not fully match the eventual PRD target because the current environment still uses SQLite instead of MySQL, so the full-text index is defined conditionally for MySQL/MariaDB targets.
 - Pest/Laravel 13 compatibility currently uses dev branch constraints for Pest 5 and Collision until stable package releases are available.
 - Laravel Boost package exists but MCP tooling is not callable from this session.
 - Git metadata is now present, but future work should still keep diffs tight because TailAdmin remains large.

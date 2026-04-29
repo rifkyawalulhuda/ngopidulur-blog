@@ -15,8 +15,8 @@ Last updated: 2026-04-29
 |---|---|---:|---|
 | 00 Bootstrap & Audit | DONE | 2026-04-29 | Initial audit completed, agent docs created, implementation plan refreshed, gaps recorded |
 | 01 Foundation | DONE | 2026-04-29 | Admin auth/session, Vue 3 admin shell, public Blade shell, Tailwind warm tokens, and warm TailAdmin base completed and verified |
-| 02 Database & Models | NOT_STARTED | - | - |
-| 03 Dashboard, Category, Tag | NOT_STARTED | - | - |
+| 02 Database & Models | DONE | 2026-04-29 | Users, posts, categories, tags, pivot, site settings, model relationships, scopes, and seed data completed and verified |
+| 03 Dashboard, Category, Tag | DONE | 2026-04-29 | Admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages completed and verified |
 | 04 Post CRUD, Editor, Upload, Preview | NOT_STARTED | - | - |
 | 05 Public Blog | NOT_STARTED | - | - |
 | 06 Settings, Media, SEO, Sitemap, Robots | NOT_STARTED | - | - |
@@ -102,6 +102,101 @@ Requested scope completed: admin auth/session foundation, protected admin SPA sh
 - Vite build still emits a large-chunk warning for the preserved TailAdmin bundle.
 - PHPUnit emits warnings about missing `.env` file reads in this checkout, although the auth test suite passes.
 
+## Milestone 02 Summary
+
+Status: DONE
+
+Requested scope completed: future-ready MVP schema for users, posts, categories, tags, post_tag, and site_settings; model relationships; published/draft/archived scopes; and seed data for admin user, default categories, and default site settings.
+
+### Milestone 02 Files Changed
+
+- Added `database/migrations/2026_04_29_000003_add_blog_fields_to_users_table.php`
+- Added `database/migrations/2026_04_29_000004_create_blog_mvp_tables.php`
+- Added `app/Models/Category.php`
+- Added `app/Models/Post.php`
+- Added `app/Models/Tag.php`
+- Added `app/Models/SiteSetting.php`
+- Updated `app/Models/User.php`
+- Updated `database/factories/UserFactory.php`
+- Updated `database/seeders/DatabaseSeeder.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+
+### Milestone 02 Commands Run
+
+- `php artisan migrate --seed --force`
+- `php artisan db:show --database=sqlite`
+- `php artisan db:table posts --database=sqlite`
+- `php artisan db:table categories --database=sqlite`
+- `php artisan db:table tags --database=sqlite`
+- `php artisan db:table site_settings --database=sqlite`
+- `php artisan tinker --execute=...` for count and schema checks
+- `php artisan test --compact`
+
+### Milestone 02 Tests / Build
+
+- `php artisan migrate --seed --force`: passed
+- `php artisan db:show --database=sqlite`: passed, tables present
+- `php artisan db:table posts --database=sqlite`: passed, indexes and foreign keys present
+- `php artisan db:table categories --database=sqlite`: passed
+- `php artisan db:table tags --database=sqlite`: passed
+- `php artisan db:table site_settings --database=sqlite`: passed
+- `php artisan test --compact`: passed with warnings about missing `.env` file reads; one existing feature test passed
+
+### Milestone 02 Known Gaps
+
+- Full-text index is defined in migration for MySQL/MariaDB targets; SQLite keeps the schema migration-safe in this workspace.
+- Future milestones still need post/category/tag CRUD UI, public blog pages, and settings screens.
+
+## Milestone 03 Summary
+
+Status: DONE
+
+Requested scope completed: admin dashboard stats, category CRUD, tag CRUD, protected admin Vue pages, TailAdmin-aware tables/modals/toasts/loading states, and delete rules for category/tag relationships.
+
+### Milestone 03 Files Changed
+
+- Added `app/Support/UniqueSlug.php`
+- Added `app/Http/Controllers/AdminApi/DashboardController.php`
+- Added `app/Http/Controllers/AdminApi/CategoryController.php`
+- Added `app/Http/Controllers/AdminApi/TagController.php`
+- Added `app/Http/Requests/Admin/CategoryRequest.php`
+- Added `app/Http/Requests/Admin/TagRequest.php`
+- Added `tests/Feature/AdminCatalogApiTest.php`
+- Updated `app/Helpers/MenuHelper.php`
+- Updated `resources/js/admin.js`
+- Updated `routes/web.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+
+### Milestone 03 Commands Run
+
+- `php artisan route:list --path=admin/api`
+- `php artisan test tests/Feature/AdminCatalogApiTest.php --compact`
+- `php artisan test --compact`
+- `npm run build`
+- `php -l app/Support/UniqueSlug.php`
+- `php -l app/Http/Controllers/AdminApi/DashboardController.php`
+- `php -l app/Http/Controllers/AdminApi/CategoryController.php`
+- `php -l app/Http/Controllers/AdminApi/TagController.php`
+- `php -l app/Http/Requests/Admin/CategoryRequest.php`
+- `php -l app/Http/Requests/Admin/TagRequest.php`
+- `php -l tests/Feature/AdminCatalogApiTest.php`
+
+### Milestone 03 Tests / Build
+
+- `php artisan route:list --path=admin/api`: passed, admin API routes registered for dashboard, categories, and tags
+- `php artisan test tests/Feature/AdminCatalogApiTest.php --compact`: passed with warnings about missing `.env` file reads; dashboard, CRUD, and delete-rule assertions passed
+- `php artisan test --compact`: passed with warnings about missing `.env` file reads
+- `npm run build`: passed with the Vue admin shell and TailAdmin assets preserved
+- `php -l ...` on all new PHP files: passed, no syntax errors
+
+### Milestone 03 Known Gaps
+
+- Wayfinder is not installed in this repo, so the Vue shell uses same-origin admin API URLs directly.
+- The TailAdmin bundle still produces a large-chunk warning at build time.
+- Public blog, post CRUD, media, settings, and SEO milestones remain untouched.
+
 ## Files Changed
 
 - Added `.agents/ngopi-dulur-product.md`
@@ -117,6 +212,12 @@ Requested scope completed: admin auth/session foundation, protected admin SPA sh
 - Added `resources/views/layouts/public.blade.php`
 - Added `resources/views/public/home.blade.php`
 - Added `tests/Feature/AdminAuthTest.php`
+- Added `database/migrations/2026_04_29_000003_add_blog_fields_to_users_table.php`
+- Added `database/migrations/2026_04_29_000004_create_blog_mvp_tables.php`
+- Added `app/Models/Category.php`
+- Added `app/Models/Post.php`
+- Added `app/Models/Tag.php`
+- Added `app/Models/SiteSetting.php`
 - Updated `bootstrap/app.php`
 - Updated `app/Helpers/MenuHelper.php`
 - Updated `docs/implementation-plan.md`
@@ -158,6 +259,13 @@ Requested scope completed: admin auth/session foundation, protected admin SPA sh
 - `php artisan route:list --path=admin`
 - `php artisan test tests/Feature/AdminAuthTest.php --compact`
 - `npm run build`
+- `php artisan migrate --seed --force`
+- `php artisan db:show --database=sqlite`
+- `php artisan db:table posts --database=sqlite`
+- `php artisan db:table categories --database=sqlite`
+- `php artisan db:table tags --database=sqlite`
+- `php artisan db:table site_settings --database=sqlite`
+- `php artisan test --compact`
 
 ## Known Gaps
 
@@ -167,4 +275,4 @@ Requested scope completed: admin auth/session foundation, protected admin SPA sh
 
 ## Next Recommended Prompt
 
-Milestone 02 - Database & Models: prepare the schema and model layer without building product UI yet.
+Milestone 03 - Dashboard, Category, Tag: build the admin data layer and lists on top of the new schema.

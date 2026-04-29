@@ -12,6 +12,16 @@ class MenuHelper
                 'name' => 'Dashboard',
                 'path' => '/admin/dashboard',
             ],
+            [
+                'icon' => 'tables',
+                'name' => 'Kategori',
+                'path' => '/admin/categories',
+            ],
+            [
+                'icon' => 'ui-elements',
+                'name' => 'Tag',
+                'path' => '/admin/tags',
+            ],
         ];
     }
 
