@@ -14,7 +14,7 @@ Last updated: 2026-04-29
 | Milestone | Status | Last Updated | Notes |
 |---|---|---:|---|
 | 00 Bootstrap & Audit | DONE | 2026-04-29 | Initial audit completed, agent docs created, implementation plan refreshed, gaps recorded |
-| 01 Foundation | NOT_STARTED | - | Align stack and build app foundation only when prompted |
+| 01 Foundation | DONE | 2026-04-29 | Admin auth/session, Vue 3 admin shell, public Blade shell, Tailwind warm tokens, and warm TailAdmin base completed and verified |
 | 02 Database & Models | NOT_STARTED | - | - |
 | 03 Dashboard, Category, Tag | NOT_STARTED | - | - |
 | 04 Post CRUD, Editor, Upload, Preview | NOT_STARTED | - | - |
@@ -29,87 +29,142 @@ Status: DONE
 
 Milestone 00 prepared the agent working foundation and audited the current repository state. No product feature, auth flow, product migration, product UI, or TailAdmin refactor was implemented.
 
-## Current Implementation Notes
+## Milestone 01 Summary
 
-- PRD exists at `docs/PRD.md`.
-- `.agents` now contains the required project guideline files:
-  - `.agents/ngopi-dulur-product.md`
-  - `.agents/laravel-architecture.md`
-  - `.agents/frontend-vue-tailadmin.md`
-  - `.agents/rtk-command-policy.md`
-- TailAdmin Laravel assets are present as Blade layouts, components, pages, CSS theme utilities, JS initializers, and sample routes.
-- Current routes are TailAdmin sample routes such as `/`, `/calendar`, `/profile`, `/signin`, `/signup`, `/basic-tables`, and UI demo pages.
-- Current `/` route renders `pages.dashboard.ecommerce`, not a public Ngopi Dulur blog homepage.
-- Current frontend uses Alpine and TailAdmin support scripts, not a Vue 3 SPA.
-- Current app models only include the default `User` model.
-- Current migrations are only default users, cache, and jobs migrations.
+Status: DONE
 
-## Stack Audit
+Requested scope completed: admin auth/session foundation, protected admin SPA shell, public Blade shell, Ngopi Dulur Tailwind tokens, warm TailAdmin base, and protected dashboard placeholder.
 
-- Laravel target from PRD: 13
-- Laravel current: 12.26.4
-- PHP current: 8.4.20
-- Composer current: 2.9.5
-- Database target from PRD: MySQL
-- Database current environment from `php artisan about`: SQLite
-- Vite target from PRD: 8
-- Vite current: `^7.0.4`
-- Tailwind CSS current: `^4.1.12`
-- Vue 3 current: not installed
-- TailAdmin Laravel current: present as Blade template/starter
-- Admin Vue SPA current: not present
-- Public Blade blog current: not present as product blog; only TailAdmin Blade sample pages exist
+### Milestone 01 Files Changed
 
-## Laravel Boost / Context7 / RTK
+- Added `app/Http/Controllers/AdminAuthController.php`
+- Added `app/Http/Controllers/AdminShellController.php`
+- Added `app/Http/Controllers/PublicHomeController.php`
+- Updated `app/Helpers/MenuHelper.php`
+- Updated `bootstrap/app.php`
+- Updated `composer.json`
+- Updated `composer.lock`
+- Updated `database/seeders/DatabaseSeeder.php`
+- Added `resources/js/admin.js`
+- Added `resources/views/admin/dashboard.blade.php`
+- Added `resources/views/admin/login.blade.php`
+- Added `resources/views/layouts/public.blade.php`
+- Added `resources/views/public/home.blade.php`
+- Updated `resources/css/app.css`
+- Updated `resources/views/layouts/app-header.blade.php`
+- Updated `resources/views/layouts/app.blade.php`
+- Updated `resources/views/layouts/fullscreen-layout.blade.php`
+- Updated `resources/views/layouts/sidebar.blade.php`
+- Updated `package.json`
+- Updated `package-lock.json`
+- Updated `phpunit.xml`
+- Added `tests/Feature/AdminAuthTest.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+- Updated `public/build/*` via `npm run build`
 
-- RTK checked: `rtk 0.35.0`
-- RTK Codex hook: `rtk init -g --codex` completed
-- Laravel Boost package checked: `laravel/boost v1.1.5` is installed
-- `boost.json`: `"mcp": true`
-- Laravel Boost MCP tools in this Codex session: not available through tool discovery
-- Artisan Boost namespace: unavailable; `php artisan boost:install --help` returned `There are no commands defined in the "boost" namespace.`
-- Context7 used for Laravel Boost install/MCP verification
+### Milestone 01 Commands Run
+
+- `rtk init -g --codex`
+- `composer show laravel/framework --all --no-ansi`
+- `composer why-not laravel/framework ^13.0 --no-ansi`
+- `composer update laravel/framework laravel/tinker laravel/boost laravel/pail laravel/sail nunomaduro/collision pestphp/pest pestphp/pest-plugin pestphp/pest-plugin-laravel -W`
+- `composer validate --no-ansi`
+- `composer audit --no-ansi`
+- `npm view vite version`
+- `npm view vite@8 version`
+- `npm view laravel-vite-plugin version`
+- `npm view @tailwindcss/vite version`
+- `npm install --save-dev vite@^8.0.10 laravel-vite-plugin@^3.0.1 @tailwindcss/vite@^4.2.4 tailwindcss@^4.2.4`
+- `npm install`
+- `npm audit fix`
+- `npm audit --omit=dev`
+- `php artisan --version`
+- `php artisan about --only=environment,cache,drivers --no-ansi`
+- `php artisan route:list --path=admin`
+- `php artisan test tests/Feature/AdminAuthTest.php --compact`
+- `npm run build`
+- `rtk gain`
+
+### Milestone 01 Tests / Build
+
+- `php artisan route:list --path=admin`: passed, routes registered for `/admin/login`, `/admin/api/login`, `/admin/api/logout`, `/admin`, `/admin/dashboard`, and `/admin/{any?}`
+- `php artisan test tests/Feature/AdminAuthTest.php --compact`: passed with warnings about missing `.env` file reads; auth assertions all passed
+- `npm run build`: passed with Vite `8.0.10`; warning remains for a large TailAdmin app chunk over 500 kB
+- `composer validate --no-ansi`: passed
+- `composer audit --no-ansi`: passed, no advisories
+- `npm audit --omit=dev`: passed, 0 vulnerabilities after `npm audit fix`
+- `php artisan --version`: `Laravel Framework 13.7.0`
+
+### Milestone 01 Known Gaps
+
+- Future product milestones still need database schema, post/category/tag CRUD, public blog pages, settings, media, SEO, and hardening.
+- Vite build still emits a large-chunk warning for the preserved TailAdmin bundle.
+- PHPUnit emits warnings about missing `.env` file reads in this checkout, although the auth test suite passes.
 
 ## Files Changed
 
 - Added `.agents/ngopi-dulur-product.md`
 - Added `.agents/laravel-architecture.md`
 - Added `.agents/frontend-vue-tailadmin.md`
+- Added `.agents/rtk-command-policy.md`
+- Added `app/Http/Controllers/AdminAuthController.php`
+- Added `app/Http/Controllers/AdminShellController.php`
+- Added `app/Http/Controllers/PublicHomeController.php`
+- Added `resources/js/admin.js`
+- Added `resources/views/admin/dashboard.blade.php`
+- Added `resources/views/admin/login.blade.php`
+- Added `resources/views/layouts/public.blade.php`
+- Added `resources/views/public/home.blade.php`
+- Added `tests/Feature/AdminAuthTest.php`
+- Updated `bootstrap/app.php`
+- Updated `app/Helpers/MenuHelper.php`
 - Updated `docs/implementation-plan.md`
 - Updated `docs/milestone-status.md`
+- Updated `composer.json`
+- Updated `composer.lock`
+- Updated `database/seeders/DatabaseSeeder.php`
+- Updated `package.json`
+- Updated `package-lock.json`
+- Updated `phpunit.xml`
+- Updated `resources/css/app.css`
+- Updated `resources/views/layouts/app-header.blade.php`
+- Updated `resources/views/layouts/app.blade.php`
+- Updated `resources/views/layouts/fullscreen-layout.blade.php`
+- Updated `resources/views/layouts/sidebar.blade.php`
+- Updated `public/build/*`
 
 ## Commands Run
 
 - `rtk --version`
 - `rtk init -g --codex`
-- `rtk ls` attempted; failed on Windows because `ls` is not a PATH binary
-- `rtk powershell -NoProfile -Command "Get-ChildItem ..."` used as the Windows-compatible RTK listing pattern
-- `rtk read PRD.md` attempted; root PRD was not present
-- `rtk powershell -NoProfile -Command "Get-Content -Raw docs\PRD.md"`
-- `rtk powershell -NoProfile -Command "Get-Content -Raw composer.json"`
-- `rtk powershell -NoProfile -Command "Get-Content -Raw package.json"`
-- `rtk powershell -NoProfile -Command "Get-Content -Raw vite.config.js"`
-- `rtk powershell -NoProfile -Command "php artisan --version"`
-- `rtk powershell -NoProfile -Command "composer show laravel/boost --no-ansi"`
-- `rtk powershell -NoProfile -Command "php artisan route:list"`
-- `rtk powershell -NoProfile -Command "php artisan about --only=environment,cache,drivers --no-ansi"`
-- `rtk git status --short` attempted; failed because this directory is not a Git repository
-- `rtk grep ...` attempted; failed on Windows because `grep` is not a PATH binary
-
-## Tests / Build
-
-- No product tests or frontend build were run because Milestone 00 only changes documentation and agent guidelines.
-- Artisan route and app info commands were run for audit verification.
+- `rtk gain`
+- `rtk git status`
+- `composer show laravel/framework --all --no-ansi`
+- `composer why-not laravel/framework ^13.0 --no-ansi`
+- `composer update laravel/framework laravel/tinker laravel/boost laravel/pail laravel/sail nunomaduro/collision pestphp/pest pestphp/pest-plugin pestphp/pest-plugin-laravel -W`
+- `composer validate --no-ansi`
+- `composer audit --no-ansi`
+- `npm view vite version`
+- `npm view vite@8 version`
+- `npm view laravel-vite-plugin version`
+- `npm view @tailwindcss/vite version`
+- `npm install --save-dev vite@^8.0.10 laravel-vite-plugin@^3.0.1 @tailwindcss/vite@^4.2.4 tailwindcss@^4.2.4`
+- `npm install`
+- `npm audit fix`
+- `npm audit --omit=dev`
+- `php artisan --version`
+- `php artisan about --only=environment,cache,drivers --no-ansi`
+- `php artisan route:list --path=admin`
+- `php artisan test tests/Feature/AdminAuthTest.php --compact`
+- `npm run build`
 
 ## Known Gaps
 
-- Repo current stack does not match PRD target: Laravel 12, Vite 7, Vue missing, SQLite environment.
-- Laravel Boost package exists but Boost MCP tools are unavailable in this Codex session and Artisan Boost commands are not registered.
-- Git status/diff cannot be verified until a `.git` checkout is available.
-- TailAdmin is present, but it is still a sample Blade dashboard rather than protected admin product shell.
-- Admin Vue SPA is not implemented.
-- Public Ngopi Dulur Blade blog is not implemented.
+- Database schema, CRUD, public blog, settings, media, SEO, and hardening milestones remain.
+- Laravel Boost MCP tools are unavailable in this Codex session and Artisan Boost commands are not registered.
+- Git metadata is now available in this checkout, but no commit has been created yet.
 
 ## Next Recommended Prompt
 
-Milestone 01 - Foundation: align the project foundation with PRD target stack and create only the base shells/configuration needed for Laravel 13 target, Vue 3 admin SPA, Vite 8 target, MySQL environment, TailAdmin admin shell, and public Blade shell. Do not create product CRUD features in that milestone.
+Milestone 02 - Database & Models: prepare the schema and model layer without building product UI yet.

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap') layer(base);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lora:wght@500;600;700&display=swap') layer(base);
 @import 'prismjs/themes/prism.min.css';
 @import 'tailwindcss';
 
@@ -13,7 +13,8 @@
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-sans: Inter, sans-serif;
+  --font-lora: Lora, serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -46,6 +47,16 @@
   --color-transparent: transparent;
   --color-white: #ffffff;
   --color-black: #101828;
+  --color-coffee-50: #fbf6f1;
+  --color-coffee-100: #f4e8dc;
+  --color-coffee-300: #d7b08b;
+  --color-coffee-500: #a86a3a;
+  --color-coffee-700: #7b4520;
+  --color-coffee-900: #3b2414;
+  --color-neutralwarm-50: #fcf8f3;
+  --color-neutralwarm-100: #f3e9de;
+  --color-neutralwarm-500: #8b7868;
+  --color-neutralwarm-900: #1f1713;
 
   --color-brand-25: #f2f7ff;
   --color-brand-50: #ecf3ff;
@@ -150,6 +161,7 @@
   --shadow-theme-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
   --shadow-theme-xl: 0px 20px 24px -4px rgba(16, 24, 40, 0.08),
     0px 8px 8px -4px rgba(16, 24, 40, 0.03);
+  --shadow-soft: 0px 18px 36px -24px rgba(59, 36, 20, 0.38);
   --shadow-datepicker: -5px 0 0 #262d3c, 5px 0 0 #262d3c;
   --shadow-focus-ring: 0px 0px 0px 4px rgba(70, 95, 255, 0.12);
   --shadow-slider-navigation: 0px 1px 2px 0px rgba(16, 24, 40, 0.1),
@@ -189,7 +201,7 @@
     cursor: pointer;
   }
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50;
+    @apply relative z-1 bg-neutralwarm-50 font-normal font-sans text-neutralwarm-900;
   }
 }
 
@@ -198,23 +210,23 @@
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-coffee-100 text-coffee-900 dark:bg-coffee-500/15 dark:text-coffee-100;
 }
 
 @utility menu-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 group-hover:text-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-gray-300;
+  @apply text-neutralwarm-900/80 hover:bg-neutralwarm-100 group-hover:text-neutralwarm-900 dark:text-neutralwarm-100 dark:hover:bg-white/5 dark:hover:text-neutralwarm-50;
 }
 
 @utility menu-item-icon {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400;
+  @apply text-neutralwarm-500 group-hover:text-neutralwarm-500 dark:text-neutralwarm-100/70;
 }
 
 @utility menu-item-icon-active {
-  @apply text-brand-500 dark:text-brand-400;
+  @apply text-coffee-700 dark:text-coffee-100;
 }
 
 @utility menu-item-icon-inactive {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+  @apply text-neutralwarm-500 group-hover:text-neutralwarm-500 dark:text-neutralwarm-100/70 dark:group-hover:text-neutralwarm-50;
 }
 
 @utility menu-item-arrow {
@@ -222,11 +234,11 @@
 }
 
 @utility menu-item-arrow-active {
-  @apply rotate-180 text-brand-500 dark:text-brand-400;
+  @apply rotate-180 text-coffee-700 dark:text-coffee-100;
 }
 
 @utility menu-item-arrow-inactive {
-  @apply text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300;
+  @apply text-neutralwarm-500 group-hover:text-neutralwarm-500 dark:text-neutralwarm-100/70 dark:group-hover:text-neutralwarm-50;
 }
 
 @utility menu-dropdown-item {
@@ -234,11 +246,11 @@
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-coffee-100 text-coffee-900 dark:bg-coffee-500/15 dark:text-coffee-100;
 }
 
 @utility menu-dropdown-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
+  @apply text-neutralwarm-900/80 hover:bg-neutralwarm-100 dark:text-neutralwarm-100 dark:hover:bg-white/5;
 }
 
 @utility menu-dropdown-item {
@@ -246,11 +258,11 @@
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-coffee-100 text-coffee-900 dark:bg-coffee-500/15 dark:text-coffee-100;
 }
 
 @utility menu-dropdown-item-inactive {
-  @apply text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5;
+  @apply text-neutralwarm-900/80 hover:bg-neutralwarm-100 dark:text-neutralwarm-100 dark:hover:bg-white/5;
 }
 
 @utility menu-dropdown-badge {

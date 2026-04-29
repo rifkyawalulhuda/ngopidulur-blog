@@ -31,23 +31,22 @@ Brand direction: Warm Coffee Meets Modern Tech.
 
 ## Current Repo Audit
 
-Milestone 00 audit found the repository is currently a TailAdmin Laravel starter, not yet the Ngopi Dulur CMS implementation.
+Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work.
 
-- Laravel runtime: `Laravel Framework 12.26.4`
-- `composer.json`: `laravel/framework:^12.0`, `laravel/boost:^1.1`, Pest 4, Laravel Pint, Sail, Pail
+- Laravel runtime: `Laravel Framework 13.7.0`
+- `composer.json`: `laravel/framework:^13.5`, `laravel/tinker:^3.0`, `laravel/boost:^2.4`, Laravel Pint, Sail, Pail, Pest 5 dev branch
 - PHP runtime from `php artisan about`: `8.4.20`
-- Database driver from `php artisan about`: SQLite in current environment
-- `package.json`: Vite `^7.0.4`, Tailwind CSS `^4.1.12`, `@tailwindcss/vite`, Alpine, ApexCharts, FullCalendar, TailAdmin support libraries
-- Vue 3 dependency: not present in `package.json`
-- Vite 8 dependency: not present yet
-- TailAdmin status: TailAdmin Laravel Blade template is present, including layout, sidebar, dashboard, forms, tables, UI components, charts, auth sample pages, and `tailadmin-laravel.png`
-- Admin Vue SPA status: not present yet; current JS uses Alpine and component-specific scripts
-- Public Blade blog status: not present yet; current `/` route renders TailAdmin ecommerce dashboard sample
-- Routes status: sample TailAdmin routes only; no `/admin`, `/admin/api`, post, category, tag, search, sitemap, or robots routes yet
+- Database driver from `php artisan about`: SQLite in the current checkout environment
+- `package.json`: Vite `^8.0.10`, `laravel-vite-plugin:^3.0.1`, Tailwind CSS `^4.2.4`, `@tailwindcss/vite:^4.2.4`, Vue `^3.5.33`, Alpine, ApexCharts, FullCalendar, TailAdmin support libraries
+- Vite 8 dependency: present and build verified
+- TailAdmin status: TailAdmin Laravel Blade template is still the base admin layout system, with warm Ngopi Dulur branding layered on top
+- Admin Vue SPA status: foundation shell present at `/admin/{any?}` with Vue mount in `resources/js/admin.js`
+- Public Blade blog status: foundation shell present at `/` with a public layout and homepage placeholder
+- Routes status: admin auth/session routes, protected dashboard route, public home route, and SPA catchall routes are present
 - Models status: only default `User` model exists
 - Migrations status: default users, cache, and jobs migrations only
-- Git status: unavailable because this working directory does not contain a `.git` directory
-- Laravel Boost package status: `laravel/boost v1.1.5` is installed and `boost.json` has `"mcp": true`, but Laravel Boost MCP tools are not available in this Codex session and `php artisan boost:*` commands are not registered
+- Git status: available in this checkout; current worktree contains modified and untracked files for this milestone
+- Laravel Boost package status: `laravel/boost v2.4.6` is installed and `boost.json` has `"mcp": true`, but Laravel Boost MCP tools are not available in this Codex session and `php artisan boost:*` commands are not registered
 - Context7 usage: used during Milestone 00 to verify Laravel Boost install/MCP role
 
 ## Architecture Plan
@@ -62,7 +61,7 @@ Milestone 00 audit found the repository is currently a TailAdmin Laravel starter
 ### Admin Dashboard
 
 - Preserve TailAdmin Laravel as the visual base.
-- Convert admin surface into a Vue 3 SPA in the foundation milestone.
+- Convert admin surface into a Vue 3 SPA in later product milestones.
 - Keep admin UI routes as SPA entry points and data operations in `/admin/api/*`.
 - Keep all admin-facing labels and validation messages in Bahasa Indonesia.
 
@@ -78,7 +77,7 @@ Milestone 00 audit found the repository is currently a TailAdmin Laravel starter
 | Milestone | Scope |
 |---|---|
 | 00 Bootstrap & Audit | Repo audit, agent guidelines, implementation plan, milestone status |
-| 01 Foundation | Align stack to PRD, setup Laravel 13 target, Vue 3 SPA foundation, Vite 8 target, MySQL config, TailAdmin admin shell, public Blade shell |
+| 01 Foundation | Align stack to PRD, setup Laravel 13 target, Vue 3 SPA foundation, Vite 8 target, TailAdmin admin shell, public Blade shell |
 | 02 Database & Models | Users future fields, posts, categories, tags, settings, relationships, factories, seeders |
 | 03 Dashboard, Category, Tag | Admin dashboard data, category CRUD, tag CRUD |
 | 04 Post CRUD, Editor, Upload, Preview | Post CRUD, rich text and markdown storage, validation, featured image, secure preview |
@@ -103,11 +102,11 @@ Milestone 00 audit found the repository is currently a TailAdmin Laravel starter
 
 ## Known Risks
 
-- Current repo stack does not yet match PRD target: Laravel 12 vs Laravel 13, Vite 7 vs Vite 8, Vue missing, SQLite environment vs MySQL target.
+- Current repo stack still does not fully match the eventual PRD target because the current environment still uses SQLite instead of MySQL.
+- Pest/Laravel 13 compatibility currently uses dev branch constraints for Pest 5 and Collision until stable package releases are available.
 - Laravel Boost package exists but MCP tooling is not callable from this session.
-- Git metadata is unavailable in this folder, so normal `git status` and `git diff` verification cannot run until the repo is under Git or Codex is pointed at the actual checkout root.
-- Current TailAdmin routes are public sample routes, not protected admin routes.
-- Current login/signup pages are template pages, not product auth.
+- Git metadata is now present, but future work should still keep diffs tight because TailAdmin remains large.
+- Current TailAdmin routes and views were preserved as the base and are now being progressively adapted to Ngopi Dulur branding.
 
 ## Decisions
 

@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'Dashboard' }} | TailAdmin - Laravel Tailwind CSS Admin Dashboard Template</title>
+    <title>{{ $title ?? 'Dashboard' }} | Ngopi Dulur Admin</title>
 
     <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin.js'])
 
     <!-- Alpine.js -->
     {{-- <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
@@ -36,10 +36,10 @@
                     const body = document.body;
                     if (this.theme === 'dark') {
                         html.classList.add('dark');
-                        body.classList.add('dark', 'bg-gray-900');
+                        body.classList.add('dark', 'bg-neutralwarm-900');
                     } else {
                         html.classList.remove('dark');
-                        body.classList.remove('dark', 'bg-gray-900');
+                        body.classList.remove('dark', 'bg-neutralwarm-900');
                     }
                 }
             });
@@ -83,10 +83,10 @@
             const theme = savedTheme || systemTheme;
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
-                document.body.classList.add('dark', 'bg-gray-900');
+                document.body.classList.add('dark', 'bg-neutralwarm-900');
             } else {
                 document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark', 'bg-gray-900');
+                document.body.classList.remove('dark', 'bg-neutralwarm-900');
             }
         })();
     </script>
