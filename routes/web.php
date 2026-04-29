@@ -1,14 +1,24 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminApi\PostController as AdminPostApiController;
 use App\Http\Controllers\AdminApi\CategoryController as AdminCategoryApiController;
 use App\Http\Controllers\AdminApi\DashboardController as AdminDashboardApiController;
 use App\Http\Controllers\AdminApi\TagController as AdminTagApiController;
 use App\Http\Controllers\AdminShellController;
+use App\Http\Controllers\PublicPostController;
 use App\Http\Controllers\PublicHomeController;
+use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
+Route::bind('post', function (string $value) {
+    return Post::withTrashed()
+        ->when(is_numeric($value), fn ($query) => $query->whereKey((int) $value), fn ($query) => $query->where('slug', $value))
+        ->firstOrFail();
+});
+
 Route::get('/', [PublicHomeController::class, 'index'])->name('home');
+Route::get('/posts/{slug}', [PublicPostController::class, 'show'])->name('posts.show');
 
 Route::middleware('guest')->group(function () {
     Route::get('/admin/login', [AdminAuthController::class, 'create'])->name('login');
@@ -20,6 +30,15 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin/api')->group(function () {
         Route::get('/dashboard', [AdminDashboardApiController::class, 'index'])->name('admin.api.dashboard');
+
+        Route::get('/posts', [AdminPostApiController::class, 'index'])->name('admin.api.posts.index');
+        Route::post('/posts', [AdminPostApiController::class, 'store'])->name('admin.api.posts.store');
+        Route::get('/posts/{post}', [AdminPostApiController::class, 'show'])->name('admin.api.posts.show');
+        Route::put('/posts/{post}', [AdminPostApiController::class, 'update'])->name('admin.api.posts.update');
+        Route::delete('/posts/{post}', [AdminPostApiController::class, 'destroy'])->name('admin.api.posts.destroy');
+        Route::post('/posts/{post}/publish', [AdminPostApiController::class, 'publish'])->name('admin.api.posts.publish');
+        Route::post('/posts/{post}/archive', [AdminPostApiController::class, 'archive'])->name('admin.api.posts.archive');
+        Route::get('/posts/{post}/preview', [AdminPostApiController::class, 'preview'])->name('admin.api.posts.preview');
 
         Route::get('/categories', [AdminCategoryApiController::class, 'index'])->name('admin.api.categories.index');
         Route::post('/categories', [AdminCategoryApiController::class, 'store'])->name('admin.api.categories.store');

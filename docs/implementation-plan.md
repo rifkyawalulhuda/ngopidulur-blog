@@ -31,7 +31,7 @@ Brand direction: Warm Coffee Meets Modern Tech.
 
 ## Current Repo Audit
 
-Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages.
+Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages. Milestone 04 completed the post management layer with editor, upload, preview, and public visibility guard.
 
 - Laravel runtime: `Laravel Framework 13.7.0`
 - `composer.json`: `laravel/framework:^13.5`, `laravel/tinker:^3.0`, `laravel/boost:^2.4`, Laravel Pint, Sail, Pail, Pest 5 dev branch
@@ -80,7 +80,7 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 | 01 Foundation | Align stack to PRD, setup Laravel 13 target, Vue 3 SPA foundation, Vite 8 target, TailAdmin admin shell, public Blade shell |
 | 02 Database & Models | Users future fields, posts, categories, tags, settings, relationships, factories, seeders |
 | 03 Dashboard, Category, Tag | Admin dashboard stats, category CRUD, tag CRUD, admin Vue pages, and delete-rule handling |
-| 04 Post CRUD, Editor, Upload, Preview | Post CRUD, rich text and markdown storage, validation, featured image, secure preview |
+| 04 Post CRUD, Editor, Upload, Preview | Post CRUD, rich text and markdown storage, validation, featured image, WebP upload, secure preview, and public visibility guard |
 | 05 Public Blog | Homepage, post detail, category, tag, search, pagination, public theme |
 | 06 Settings, Media, SEO, Sitemap, Robots | Settings, Media MVP, SEO metadata, sitemap, robots/noindex policy |
 | 07 Tests, Hardening, Polish | Required MVP tests, security/performance hardening, responsive polish |

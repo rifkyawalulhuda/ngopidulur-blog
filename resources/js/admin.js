@@ -3,6 +3,18 @@ import { createApp } from 'vue';
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
 const pageFromPath = (path) => {
+    if (path.startsWith('/admin/posts/create')) {
+        return 'post-create';
+    }
+
+    if (path.match(/^\/admin\/posts\/[^/]+\/edit$/)) {
+        return 'post-edit';
+    }
+
+    if (path.startsWith('/admin/posts')) {
+        return 'posts';
+    }
+
     if (path.startsWith('/admin/categories')) {
         return 'categories';
     }
@@ -12,6 +24,12 @@ const pageFromPath = (path) => {
     }
 
     return 'dashboard';
+};
+
+const postIdFromPath = (path) => {
+    const match = path.match(/^\/admin\/posts\/([^/]+)\/edit$/);
+
+    return match ? match[1] : null;
 };
 
 const apiHeaders = {
@@ -29,12 +47,18 @@ const toastTypes = {
 
 function useApi(app) {
     return async (url, options = {}) => {
+        const headers = {
+            ...apiHeaders,
+            ...(options.headers || {}),
+        };
+
+        if (options.body instanceof FormData) {
+            delete headers['Content-Type'];
+        }
+
         const response = await fetch(url, {
             credentials: 'same-origin',
-            headers: {
-                ...apiHeaders,
-                ...(options.headers || {}),
-            },
+            headers,
             ...options,
         });
 
@@ -47,7 +71,10 @@ function useApi(app) {
         }
 
         if (! response.ok) {
-            const message = payload?.message || 'Terjadi kesalahan saat memproses permintaan.';
+            const firstError = payload?.errors ? Object.values(payload.errors).flat()[0] : null;
+            const message = payload?.message && payload.message !== 'The given data was invalid.'
+                ? payload.message
+                : firstError || 'Terjadi kesalahan saat memproses permintaan.';
             throw new Error(message);
         }
 
@@ -87,6 +114,52 @@ createApp({
                 items: [],
                 error: '',
             },
+            posts: {
+                loading: true,
+                saving: false,
+                items: [],
+                filters: {
+                    search: '',
+                    status: '',
+                    category: '',
+                    sort: 'updated_at',
+                },
+                meta: {
+                    current_page: 1,
+                    last_page: 1,
+                    per_page: 10,
+                    total: 0,
+                },
+                error: '',
+            },
+            postEditor: {
+                open: false,
+                mode: 'create',
+                loading: false,
+                saving: false,
+                id: null,
+                title: '',
+                slug: '',
+                excerpt: '',
+                content_format: 'richtext',
+                content: '',
+                featured_image_file: null,
+                featured_image_url: '',
+                featured_image_alt: '',
+                category_id: '',
+                tag_ids: [],
+                status: 'draft',
+                is_featured: false,
+                meta_title: '',
+                meta_description: '',
+                published_at: '',
+                preview: {
+                    open: false,
+                    loading: false,
+                    html: '',
+                    title: '',
+                },
+            },
             editor: {
                 open: false,
                 kind: 'category',
@@ -118,6 +191,10 @@ createApp({
                 return 'Tag';
             }
 
+            if (this.current === 'posts' || this.current === 'post-create' || this.current === 'post-edit') {
+                return 'Tulisan';
+            }
+
             return 'Dashboard';
         },
 
@@ -128,6 +205,18 @@ createApp({
 
             if (this.current === 'tags') {
                 return 'Kelola tag untuk memberi penanda ringan pada tulisan.';
+            }
+
+            if (this.current === 'posts') {
+                return 'Kelola artikel, filter konten, dan lakukan aksi terbit atau arsip dari satu tempat.';
+            }
+
+            if (this.current === 'post-create') {
+                return 'Tulis draft baru, pilih kategori, dan siapkan artikel sebelum diterbitkan.';
+            }
+
+            if (this.current === 'post-edit') {
+                return 'Ubah isi, status, dan metadata artikel tanpa meninggalkan panel admin.';
             }
 
             return 'Ringkasan aktivitas dan konten terbaru hadir di satu tempat.';
@@ -164,6 +253,18 @@ createApp({
         async loadCurrentPage() {
             if (this.current === 'dashboard') {
                 await this.loadDashboard();
+            }
+
+            if (this.current === 'posts') {
+                await this.loadPosts();
+            }
+
+            if (this.current === 'post-create') {
+                await this.loadPostEditor('create');
+            }
+
+            if (this.current === 'post-edit') {
+                await this.loadPostEditor('edit', postIdFromPath(window.location.pathname));
             }
 
             if (this.current === 'categories') {
@@ -217,6 +318,414 @@ createApp({
             } finally {
                 this.tags.loading = false;
             }
+        },
+
+        async loadPosts() {
+            this.posts.loading = true;
+            this.posts.error = '';
+
+            try {
+                const params = new URLSearchParams();
+
+                if (this.posts.filters.search) {
+                    params.set('search', this.posts.filters.search);
+                }
+
+                if (this.posts.filters.status) {
+                    params.set('status', this.posts.filters.status);
+                }
+
+                if (this.posts.filters.category) {
+                    params.set('category', this.posts.filters.category);
+                }
+
+                if (this.posts.filters.sort) {
+                    params.set('sort', this.posts.filters.sort);
+                }
+
+                const payload = await this.apiCall(`/admin/api/posts?${params.toString()}`);
+                this.posts.items = payload.items || [];
+                this.posts.meta = payload.meta || this.posts.meta;
+                this.categories.items = payload.categories || this.categories.items;
+                this.tags.items = payload.tags || this.tags.items;
+                this.posts.filters = {
+                    ...this.posts.filters,
+                    ...(payload.filters || {}),
+                };
+            } catch (error) {
+                this.posts.error = error.message;
+                this.toast(error.message, 'error');
+            } finally {
+                this.posts.loading = false;
+            }
+        },
+
+        async ensurePostOptionsLoaded() {
+            const tasks = [];
+
+            if (this.categories.items.length === 0) {
+                tasks.push(this.loadCategories());
+            }
+
+            if (this.tags.items.length === 0) {
+                tasks.push(this.loadTags());
+            }
+
+            await Promise.all(tasks);
+        },
+
+        resetPostEditor() {
+            this.postEditor = {
+                open: true,
+                mode: 'create',
+                loading: false,
+                saving: false,
+                id: null,
+                title: '',
+                slug: '',
+                excerpt: '',
+                content_format: 'richtext',
+                content: '',
+                featured_image_file: null,
+                featured_image_url: '',
+                featured_image_alt: '',
+                category_id: this.categories.items[0]?.id || '',
+                tag_ids: [],
+                status: 'draft',
+                is_featured: false,
+                meta_title: '',
+                meta_description: '',
+                published_at: '',
+                preview: {
+                    open: false,
+                    loading: false,
+                    html: '',
+                    title: '',
+                },
+            };
+        },
+
+        async loadPostEditor(mode, id = null) {
+            try {
+                await this.ensurePostOptionsLoaded();
+                this.resetPostEditor();
+                this.postEditor.mode = mode;
+                this.postEditor.id = id;
+                this.postEditor.open = true;
+                this.postEditor.loading = mode === 'edit';
+
+                if (mode === 'edit' && id) {
+                    const payload = await this.apiCall(`/admin/api/posts/${id}`);
+                    this.fillPostEditor(payload.item);
+                }
+            } catch (error) {
+                this.toast(error.message, 'error');
+
+                if (mode === 'create') {
+                    this.navigate('/admin/posts');
+                }
+            } finally {
+                this.postEditor.loading = false;
+            }
+        },
+
+        fillPostEditor(item) {
+            this.postEditor.id = item.id;
+            this.postEditor.title = item.title || '';
+            this.postEditor.slug = item.slug || '';
+            this.postEditor.excerpt = item.excerpt || '';
+            this.postEditor.content_format = item.content_format || 'richtext';
+            this.postEditor.content = item.content || '';
+            this.postEditor.featured_image_url = item.featured_image_url || '';
+            this.postEditor.featured_image_alt = item.featured_image_alt || '';
+            this.postEditor.category_id = item.category_id || item.category?.id || '';
+            this.postEditor.tag_ids = (item.tag_ids || []).map((tagId) => Number(tagId));
+            this.postEditor.status = item.status || 'draft';
+            this.postEditor.is_featured = Boolean(item.is_featured);
+            this.postEditor.meta_title = item.meta_title || '';
+            this.postEditor.meta_description = item.meta_description || '';
+            this.postEditor.published_at = item.published_at ? item.published_at.slice(0, 16) : '';
+        },
+
+        openPostCreate() {
+            this.navigate('/admin/posts/create');
+        },
+
+        async openPostEdit(item) {
+            this.navigate(`/admin/posts/${item.id}/edit`);
+        },
+
+        changePostFilters(patch) {
+            this.posts.filters = {
+                ...this.posts.filters,
+                ...patch,
+            };
+        },
+
+        async submitPost(statusOverride = null) {
+            this.postEditor.saving = true;
+
+            const formData = new FormData();
+            formData.append('title', this.postEditor.title);
+            formData.append('slug', this.postEditor.slug || '');
+            formData.append('excerpt', this.postEditor.excerpt || '');
+            formData.append('content_format', this.postEditor.content_format);
+            formData.append('content', this.postEditor.content);
+            formData.append('category_id', this.postEditor.category_id);
+            this.postEditor.tag_ids.forEach((tagId) => formData.append('tags[]', tagId));
+            formData.append('status', statusOverride || this.postEditor.status);
+            formData.append('is_featured', this.postEditor.is_featured ? '1' : '0');
+            formData.append('meta_title', this.postEditor.meta_title || '');
+            formData.append('meta_description', this.postEditor.meta_description || '');
+            formData.append('published_at', this.postEditor.published_at || '');
+            formData.append('featured_image_alt', this.postEditor.featured_image_alt || '');
+
+            if (this.postEditor.featured_image_file) {
+                formData.append('featured_image', this.postEditor.featured_image_file);
+            }
+
+            const isEdit = this.postEditor.mode === 'edit' && this.postEditor.id;
+            const url = isEdit
+                ? `/admin/api/posts/${this.postEditor.id}`
+                : '/admin/api/posts';
+
+            if (isEdit) {
+                formData.append('_method', 'PUT');
+            }
+
+            try {
+                const payload = await this.apiCall(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                });
+
+                this.toast(payload.message || 'Artikel berhasil disimpan.', 'success');
+
+                if (isEdit) {
+                    await this.loadPostEditor('edit', this.postEditor.id);
+                } else {
+                    this.navigate(`/admin/posts/${payload.item.id}/edit`);
+                }
+
+                await this.loadPosts();
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.postEditor.saving = false;
+            }
+        },
+
+        async publishPost(item) {
+            try {
+                const payload = await this.apiCall(`/admin/api/posts/${item.id}/publish`, {
+                    method: 'POST',
+                });
+
+                this.toast(payload.message || 'Artikel berhasil diterbitkan.', 'success');
+                await this.loadPosts();
+            } catch (error) {
+                this.toast(error.message, 'error');
+            }
+        },
+
+        async archivePost(item) {
+            try {
+                const payload = await this.apiCall(`/admin/api/posts/${item.id}/archive`, {
+                    method: 'POST',
+                });
+
+                this.toast(payload.message || 'Artikel berhasil diarsipkan.', 'success');
+                await this.loadPosts();
+            } catch (error) {
+                this.toast(error.message, 'error');
+            }
+        },
+
+        async previewPost() {
+            if (! this.postEditor.id) {
+                this.toast('Simpan artikel terlebih dahulu sebelum preview.', 'info');
+                return;
+            }
+
+            this.postEditor.preview = {
+                open: true,
+                loading: true,
+                html: '',
+                title: this.postEditor.title || 'Pratinjau',
+            };
+            this.postEditor.preview.loading = true;
+
+            try {
+                const payload = await this.apiCall(`/admin/api/posts/${this.postEditor.id}/preview`);
+                this.postEditor.preview = {
+                    open: true,
+                    loading: false,
+                    html: payload.preview_html || payload.item.rendered_content || '',
+                    title: payload.item.title || this.postEditor.title || 'Pratinjau',
+                };
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.postEditor.preview.loading = false;
+            }
+        },
+
+        async previewPostById(item) {
+            this.postEditor.preview = {
+                open: true,
+                loading: true,
+                html: '',
+                title: item.title || 'Pratinjau',
+            };
+            this.postEditor.preview.loading = true;
+
+            try {
+                const payload = await this.apiCall(`/admin/api/posts/${item.id}/preview`);
+                this.postEditor.preview = {
+                    open: true,
+                    loading: false,
+                    html: payload.preview_html || payload.item.rendered_content || '',
+                    title: payload.item.title || item.title || 'Pratinjau',
+                };
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.postEditor.preview.loading = false;
+            }
+        },
+
+        closePostPreview() {
+            this.postEditor.preview = {
+                open: false,
+                loading: false,
+                html: '',
+                title: '',
+            };
+        },
+
+        applyPostFormatting(type) {
+            const textarea = this.$refs.postContent;
+
+            if (! textarea) {
+                return;
+            }
+
+            const start = textarea.selectionStart ?? 0;
+            const end = textarea.selectionEnd ?? 0;
+            const selected = this.postEditor.content.slice(start, end) || this.getFormattingPlaceholder(type);
+
+            const insert = (before, after = '') => {
+                const value = `${before}${selected}${after}`;
+                this.postEditor.content = `${this.postEditor.content.slice(0, start)}${value}${this.postEditor.content.slice(end)}`;
+                this.$nextTick(() => {
+                    textarea.focus();
+                    const cursor = start + before.length;
+                    textarea.setSelectionRange(cursor, cursor + selected.length);
+                });
+            };
+
+            if (this.postEditor.content_format === 'markdown') {
+                if (type === 'bold') {
+                    insert('**', '**');
+                } else if (type === 'italic') {
+                    insert('*', '*');
+                } else if (type === 'heading') {
+                    insert('# ', '');
+                } else if (type === 'quote') {
+                    insert('> ', '');
+                } else if (type === 'list') {
+                    insert('- ', '');
+                } else if (type === 'ordered') {
+                    insert('1. ', '');
+                } else if (type === 'link') {
+                    const url = window.prompt('Masukkan URL tautan');
+
+                    if (! url) {
+                        return;
+                    }
+
+                    insert('[', `](${url})`);
+                }
+
+                return;
+            }
+
+            if (type === 'bold') {
+                insert('<strong>', '</strong>');
+            } else if (type === 'italic') {
+                insert('<em>', '</em>');
+            } else if (type === 'heading') {
+                insert('<h2>', '</h2>');
+            } else if (type === 'quote') {
+                insert('<blockquote>', '</blockquote>');
+            } else if (type === 'list') {
+                insert('<ul><li>', '</li></ul>');
+            } else if (type === 'ordered') {
+                insert('<ol><li>', '</li></ol>');
+            } else if (type === 'link') {
+                const url = window.prompt('Masukkan URL tautan');
+
+                if (! url) {
+                    return;
+                }
+
+                insert(`<a href="${url}" rel="noreferrer noopener">`, '</a>');
+            }
+        },
+
+        getFormattingPlaceholder(type) {
+            if (type === 'heading') {
+                return 'Judul kecil';
+            }
+
+            if (type === 'quote') {
+                return 'Kutipan hangat';
+            }
+
+            if (type === 'list') {
+                return 'Item daftar';
+            }
+
+            if (type === 'ordered') {
+                return 'Item daftar';
+            }
+
+            if (type === 'link') {
+                return 'Teks tautan';
+            }
+
+            return 'Teks';
+        },
+
+        updatePostFeaturedImage(event) {
+            const [file] = event.target.files || [];
+
+            this.postEditor.featured_image_file = file || null;
+
+            if (file) {
+                this.postEditor.featured_image_url = URL.createObjectURL(file);
+            }
+        },
+
+        removePostFeaturedImage() {
+            this.postEditor.featured_image_file = null;
+            this.postEditor.featured_image_url = '';
+            this.postEditor.featured_image_alt = '';
+
+            const input = this.$refs.postFeaturedImage;
+
+            if (input) {
+                input.value = '';
+            }
+        },
+
+        closePostEditor() {
+            this.postEditor.open = false;
+            this.navigate('/admin/posts');
         },
 
         openCategoryCreate() {
@@ -363,9 +872,13 @@ createApp({
             const item = this.deleting.item;
             this.deleting.loading = true;
 
-            const endpoint = kind === 'category'
-                ? `/admin/api/categories/${item.slug}`
-                : `/admin/api/tags/${item.slug}`;
+            let endpoint = `/admin/api/tags/${item.slug}`;
+
+            if (kind === 'category') {
+                endpoint = `/admin/api/categories/${item.slug}`;
+            } else if (kind === 'post') {
+                endpoint = `/admin/api/posts/${item.id}`;
+            }
 
             try {
                 const payload = await this.apiCall(endpoint, {
@@ -377,6 +890,11 @@ createApp({
 
                 if (kind === 'category') {
                     await this.loadCategories();
+                } else if (kind === 'post') {
+                    await this.loadPosts();
+                    if (this.current === 'post-edit' || this.current === 'post-create') {
+                        this.navigate('/admin/posts');
+                    }
                 } else {
                     await this.loadTags();
                 }
@@ -439,6 +957,12 @@ createApp({
                             class="rounded-full border px-4 py-2 text-sm font-semibold transition"
                             :class="current === 'dashboard' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
                             Dashboard
+                        </button>
+                        <button
+                            @click="navigate('/admin/posts')"
+                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            :class="current === 'posts' || current === 'post-create' || current === 'post-edit' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            Tulisan
                         </button>
                         <button
                             @click="navigate('/admin/categories')"
@@ -533,6 +1057,355 @@ createApp({
                         </div>
                     </div>
                 </template>
+            </section>
+
+            <section v-if="current === 'posts'" class="space-y-6">
+                <div class="rounded-3xl border border-coffee-100 bg-white p-5 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                    <div class="grid gap-4 lg:grid-cols-12 lg:items-end">
+                        <label class="space-y-2 lg:col-span-4">
+                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Cari judul</span>
+                            <input
+                                v-model="posts.filters.search"
+                                @keyup.enter="loadPosts"
+                                type="search"
+                                class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
+                                placeholder="Cari tulisan...">
+                        </label>
+
+                        <label class="space-y-2 lg:col-span-2">
+                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Status</span>
+                            <select v-model="posts.filters.status" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                <option value="">Semua</option>
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="archived">Archived</option>
+                            </select>
+                        </label>
+
+                        <label class="space-y-2 lg:col-span-2">
+                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Kategori</span>
+                            <select v-model="posts.filters.category" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                <option value="">Semua</option>
+                                <option v-for="category in categories.items" :key="category.id" :value="category.slug">
+                                    {{ category.name }}
+                                </option>
+                            </select>
+                        </label>
+
+                        <label class="space-y-2 lg:col-span-2">
+                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Urutkan</span>
+                            <select v-model="posts.filters.sort" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                <option value="updated_at">Update terbaru</option>
+                                <option value="published_at">Tanggal publish</option>
+                            </select>
+                        </label>
+
+                        <div class="flex flex-wrap gap-2 lg:col-span-2 lg:justify-end">
+                            <button @click="loadPosts" class="inline-flex items-center justify-center rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                                Terapkan
+                            </button>
+                            <button @click="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at' }); loadPosts()" class="inline-flex items-center justify-center rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                    <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Daftar artikel terbaru dengan filter yang cepat dipakai.</p>
+                    <button @click="openPostCreate" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                        Tulis Artikel Baru
+                    </button>
+                </div>
+
+                <div v-if="posts.loading" class="grid gap-4">
+                    <div v-for="n in 3" :key="n" class="h-28 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                </div>
+
+                <div v-else-if="posts.items.length === 0" class="rounded-3xl border border-dashed border-coffee-200 bg-white px-6 py-12 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                    <div class="mx-auto max-w-xl text-center">
+                        <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada artikel</p>
+                        <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Mulai dengan draft pertama, lalu terbitkan saat kontennya siap.</p>
+                        <button @click="openPostCreate" class="mt-6 inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                            Tulis Artikel Baru
+                        </button>
+                    </div>
+                </div>
+
+                <div v-else class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-coffee-100 dark:divide-coffee-800/40">
+                            <thead class="bg-coffee-50/70 dark:bg-white/5">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Judul</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Slug</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Kategori</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Status</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Tanggal Publish</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Update Terakhir</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-coffee-100 dark:divide-coffee-800/30">
+                                <tr v-for="item in posts.items" :key="item.id" class="transition hover:bg-coffee-50/70 dark:hover:bg-white/5">
+                                    <td class="px-6 py-4">
+                                        <div class="space-y-1">
+                                            <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ item.title }}</p>
+                                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.author_name || 'Admin' }}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.slug }}</td>
+                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.category_name || '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
+                                            :class="item.status === 'published' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : item.status === 'draft' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-neutralwarm-100'">
+                                            {{ item.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.published_at || '-' }}</td>
+                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.updated_at || '-' }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex justify-end gap-2">
+                                            <button @click="previewPostById(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                                Preview
+                                            </button>
+                                            <button @click="openPostEdit(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                                Ubah
+                                            </button>
+                                            <button v-if="item.status !== 'published'" @click="publishPost(item)" class="rounded-full border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-100 dark:hover:bg-emerald-500/10">
+                                                Terbitkan
+                                            </button>
+                                            <button v-if="item.status !== 'archived'" @click="archivePost(item)" class="rounded-full border border-amber-200 px-3 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10">
+                                                Arsipkan
+                                            </button>
+                                            <button @click="promptDelete('post', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section v-else-if="current === 'post-create' || current === 'post-edit'" class="space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <button @click="navigate('/admin/posts')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                            Kembali
+                        </button>
+                        <span class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                            {{ postEditor.mode === 'create' ? 'Mode membuat draft baru' : 'Mode mengedit artikel' }}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                        <button @click="previewPost" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                            Preview
+                        </button>
+                        <button @click="submitPost('draft')" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                            {{ postEditor.saving ? 'Menyimpan...' : 'Simpan Draft' }}
+                        </button>
+                        <button @click="submitPost('published')" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="postEditor.loading || postEditor.saving">
+                            {{ postEditor.saving ? 'Menyimpan...' : 'Terbitkan' }}
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="postEditor.loading" class="grid gap-4 xl:grid-cols-12">
+                    <div class="xl:col-span-8 space-y-4">
+                        <div class="h-16 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-16 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-64 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    </div>
+                    <div class="xl:col-span-4 space-y-4">
+                        <div class="h-48 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-64 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    </div>
+                </div>
+
+                <div v-else class="grid gap-6 xl:grid-cols-12">
+                    <div class="space-y-6 xl:col-span-8">
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <div class="grid gap-4">
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Judul</span>
+                                    <input v-model="postEditor.title" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Contoh: Secangkir Pagi">
+                                </label>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Slug</span>
+                                    <input v-model="postEditor.slug" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="otomatis-dari-judul">
+                                    <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/60">Kosongkan untuk slug otomatis. Jika diisi manual, slug harus unik.</p>
+                                </label>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Ringkasan</span>
+                                    <textarea v-model="postEditor.excerpt" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional, untuk kartu artikel dan SEO"></textarea>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Editor</p>
+                                    <p class="mt-1 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Mode Visual menyimpan HTML, Mode Markdown menyimpan markdown asli.</p>
+                                </div>
+                                <div class="inline-flex rounded-full border border-coffee-100 bg-coffee-50 p-1 dark:border-coffee-800/50 dark:bg-white/5">
+                                    <button @click="postEditor.content_format = 'richtext'" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'richtext' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
+                                        Mode Visual
+                                    </button>
+                                    <button @click="postEditor.content_format = 'markdown'" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'markdown' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
+                                        Mode Markdown
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <button @click="applyPostFormatting('bold')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">B</button>
+                                <button @click="applyPostFormatting('italic')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">I</button>
+                                <button @click="applyPostFormatting('heading')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">H1</button>
+                                <button @click="applyPostFormatting('quote')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">Quote</button>
+                                <button @click="applyPostFormatting('list')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">UL</button>
+                                <button @click="applyPostFormatting('ordered')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">OL</button>
+                                <button @click="applyPostFormatting('link')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">Link</button>
+                            </div>
+
+                            <div class="mt-4 space-y-3">
+                                <textarea
+                                    ref="postContent"
+                                    v-model="postEditor.content"
+                                    rows="16"
+                                    class="w-full rounded-3xl border border-coffee-100 bg-white px-4 py-3 text-sm leading-7 text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
+                                    :placeholder="postEditor.content_format === 'markdown' ? '# Judul artikel' : '<p>Mulai menulis di sini...</p>'"></textarea>
+
+                                <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/60">
+                                    {{ postEditor.content_format === 'markdown' ? 'Markdown akan dirender dan disanitasi di server.' : 'Konten visual disimpan sebagai HTML yang sudah disanitasi di server.' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <div class="flex items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Preview aman</p>
+                                    <p class="mt-1 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Preview ditarik dari server dan memakai HTML yang sudah disanitasi.</p>
+                                </div>
+                                <button @click="previewPost" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                    Buka preview
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 xl:col-span-4">
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Meta & Status</p>
+
+                            <div class="mt-4 space-y-4">
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Kategori</span>
+                                    <select v-model="postEditor.category_id" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                        <option value="">Pilih kategori</option>
+                                        <option v-for="category in categories.items" :key="category.id" :value="category.id">
+                                            {{ category.name }}
+                                        </option>
+                                    </select>
+                                </label>
+
+                                <div class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Tag</span>
+                                    <div class="grid grid-cols-1 gap-2 rounded-2xl border border-coffee-100 p-4 dark:border-coffee-800/50">
+                                        <label v-for="tag in tags.items" :key="tag.id" class="flex items-center gap-3 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/75">
+                                            <input v-model="postEditor.tag_ids" :value="tag.id" type="checkbox" class="size-4 rounded border-coffee-300 text-coffee-700 focus:ring-coffee-300">
+                                            {{ tag.name }}
+                                        </label>
+                                        <p v-if="tags.items.length === 0" class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada tag.</p>
+                                    </div>
+                                </div>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Status</span>
+                                    <select v-model="postEditor.status" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                        <option value="draft">Draft</option>
+                                        <option value="published">Published</option>
+                                        <option value="archived">Archived</option>
+                                    </select>
+                                </label>
+
+                                <label class="flex items-center gap-3 rounded-2xl border border-coffee-100 px-4 py-3 text-sm text-neutralwarm-500 dark:border-coffee-800/50 dark:text-neutralwarm-100/70">
+                                    <input v-model="postEditor.is_featured" type="checkbox" class="size-4 rounded border-coffee-300 text-coffee-700 focus:ring-coffee-300">
+                                    Jadikan featured
+                                </label>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Meta title</span>
+                                    <input v-model="postEditor.meta_title" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional">
+                                </label>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Meta description</span>
+                                    <textarea v-model="postEditor.meta_description" rows="4" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional"></textarea>
+                                </label>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Published at</span>
+                                    <input v-model="postEditor.published_at" type="datetime-local" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Featured image</p>
+
+                            <div class="mt-4 space-y-4">
+                                <div class="overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                    <img v-if="postEditor.featured_image_url" :src="postEditor.featured_image_url" class="h-56 w-full object-cover" :alt="postEditor.featured_image_alt || postEditor.title || 'Featured image'">
+                                    <div v-else class="flex h-56 items-center justify-center px-6 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                                        Belum ada featured image
+                                    </div>
+                                </div>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Upload gambar</span>
+                                    <input ref="postFeaturedImage" @change="updatePostFeaturedImage" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Alt text</span>
+                                    <input v-model="postEditor.featured_image_alt" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional">
+                                </label>
+
+                                <div class="flex flex-wrap gap-2">
+                                    <button @click="removePostFeaturedImage" type="button" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                        Hapus gambar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi cepat</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <button @click="submitPost('draft')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                    Simpan Draft
+                                </button>
+                                <button @click="submitPost('published')" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                                    Terbitkan
+                                </button>
+                                <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="archivePost({ id: postEditor.id })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10">
+                                    Arsipkan
+                                </button>
+                                <button v-if="postEditor.id" @click="promptDelete('post', { id: postEditor.id, slug: postEditor.slug || postEditor.id })" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                    Hapus
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <section v-else-if="current === 'categories'" class="space-y-6">
@@ -727,12 +1600,14 @@ createApp({
                 <div class="w-full max-w-lg rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
                     <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Konfirmasi hapus</p>
                     <h3 class="mt-2 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
-                        Hapus {{ deleting.kind === 'category' ? 'kategori' : 'tag' }} ini?
+                        Hapus {{ deleting.kind === 'category' ? 'kategori' : deleting.kind === 'post' ? 'artikel' : 'tag' }} ini?
                     </h3>
                     <p class="mt-3 text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70">
                         {{ deleting.kind === 'category'
                             ? 'Kategori yang masih dipakai artikel tidak dapat dihapus.'
-                            : 'Tag akan dihapus dan relasi pada artikel dibersihkan otomatis.' }}
+                            : deleting.kind === 'post'
+                                ? 'Artikel akan dipindahkan ke tempat sampah dan tetap bisa dipulihkan selama belum dihapus permanen.'
+                                : 'Tag akan dihapus dan relasi pada artikel dibersihkan otomatis.' }}
                     </p>
 
                     <div class="mt-6 flex items-center justify-end gap-3">
@@ -742,6 +1617,31 @@ createApp({
                         <button @click="confirmDelete" class="rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700" :disabled="deleting.loading">
                             {{ deleting.loading ? 'Menghapus...' : 'Ya, hapus' }}
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                v-if="postEditor.preview.open"
+                class="fixed inset-0 z-[85] flex items-center justify-center bg-neutralwarm-950/60 px-4 py-8 backdrop-blur-sm">
+                <div class="w-full max-w-5xl rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                    <div class="flex items-center justify-between border-b border-coffee-100 px-6 py-4 dark:border-coffee-800/40">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Preview aman</p>
+                            <h3 class="mt-1 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ postEditor.preview.title }}</h3>
+                        </div>
+                        <button @click="closePostPreview" class="rounded-full border border-coffee-100 bg-white px-3 py-2 text-sm font-semibold text-coffee-700 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100">
+                            Tutup
+                        </button>
+                    </div>
+
+                    <div class="max-h-[75vh] overflow-y-auto px-6 py-6">
+                        <div v-if="postEditor.preview.loading" class="space-y-4">
+                            <div class="h-8 animate-pulse rounded-2xl bg-coffee-50 dark:bg-white/5"></div>
+                            <div class="h-64 animate-pulse rounded-3xl bg-coffee-50 dark:bg-white/5"></div>
+                        </div>
+
+                        <article v-else class="prose prose-neutral max-w-none dark:prose-invert" v-html="postEditor.preview.html"></article>
                     </div>
                 </div>
             </div>

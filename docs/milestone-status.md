@@ -17,7 +17,7 @@ Last updated: 2026-04-29
 | 01 Foundation | DONE | 2026-04-29 | Admin auth/session, Vue 3 admin shell, public Blade shell, Tailwind warm tokens, and warm TailAdmin base completed and verified |
 | 02 Database & Models | DONE | 2026-04-29 | Users, posts, categories, tags, pivot, site settings, model relationships, scopes, and seed data completed and verified |
 | 03 Dashboard, Category, Tag | DONE | 2026-04-29 | Admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages completed and verified |
-| 04 Post CRUD, Editor, Upload, Preview | NOT_STARTED | - | - |
+| 04 Post CRUD, Editor, Upload, Preview | DONE | 2026-04-29 | Post management MVP, editor, upload WebP, secure preview, and public visibility guard completed and verified |
 | 05 Public Blog | NOT_STARTED | - | - |
 | 06 Settings, Media, SEO, Sitemap, Robots | NOT_STARTED | - | - |
 | 07 Tests, Hardening, Polish | NOT_STARTED | - | - |
@@ -196,6 +196,55 @@ Requested scope completed: admin dashboard stats, category CRUD, tag CRUD, prote
 - Wayfinder is not installed in this repo, so the Vue shell uses same-origin admin API URLs directly.
 - The TailAdmin bundle still produces a large-chunk warning at build time.
 - Public blog, post CRUD, media, settings, and SEO milestones remain untouched.
+
+## Milestone 04 Summary
+
+Status: DONE
+
+Requested scope completed: admin post management API, posts list and editor pages, lightweight visual/markdown editor, image upload with automatic WebP conversion, secure preview API, public post visibility guard, and slug collision handling.
+
+### Milestone 04 Files Changed
+
+- Added `app/Http/Controllers/AdminApi/PostController.php`
+- Added `app/Http/Controllers/PublicPostController.php`
+- Added `app/Http/Requests/Admin/PostRequest.php`
+- Added `app/Services/PostPublishingService.php`
+- Updated `app/Helpers/MenuHelper.php`
+- Updated `app/Models/Post.php`
+- Updated `resources/js/admin.js`
+- Updated `routes/web.php`
+- Added `resources/views/public/post.blade.php`
+- Added `tests/Feature/AdminPostApiTest.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+
+### Milestone 04 Commands Run
+
+- `php -l app/Services/PostPublishingService.php`
+- `php -l app/Http/Requests/Admin/PostRequest.php`
+- `php -l app/Http/Controllers/AdminApi/PostController.php`
+- `php -l app/Http/Controllers/PublicPostController.php`
+- `php -l app/Models/Post.php`
+- `php -l tests/Feature/AdminPostApiTest.php`
+- `php artisan route:list --path=admin/api`
+- `php artisan test tests/Feature/AdminPostApiTest.php --compact`
+- `php artisan test --compact`
+- `npm run build`
+
+### Milestone 04 Tests / Build
+
+- `php artisan route:list --path=admin/api`: passed, posts routes registered for index, create, show, update, delete, publish, archive, and preview
+- `php artisan test tests/Feature/AdminPostApiTest.php --compact`: passed with warnings about missing `.env` file reads; draft creation, slug collision, upload conversion, publish guard, sanitization, secure preview, lifecycle, and public visibility assertions passed
+- `php artisan test --compact`: passed with warnings about missing `.env` file reads; entire suite passed
+- `npm run build`: passed with Vite `8.0.10`; TailAdmin chunk warning still present
+- `php -l ...` on all new PHP files: passed, no syntax errors
+
+### Milestone 04 Known Gaps
+
+- The editor is intentionally lightweight and uses a textarea toolbar rather than a full third-party rich text package.
+- Wayfinder is still not installed, so the Vue shell continues to call same-origin admin API URLs directly.
+- Public blog remains incomplete beyond the minimal post detail route needed for visibility checks.
+- TailAdmin chunk-size warning remains at build time.
 
 ## Files Changed
 

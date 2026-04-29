@@ -13,6 +13,11 @@ class MenuHelper
                 'path' => '/admin/dashboard',
             ],
             [
+                'icon' => 'pages',
+                'name' => 'Tulisan',
+                'path' => '/admin/posts',
+            ],
+            [
                 'icon' => 'tables',
                 'name' => 'Kategori',
                 'path' => '/admin/categories',
@@ -46,7 +51,9 @@ class MenuHelper
 
     public static function isActive($path)
     {
-        return request()->is(ltrim($path, '/'));
+        $trimmed = ltrim($path, '/');
+
+        return request()->is($trimmed) || request()->is($trimmed.'/*');
     }
 
     public static function getIconSvg($iconName)
