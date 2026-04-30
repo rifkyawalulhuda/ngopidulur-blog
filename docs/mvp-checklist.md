@@ -130,4 +130,4 @@ Audit references:
 
 - Test suite masih memunculkan warning pembacaan `.env` di environment checkout ini, tetapi seluruh suite lulus.
 - Workspace lokal masih memakai SQLite untuk test/dev, sementara full-text production path tetap disiapkan untuk MySQL/MariaDB.
-- Warning chunk besar TailAdmin saat `npm run build` masih ada, tetapi build lulus dan belum perlu refactor besar di milestone ini.
+- Warning chunk besar TailAdmin saat build sudah dibersihkan lewat lazy-loading dan cleanup entry shell; build kini lulus tanpa warning chunk >500 kB.

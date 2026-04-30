@@ -540,7 +540,7 @@ Requested scope completed: final verification of milestones 00-07, PRD acceptanc
 ### Milestone 08 Tests / Build
 
 - `rtk powershell -NoProfile -Command "php artisan test --compact"`: passed on sequential rerun with existing `.env` warnings; full suite completed successfully
-- `npm run build`: passed; TailAdmin bundle still emits large chunk warning
+- `npm run build`: passed; admin shell chunk warning has been resolved after trimming unused TailAdmin starter loaders
 - `composer validate --no-ansi`: passed
 - `composer audit --no-ansi`: passed, no advisories
 - `npm audit --omit=dev`: passed, 0 vulnerabilities
@@ -550,7 +550,7 @@ Requested scope completed: final verification of milestones 00-07, PRD acceptanc
 - RTK policy file exists and RTK CLI is installed, but this session still reports `No hook installed`, so token-saving hook activation should be rechecked outside the product release flow.
 - PHPUnit still emits `.env` read warnings in this checkout even though the suite passes.
 - Local verification remains SQLite-based, so production MySQL/MariaDB full-text behavior is still primarily covered through code path and acceptance tests rather than local engine parity.
-- TailAdmin still produces a large bundle warning during build, but no launch-blocking regression was found in this verification pass.
+- TailAdmin starter residue still exists in the repo, but the previous large bundle warning on build has been resolved.
 
 ### Milestone 08 Stop Point
 

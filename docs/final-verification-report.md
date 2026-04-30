@@ -11,7 +11,6 @@ MVP utama untuk Ngopi Dulur sudah terimplementasi dan tervalidasi terhadap miles
 Issue yang masih tersisa bersifat non-blocking:
 
 - warning `.env` saat test di environment lokal ini
-- warning chunk besar TailAdmin saat build
 - verifikasi lokal masih memakai SQLite, sementara target produksi PRD adalah MySQL
 - RTK hook Codex belum terdeteksi aktif walaupun RTK CLI dan policy file sudah ada
 
@@ -128,7 +127,7 @@ Status: `DONE`
 | Check | Status | Notes |
 |---|---|---|
 | `php artisan test --compact` | DONE | Lulus pada rerun berurutan; warning `.env` tetap ada |
-| `npm run build` | DONE | Lulus; warning chunk besar TailAdmin tetap ada |
+| `npm run build` | DONE | Lulus; optimasi chunk entry admin shell sudah menghilangkan warning build sebelumnya |
 | `composer validate --no-ansi` | DONE | Valid |
 | `composer audit --no-ansi` | DONE | No advisories |
 | `npm audit --omit=dev` | DONE | 0 vulnerabilities |
@@ -147,9 +146,8 @@ Status: `DONE`
 
 1. RTK hook belum terdeteksi aktif pada sesi ini walaupun RTK CLI tersedia.
 2. PHPUnit masih mengeluarkan warning pembacaan `.env` pada environment checkout ini.
-3. Build frontend masih menghasilkan warning chunk besar pada bundle TailAdmin.
-4. Verifikasi lokal belum berjalan di MySQL aktif, sehingga perilaku engine-specific full-text MySQL belum diuji langsung di mesin ini.
-5. Repo masih menyimpan sebagian scaffold/residue TailAdmin yang tidak terlihat sebagai surface aktif MVP.
+3. Verifikasi lokal belum berjalan di MySQL aktif, sehingga perilaku engine-specific full-text MySQL belum diuji langsung di mesin ini.
+4. Repo masih menyimpan sebagian scaffold/residue TailAdmin yang tidak terlihat sebagai surface aktif MVP.
 
 ## Recommendation
 
@@ -170,7 +168,7 @@ Alasan:
 1. Jalankan smoke test manual ringan di browser untuk alur admin login, create draft, publish, dan baca artikel publik.
 2. Validasi satu putaran environment yang benar-benar memakai MySQL sebelum deploy produksi.
 3. Aktifkan ulang hook RTK di environment kerja Codex agar workflow token-saving konsisten.
-4. Jadwalkan cleanup pasca-launch untuk scaffold TailAdmin yang tidak terpakai dan optimasi chunk frontend bila sudah ada ruang refactor.
+4. Jadwalkan cleanup pasca-launch untuk scaffold TailAdmin yang tidak terpakai bila sudah ada ruang refactor.
 
 ## Final Conclusion
 
