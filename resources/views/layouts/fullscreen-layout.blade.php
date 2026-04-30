@@ -81,12 +81,21 @@
             const savedTheme = localStorage.getItem('theme');
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             const theme = savedTheme || systemTheme;
+            const bodyClasses = ['dark', 'bg-neutralwarm-900'];
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
-                document.body.classList.add('dark', 'bg-neutralwarm-900');
+                if (document.body) {
+                    document.body.classList.add(...bodyClasses);
+                } else {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        document.body?.classList.add(...bodyClasses);
+                    }, { once: true });
+                }
             } else {
                 document.documentElement.classList.remove('dark');
-                document.body.classList.remove('dark', 'bg-neutralwarm-900');
+                if (document.body) {
+                    document.body.classList.remove(...bodyClasses);
+                }
             }
         })();
     </script>
