@@ -7,6 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ $title ?? 'Dashboard' }} | Ngopi Dulur Admin</title>
+    <meta name="robots" content="noindex,nofollow">
+    @stack('head')
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin.js'])

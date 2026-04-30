@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Support\BlogSettings;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,10 @@ class PublicSearchController extends Controller
 
         return view('public.search', [
             'title' => $queryTerm !== '' ? 'Hasil pencarian untuk "'.$queryTerm.'"' : 'Cari Artikel',
+            'metaTitle' => $queryTerm !== '' ? 'Pencarian: '.$queryTerm.' | '.BlogSettings::get('site_name', 'Ngopi Dulur') : 'Cari Artikel | '.BlogSettings::get('site_name', 'Ngopi Dulur'),
+            'metaDescription' => 'Hasil pencarian artikel Ngopi Dulur',
+            'canonicalUrl' => route('search'),
+            'metaRobots' => 'noindex,follow',
             'posts' => $posts,
             'searchTerm' => $queryTerm,
         ]);

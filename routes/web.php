@@ -12,6 +12,7 @@ use App\Http\Controllers\PublicSearchController;
 use App\Http\Controllers\PublicPostController;
 use App\Http\Controllers\PublicHomeController;
 use App\Http\Controllers\PublicTagController;
+use App\Http\Controllers\PublicSitemapController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,7 @@ Route::get('/posts/{slug}', [PublicPostController::class, 'show'])->name('posts.
 Route::get('/category/{category}', [PublicCategoryController::class, 'show'])->name('category.show');
 Route::get('/tag/{tag}', [PublicTagController::class, 'show'])->name('tag.show');
 Route::get('/search', [PublicSearchController::class, 'index'])->name('search');
+Route::get('/sitemap.xml', [PublicSitemapController::class, 'show'])->name('sitemap');
 Route::get('/robots.txt', [PublicRobotsController::class, 'show'])->name('robots');
 
 Route::middleware('guest')->group(function () {
@@ -59,6 +61,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/tags/{tag}', [AdminTagApiController::class, 'show'])->name('admin.api.tags.show');
         Route::put('/tags/{tag}', [AdminTagApiController::class, 'update'])->name('admin.api.tags.update');
         Route::delete('/tags/{tag}', [AdminTagApiController::class, 'destroy'])->name('admin.api.tags.destroy');
+
+        Route::get('/settings', [\App\Http\Controllers\AdminApi\SettingsController::class, 'show'])->name('admin.api.settings.show');
+        Route::put('/settings', [\App\Http\Controllers\AdminApi\SettingsController::class, 'update'])->name('admin.api.settings.update');
+
+        Route::get('/media', [\App\Http\Controllers\AdminApi\MediaController::class, 'index'])->name('admin.api.media.index');
     });
 
     Route::get('/admin', [AdminShellController::class, 'index'])->name('admin.index');

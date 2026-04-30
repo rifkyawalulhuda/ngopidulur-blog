@@ -1,18 +1,5 @@
 @extends('layouts.public')
 
-@push('head')
-    <meta name="description" content="{{ $metaDescription ?? $post->excerpt ?? $defaultMetaDescription ?? $post->title }}">
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" href="{{ route('posts.show', $post->slug) }}">
-
-    <meta property="og:title" content="{{ $title ?? $post->title }}">
-    <meta property="og:description" content="{{ $metaDescription ?? $post->excerpt ?? $defaultMetaDescription ?? $post->title }}">
-    <meta property="og:type" content="article">
-    @if ($post->featured_image_url)
-        <meta property="og:image" content="{{ $post->featured_image_url }}">
-    @endif
-@endpush
-
 @section('content')
     <article class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div class="space-y-6">

@@ -22,6 +22,7 @@ class PublicHomeController extends Controller
                 'heroBadge' => 'Ngopi Dulur',
                 'heroHeading' => 'Cerita, catatan, dan pikiran ringan yang enak dibaca sambil ngopi.',
                 'heroSubheading' => 'Seduh bacaan terbaru dari ruang tulis pribadi yang modern dan hangat.',
+                'heroCtaText' => 'Cari artikel',
                 'footerNote' => 'Dibuat dengan Laravel, Vue, dan secangkir kopi yang pelan-pelan habis.',
                 'featuredPost' => null,
                 'latestPosts' => $this->emptyPaginator(),
@@ -55,18 +56,21 @@ class PublicHomeController extends Controller
             ->get();
 
         return view('public.home', [
-            'title' => BlogSettings::get('site_name', 'Ngopi Dulur'),
+            'title' => BlogSettings::get('default_meta_title', BlogSettings::get('site_name', 'Ngopi Dulur')),
             'siteName' => BlogSettings::get('site_name', 'Ngopi Dulur'),
             'siteTagline' => BlogSettings::get('site_tagline', 'Warm Coffee Meets Modern Tech'),
             'siteDescription' => BlogSettings::get('site_description', 'Blog pribadi hangat untuk catatan, ide, dan tulisan santai.'),
             'heroBadge' => BlogSettings::get('hero_badge', 'Ngopi Dulur'),
             'heroHeading' => BlogSettings::get('hero_heading', 'Cerita, catatan, dan pikiran ringan yang enak dibaca sambil ngopi.'),
             'heroSubheading' => BlogSettings::get('hero_subheading', 'Seduh bacaan terbaru dari ruang tulis pribadi yang modern dan hangat.'),
+            'heroCtaText' => BlogSettings::get('hero_cta_text', 'Cari artikel'),
             'footerNote' => BlogSettings::get('footer_note', 'Dibuat dengan Laravel, Vue, dan secangkir kopi yang pelan-pelan habis.'),
             'featuredPost' => $featuredPost,
             'latestPosts' => $latestPosts,
             'categories' => $categories,
             'searchTerm' => trim((string) request()->input('q', '')),
+            'metaTitle' => BlogSettings::get('default_meta_title', BlogSettings::get('site_name', 'Ngopi Dulur')),
+            'metaDescription' => BlogSettings::get('default_meta_description', BlogSettings::get('site_description', 'Blog pribadi hangat untuk catatan, ide, dan tulisan santai.')),
         ]);
     }
 

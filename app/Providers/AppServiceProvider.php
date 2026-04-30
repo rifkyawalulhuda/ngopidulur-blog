@@ -27,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
                 $view->with([
                     'blogSettings' => collect(),
                     'blogTheme' => 'light',
+                    'blogSettingAssets' => [],
+                    'blogSocialLinks' => [],
                 ]);
 
                 return;
@@ -36,7 +38,13 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'blogSettings' => $blogSettings,
-                'blogTheme' => in_array(strtolower(trim((string) $blogSettings->get('default_theme', 'light'))), ['dark', 'espresso'], true) ? 'dark' : 'light',
+                'blogTheme' => BlogSettings::themeMode($blogSettings),
+                'blogSettingAssets' => [
+                    'logo_url' => BlogSettings::assetUrl('logo'),
+                    'favicon_url' => BlogSettings::assetUrl('favicon'),
+                    'default_og_image_url' => BlogSettings::assetUrl('default_og_image'),
+                ],
+                'blogSocialLinks' => BlogSettings::socialLinks(),
             ]);
         });
     }

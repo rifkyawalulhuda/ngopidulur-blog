@@ -48,13 +48,21 @@ class DatabaseSeeder extends Seeder
             'site_name' => 'Ngopi Dulur',
             'site_tagline' => 'Warm Coffee Meets Modern Tech',
             'site_description' => 'Blog pribadi hangat untuk catatan, ide, dan tulisan santai.',
-            'default_theme' => 'light',
+            'logo' => null,
+            'favicon' => null,
+            'default_theme' => 'terang',
             'hero_badge' => 'Ngopi Dulur',
             'hero_heading' => 'Cerita, catatan, dan pikiran ringan yang enak dibaca sambil ngopi.',
             'hero_subheading' => 'Seduh bacaan terbaru dari ruang tulis pribadi yang modern dan hangat.',
+            'hero_cta_text' => 'Cari artikel',
             'footer_note' => 'Dibuat dengan Laravel, Vue, dan secangkir kopi yang pelan-pelan habis.',
             'default_meta_title' => 'Ngopi Dulur',
             'default_meta_description' => 'Personal blog CMS dengan nuansa hangat dan fondasi modern.',
+            'default_og_image' => null,
+            'social_links' => json_encode([
+                'instagram' => 'https://instagram.com/ngopidulur',
+                'github' => 'https://github.com/ngopidulur',
+            ], JSON_UNESCAPED_SLASHES),
         ];
 
         foreach ($settings as $key => $value) {

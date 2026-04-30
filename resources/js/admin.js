@@ -23,6 +23,14 @@ const pageFromPath = (path) => {
         return 'tags';
     }
 
+    if (path.startsWith('/admin/media')) {
+        return 'media';
+    }
+
+    if (path.startsWith('/admin/settings')) {
+        return 'settings';
+    }
+
     return 'dashboard';
 };
 
@@ -114,6 +122,45 @@ createApp({
                 items: [],
                 error: '',
             },
+            media: {
+                loading: true,
+                items: [],
+                error: '',
+            },
+            settings: {
+                loading: true,
+                saving: false,
+                site_name: '',
+                site_tagline: '',
+                site_description: '',
+                logo: '',
+                logo_url: '',
+                logo_file: null,
+                favicon: '',
+                favicon_url: '',
+                favicon_file: null,
+                default_meta_title: '',
+                default_meta_description: '',
+                default_og_image: '',
+                default_og_image_url: '',
+                default_og_image_file: null,
+                footer_note: '',
+                social_links: {
+                    instagram: '',
+                    x: '',
+                    github: '',
+                    linkedin: '',
+                    youtube: '',
+                },
+                hero_badge: '',
+                hero_heading: '',
+                hero_subheading: '',
+                hero_cta_text: '',
+                default_theme: 'terang',
+                remove_logo: false,
+                remove_favicon: false,
+                remove_default_og_image: false,
+            },
             posts: {
                 loading: true,
                 saving: false,
@@ -191,6 +238,14 @@ createApp({
                 return 'Tag';
             }
 
+            if (this.current === 'media') {
+                return 'Media';
+            }
+
+            if (this.current === 'settings') {
+                return 'Pengaturan';
+            }
+
             if (this.current === 'posts' || this.current === 'post-create' || this.current === 'post-edit') {
                 return 'Tulisan';
             }
@@ -205,6 +260,14 @@ createApp({
 
             if (this.current === 'tags') {
                 return 'Kelola tag untuk memberi penanda ringan pada tulisan.';
+            }
+
+            if (this.current === 'media') {
+                return 'Lihat gambar unggulan yang sudah terhubung ke tulisan tanpa membuat media library yang terlalu berat.';
+            }
+
+            if (this.current === 'settings') {
+                return 'Atur identitas blog, aset brand, SEO default, dan nuansa public blog dari satu tempat.';
             }
 
             if (this.current === 'posts') {
@@ -274,6 +337,14 @@ createApp({
             if (this.current === 'tags') {
                 await this.loadTags();
             }
+
+            if (this.current === 'media') {
+                await this.loadMedia();
+            }
+
+            if (this.current === 'settings') {
+                await this.loadSettings();
+            }
         },
 
         async loadDashboard() {
@@ -317,6 +388,34 @@ createApp({
                 this.toast(error.message, 'error');
             } finally {
                 this.tags.loading = false;
+            }
+        },
+
+        async loadMedia() {
+            this.media.loading = true;
+            this.media.error = '';
+
+            try {
+                const payload = await this.apiCall('/admin/api/media');
+                this.media.items = payload.items || [];
+            } catch (error) {
+                this.media.error = error.message;
+                this.toast(error.message, 'error');
+            } finally {
+                this.media.loading = false;
+            }
+        },
+
+        async loadSettings() {
+            this.settings.loading = true;
+
+            try {
+                const payload = await this.apiCall('/admin/api/settings');
+                this.fillSettings(payload.item || {});
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.settings.loading = false;
             }
         },
 
@@ -728,6 +827,129 @@ createApp({
             this.navigate('/admin/posts');
         },
 
+        fillSettings(item) {
+            this.settings = {
+                ...this.settings,
+                site_name: item.site_name || '',
+                site_tagline: item.site_tagline || '',
+                site_description: item.site_description || '',
+                logo: item.logo || '',
+                logo_url: item.logo_url || '',
+                logo_file: null,
+                favicon: item.favicon || '',
+                favicon_url: item.favicon_url || '',
+                favicon_file: null,
+                default_meta_title: item.default_meta_title || '',
+                default_meta_description: item.default_meta_description || '',
+                default_og_image: item.default_og_image || '',
+                default_og_image_url: item.default_og_image_url || '',
+                default_og_image_file: null,
+                footer_note: item.footer_note || '',
+                social_links: {
+                    instagram: item.social_links?.instagram || '',
+                    x: item.social_links?.x || '',
+                    github: item.social_links?.github || '',
+                    linkedin: item.social_links?.linkedin || '',
+                    youtube: item.social_links?.youtube || '',
+                },
+                hero_badge: item.hero_badge || '',
+                hero_heading: item.hero_heading || '',
+                hero_subheading: item.hero_subheading || '',
+                hero_cta_text: item.hero_cta_text || '',
+                default_theme: item.default_theme || 'terang',
+                remove_logo: false,
+                remove_favicon: false,
+                remove_default_og_image: false,
+            };
+        },
+
+        updateSettingsAsset(kind, event) {
+            const file = (event.target.files || [])[0] || null;
+            const fileField = `${kind}_file`;
+            const urlField = `${kind}_url`;
+            const removeField = `remove_${kind}`;
+
+            this.settings[fileField] = file;
+            this.settings[removeField] = false;
+
+            if (file) {
+                this.settings[urlField] = URL.createObjectURL(file);
+            }
+        },
+
+        clearSettingsAsset(kind) {
+            const fileField = `${kind}_file`;
+            const urlField = `${kind}_url`;
+            const pathField = kind;
+            const removeField = `remove_${kind}`;
+
+            this.settings[fileField] = null;
+            this.settings[urlField] = '';
+            this.settings[pathField] = '';
+            this.settings[removeField] = true;
+
+            const input = this.$refs[`settings_${kind}`];
+
+            if (input) {
+                input.value = '';
+            }
+        },
+
+        async saveSettings() {
+            this.settings.saving = true;
+
+            const formData = new FormData();
+            formData.append('_method', 'PUT');
+            formData.append('site_name', this.settings.site_name);
+            formData.append('site_tagline', this.settings.site_tagline);
+            formData.append('site_description', this.settings.site_description);
+            formData.append('default_meta_title', this.settings.default_meta_title);
+            formData.append('default_meta_description', this.settings.default_meta_description);
+            formData.append('footer_note', this.settings.footer_note);
+            formData.append('hero_badge', this.settings.hero_badge);
+            formData.append('hero_heading', this.settings.hero_heading);
+            formData.append('hero_subheading', this.settings.hero_subheading);
+            formData.append('hero_cta_text', this.settings.hero_cta_text);
+            formData.append('default_theme', this.settings.default_theme);
+            formData.append('remove_logo', this.settings.remove_logo ? '1' : '0');
+            formData.append('remove_favicon', this.settings.remove_favicon ? '1' : '0');
+            formData.append('remove_default_og_image', this.settings.remove_default_og_image ? '1' : '0');
+
+            Object.entries(this.settings.social_links).forEach(([key, value]) => {
+                formData.append(`social_links[${key}]`, value || '');
+            });
+
+            if (this.settings.logo_file) {
+                formData.append('logo', this.settings.logo_file);
+            }
+
+            if (this.settings.favicon_file) {
+                formData.append('favicon', this.settings.favicon_file);
+            }
+
+            if (this.settings.default_og_image_file) {
+                formData.append('default_og_image', this.settings.default_og_image_file);
+            }
+
+            try {
+                const payload = await this.apiCall('/admin/api/settings', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                });
+
+                this.fillSettings(payload.item || {});
+                this.toast(payload.message || 'Pengaturan berhasil diperbarui.', 'success');
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.settings.saving = false;
+            }
+        },
+
         openCategoryCreate() {
             this.editor = {
                 open: true,
@@ -975,6 +1197,18 @@ createApp({
                             class="rounded-full border px-4 py-2 text-sm font-semibold transition"
                             :class="current === 'tags' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
                             Tag
+                        </button>
+                        <button
+                            @click="navigate('/admin/media')"
+                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            :class="current === 'media' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            Media
+                        </button>
+                        <button
+                            @click="navigate('/admin/settings')"
+                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
+                            :class="current === 'settings' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            Pengaturan
                         </button>
                     </div>
                 </div>
@@ -1475,7 +1709,7 @@ createApp({
                 </div>
             </section>
 
-            <section v-else class="space-y-6">
+            <section v-else-if="current === 'tags'" class="space-y-6">
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Tag untuk memberi penanda ringan pada tulisan.</p>
@@ -1530,6 +1764,212 @@ createApp({
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <section v-else-if="current === 'media'" class="space-y-6">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Semua gambar unggulan dari tulisan terkumpul di sini agar mudah dicek ulang.</p>
+                    </div>
+                </div>
+
+                <div v-if="media.loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div v-for="n in 6" :key="n" class="h-72 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                </div>
+
+                <div v-else-if="media.items.length === 0" class="rounded-3xl border border-dashed border-coffee-200 bg-white px-6 py-12 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                    <div class="mx-auto max-w-xl text-center">
+                        <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada media</p>
+                        <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Gambar unggulan dari tulisan akan muncul di sini setelah artikel menyimpan featured image.</p>
+                    </div>
+                </div>
+
+                <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    <article v-for="item in media.items" :key="item.id" class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                        <div class="aspect-[16/10] overflow-hidden bg-coffee-50 dark:bg-white/5">
+                            <img :src="item.thumbnail_url" :alt="item.featured_image_alt || item.post_title" class="h-full w-full object-cover">
+                        </div>
+                        <div class="space-y-4 p-5">
+                            <div class="space-y-1">
+                                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-coffee-700 dark:text-coffee-100">{{ item.status }}</p>
+                                <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ item.post_title }}</p>
+                                <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.category_name || 'Tanpa kategori' }}</p>
+                            </div>
+
+                            <div class="space-y-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                                <p><span class="font-medium text-coffee-900 dark:text-neutralwarm-50">Path:</span> {{ item.featured_image }}</p>
+                                <p><span class="font-medium text-coffee-900 dark:text-neutralwarm-50">Update:</span> {{ item.updated_at || '-' }}</p>
+                                <p><span class="font-medium text-coffee-900 dark:text-neutralwarm-50">Publish:</span> {{ item.published_at || '-' }}</p>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2">
+                                <a :href="item.featured_image_url" target="_blank" rel="noreferrer noopener" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                    Buka URL
+                                </a>
+                                <button @click="openPostEdit({ id: item.post_id })" class="rounded-full bg-coffee-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-coffee-800">
+                                    Buka tulisan
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section v-else-if="current === 'settings'" class="space-y-6">
+                <div class="flex items-center justify-between gap-3">
+                    <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Pengaturan ini langsung memengaruhi identitas public blog, SEO default, dan tema awal pembaca.</p>
+                    <button @click="saveSettings" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="settings.loading || settings.saving">
+                        {{ settings.saving ? 'Menyimpan...' : 'Simpan Pengaturan' }}
+                    </button>
+                </div>
+
+                <div v-if="settings.loading" class="grid gap-6 xl:grid-cols-12">
+                    <div class="xl:col-span-8 space-y-4">
+                        <div class="h-32 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-48 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    </div>
+                    <div class="xl:col-span-4 space-y-4">
+                        <div class="h-64 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    </div>
+                </div>
+
+                <div v-else class="grid gap-6 xl:grid-cols-12">
+                    <div class="space-y-6 xl:col-span-8">
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Identitas situs</p>
+                            <div class="mt-4 grid gap-4 md:grid-cols-2">
+                                <label class="space-y-2 md:col-span-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Nama situs</span>
+                                    <input v-model="settings.site_name" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2 md:col-span-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Tagline</span>
+                                    <input v-model="settings.site_tagline" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2 md:col-span-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Deskripsi situs</span>
+                                    <textarea v-model="settings.site_description" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"></textarea>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Tema default</span>
+                                    <select v-model="settings.default_theme" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                        <option value="terang">Terang</option>
+                                        <option value="dark_espresso">Dark Espresso</option>
+                                    </select>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Teks footer</span>
+                                    <input v-model="settings.footer_note" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Hero homepage</p>
+                            <div class="mt-4 grid gap-4">
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Badge</span>
+                                    <input v-model="settings.hero_badge" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Judul hero</span>
+                                    <input v-model="settings.hero_heading" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Subtitle hero</span>
+                                    <textarea v-model="settings.hero_subheading" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"></textarea>
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Teks CTA</span>
+                                    <input v-model="settings.hero_cta_text" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">SEO default</p>
+                            <div class="mt-4 grid gap-4">
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">SEO title default</span>
+                                    <input v-model="settings.default_meta_title" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">SEO description default</span>
+                                    <textarea v-model="settings.default_meta_description" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"></textarea>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Tautan sosial</p>
+                            <div class="mt-4 grid gap-4 md:grid-cols-2">
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Instagram</span>
+                                    <input v-model="settings.social_links.instagram" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">X / Twitter</span>
+                                    <input v-model="settings.social_links.x" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">GitHub</span>
+                                    <input v-model="settings.social_links.github" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">LinkedIn</span>
+                                    <input v-model="settings.social_links.linkedin" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                                <label class="space-y-2 md:col-span-2">
+                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">YouTube</span>
+                                    <input v-model="settings.social_links.youtube" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6 xl:col-span-4">
+                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aset brand</p>
+                            <div class="mt-4 space-y-5">
+                                <div class="space-y-3">
+                                    <p class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Logo</p>
+                                    <div class="flex h-32 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                        <img v-if="settings.logo_url" :src="settings.logo_url" alt="Logo situs" class="h-full w-full object-contain p-4">
+                                        <p v-else class="px-4 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada logo</p>
+                                    </div>
+                                    <input ref="settings_logo" @change="updateSettingsAsset('logo', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <button v-if="settings.logo_url" @click="clearSettingsAsset('logo')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                        Hapus logo
+                                    </button>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <p class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Favicon</p>
+                                    <div class="flex h-24 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                        <img v-if="settings.favicon_url" :src="settings.favicon_url" alt="Favicon situs" class="size-16 object-contain">
+                                        <p v-else class="px-4 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada favicon</p>
+                                    </div>
+                                    <input ref="settings_favicon" @change="updateSettingsAsset('favicon', $event)" type="file" accept=".ico,image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <button v-if="settings.favicon_url" @click="clearSettingsAsset('favicon')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                        Hapus favicon
+                                    </button>
+                                </div>
+
+                                <div class="space-y-3">
+                                    <p class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Default Open Graph image</p>
+                                    <div class="flex h-40 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                        <img v-if="settings.default_og_image_url" :src="settings.default_og_image_url" alt="Default OG image" class="h-full w-full object-cover">
+                                        <p v-else class="px-4 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada gambar Open Graph</p>
+                                    </div>
+                                    <input ref="settings_default_og_image" @change="updateSettingsAsset('default_og_image', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <button v-if="settings.default_og_image_url" @click="clearSettingsAsset('default_og_image')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                        Hapus OG image
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

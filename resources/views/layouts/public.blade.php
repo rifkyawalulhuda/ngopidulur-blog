@@ -2,6 +2,16 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full {{ ($blogTheme ?? 'light') === 'dark' ? 'dark' : '' }}" data-theme="{{ $blogTheme ?? 'light' }}">
 
 <head>
+    @php
+        $resolvedTitle = trim((string) ($metaTitle ?? $title ?? data_get($blogSettings ?? [], 'default_meta_title', data_get($blogSettings ?? [], 'site_name', 'Ngopi Dulur'))));
+        $resolvedDescription = trim((string) ($metaDescription ?? data_get($blogSettings ?? [], 'default_meta_description', data_get($blogSettings ?? [], 'site_description', 'Blog pribadi hangat untuk catatan, ide, dan tulisan santai.'))));
+        $resolvedCanonical = $canonicalUrl ?? url()->current();
+        $resolvedRobots = $metaRobots ?? 'index,follow';
+        $resolvedOgTitle = trim((string) ($ogTitle ?? $resolvedTitle));
+        $resolvedOgDescription = trim((string) ($ogDescription ?? $resolvedDescription));
+        $resolvedOgType = $ogType ?? 'website';
+        $resolvedOgImage = $ogImage ?? data_get($blogSettingAssets ?? [], 'default_og_image_url');
+    @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -18,7 +28,25 @@
         })();
     </script>
 
-    <title>{{ $title ?? ($siteName ?? 'Ngopi Dulur') }}</title>
+    <title>{{ $resolvedTitle }}</title>
+    <meta name="description" content="{{ $resolvedDescription }}">
+    <meta name="robots" content="{{ $resolvedRobots }}">
+    <link rel="canonical" href="{{ $resolvedCanonical }}">
+
+    <meta property="og:title" content="{{ $resolvedOgTitle }}">
+    <meta property="og:description" content="{{ $resolvedOgDescription }}">
+    <meta property="og:type" content="{{ $resolvedOgType }}">
+    <meta property="og:url" content="{{ $resolvedCanonical }}">
+    @if ($resolvedOgImage)
+        <meta property="og:image" content="{{ $resolvedOgImage }}">
+        <meta name="twitter:card" content="summary_large_image">
+    @else
+        <meta name="twitter:card" content="summary">
+    @endif
+
+    @if (data_get($blogSettingAssets ?? [], 'favicon_url'))
+        <link rel="icon" href="{{ data_get($blogSettingAssets, 'favicon_url') }}">
+    @endif
 
     @vite(['resources/css/app.css', 'resources/js/public.js'])
 
@@ -30,9 +58,13 @@
         <header class="border-b border-coffee-100 bg-white/80 backdrop-blur dark:border-coffee-700/40 dark:bg-neutralwarm-900/80">
             <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    <div class="flex size-10 items-center justify-center rounded-2xl bg-coffee-700 text-sm font-bold text-white shadow-soft">
-                        ND
-                    </div>
+                    @if (data_get($blogSettingAssets ?? [], 'logo_url'))
+                        <img src="{{ data_get($blogSettingAssets, 'logo_url') }}" alt="{{ data_get($blogSettings ?? [], 'site_name', 'Ngopi Dulur') }}" class="h-10 w-auto rounded-2xl object-contain shadow-soft">
+                    @else
+                        <div class="flex size-10 items-center justify-center rounded-2xl bg-coffee-700 text-sm font-bold text-white shadow-soft">
+                            ND
+                        </div>
+                    @endif
                     <div class="min-w-0">
                         <p class="truncate font-lora text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">
                             {{ data_get($blogSettings ?? [], 'site_name', 'Ngopi Dulur') }}
@@ -77,7 +109,14 @@
         <footer class="border-t border-coffee-100 bg-white/70 py-8 dark:border-coffee-700/40 dark:bg-neutralwarm-900/70">
             <div class="mx-auto flex max-w-6xl flex-col gap-2 px-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
                 <p>{{ data_get($blogSettings ?? [], 'footer_note', 'Dibuat dengan Laravel dan secangkir kopi yang pelan-pelan habis.') }}</p>
-                <p>&copy; {{ now()->year }} {{ data_get($blogSettings ?? [], 'site_name', 'Ngopi Dulur') }}</p>
+                <div class="flex flex-wrap items-center gap-4">
+                    @foreach (($blogSocialLinks ?? []) as $label => $url)
+                        <a href="{{ $url }}" target="_blank" rel="noreferrer noopener" class="font-medium text-coffee-700 transition hover:text-coffee-900 dark:text-coffee-100 dark:hover:text-neutralwarm-50">
+                            {{ ucfirst($label) }}
+                        </a>
+                    @endforeach
+                    <p>&copy; {{ now()->year }} {{ data_get($blogSettings ?? [], 'site_name', 'Ngopi Dulur') }}</p>
+                </div>
             </div>
         </footer>
     </div>

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use RuntimeException;
 
 class PostController extends Controller
 {
@@ -85,9 +86,15 @@ class PostController extends Controller
 
     public function store(PostRequest $request, UniqueSlug $slugger, PostPublishingService $service): JsonResponse
     {
-        $post = DB::transaction(function () use ($request, $slugger, $service) {
-            return $this->persistPost(new Post(), $request, $slugger, $service);
-        });
+        try {
+            $post = DB::transaction(function () use ($request, $slugger, $service) {
+                return $this->persistPost(new Post(), $request, $slugger, $service);
+            });
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
 
         return response()->json([
             'message' => 'Artikel berhasil disimpan.',
@@ -104,9 +111,15 @@ class PostController extends Controller
 
     public function update(PostRequest $request, Post $post, UniqueSlug $slugger, PostPublishingService $service): JsonResponse
     {
-        $post = DB::transaction(function () use ($request, $post, $slugger, $service) {
-            return $this->persistPost($post, $request, $slugger, $service);
-        });
+        try {
+            $post = DB::transaction(function () use ($request, $post, $slugger, $service) {
+                return $this->persistPost($post, $request, $slugger, $service);
+            });
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
 
         return response()->json([
             'message' => 'Artikel berhasil diperbarui.',

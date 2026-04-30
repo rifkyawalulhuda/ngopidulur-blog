@@ -27,6 +27,16 @@ class MenuHelper
                 'name' => 'Tag',
                 'path' => '/admin/tags',
             ],
+            [
+                'icon' => 'ecommerce',
+                'name' => 'Media',
+                'path' => '/admin/media',
+            ],
+            [
+                'icon' => 'forms',
+                'name' => 'Pengaturan',
+                'path' => '/admin/settings',
+            ],
         ];
     }
 

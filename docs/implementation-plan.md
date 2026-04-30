@@ -1,6 +1,6 @@
 # Implementation Plan - Ngopi Dulur
 
-Last updated: 2026-04-29
+Last updated: 2026-04-30
 
 ## Source of Truth
 
@@ -31,7 +31,7 @@ Brand direction: Warm Coffee Meets Modern Tech.
 
 ## Current Repo Audit
 
-Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages. Milestone 04 completed the post management layer with editor, upload, preview, and public visibility guard. Milestone 05 completed the public Blade blog with featured fallback, taxonomy pages, search, public theme, robots, and branded 404.
+Milestone 00 audited the starter state. Milestone 01 completed the foundation layer needed to begin product work. Milestone 02 completed the MVP database and model layer. Milestone 03 completed the admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages. Milestone 04 completed the post management layer with editor, upload, preview, and public visibility guard. Milestone 05 completed the public Blade blog with featured fallback, taxonomy pages, search, public theme, robots, and branded 404. Milestone 06 completed editable settings, media listing, public SEO fallback, sitemap XML, and robots/noindex policy. Milestone 07 completed the required MVP test pass, upload failure hardening, sitemap query polish, and the audit checklist for security/performance/polish.
 
 - Laravel runtime: `Laravel Framework 13.7.0`
 - `composer.json`: `laravel/framework:^13.5`, `laravel/tinker:^3.0`, `laravel/boost:^2.4`, Laravel Pint, Sail, Pail, Pest 5 dev branch
@@ -41,8 +41,8 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 - Vite 8 dependency: present and build verified
 - TailAdmin status: TailAdmin Laravel Blade template is still the base admin layout system, with warm Ngopi Dulur branding layered on top
 - Admin Vue SPA status: foundation shell present at `/admin/{any?}` with Vue mount in `resources/js/admin.js`
-- Public Blade blog status: Blade public homepage, post detail, category, tag, search, theme toggle, robots, and branded 404 are present
-- Routes status: admin auth/session routes, protected dashboard route, public blog routes, robots.txt, and SPA catchall routes are present
+- Public Blade blog status: Blade public homepage, post detail, category, tag, search, theme toggle, settings-driven SEO metadata, sitemap, robots, and branded 404 are present
+- Routes status: admin auth/session routes, protected dashboard route, public blog routes, sitemap.xml, robots.txt, and SPA catchall routes are present
 - Models status: `User`, `Post`, `Category`, `Tag`, and `SiteSetting` models exist with core relationships and scopes
 - Migrations status: user blog fields plus `posts`, `categories`, `tags`, `post_tag`, and `site_settings` tables are present
 - Git status: available in this checkout; current worktree contains modified and untracked files for this milestone
@@ -100,11 +100,19 @@ Milestone 00 audited the starter state. Milestone 01 completed the foundation la
 - Use Laravel Boost MCP when available.
 - Use Context7 only when current documentation is needed for a package/framework decision.
 
-## Milestone 05 Notes
+## Milestone 07 Notes
 
-- Public blog pages are now implemented with Blade and use published-only queries.
-- Theme preference supports light and dark espresso through a local browser preference with a default pulled from site settings.
-- `robots.txt` is in place, but `sitemap.xml` and fuller SEO treatment are still left for the SEO milestone.
+- Required MVP tests now explicitly cover admin protection, draft and archived visibility, validation edge cases, upload rejection paths, safe WebP failure handling, and pagination expectations.
+- Upload conversion failures for posts and settings now return safe validation-style responses instead of leaking a raw 500.
+- Sitemap category/tag `lastmod` generation now avoids per-item queries by using aggregate relation metadata.
+- `docs/mvp-checklist.md` is now the lightweight acceptance and audit ledger for the MVP hardening pass.
+
+## Milestone 06 Notes
+
+- Settings are now editable from the admin SPA and feed the public blog identity, footer, theme default, and SEO fallback.
+- Media MVP intentionally stays narrow: it lists featured images attached to posts without bulk upload, foldering, tagging, or crop tools.
+- `sitemap.xml` now includes homepage, published posts, active categories, and tags with published posts only.
+- `robots.txt`, preview responses, admin HTML, and search pages now follow the noindex policy expected in the PRD.
 
 ## Known Risks
 

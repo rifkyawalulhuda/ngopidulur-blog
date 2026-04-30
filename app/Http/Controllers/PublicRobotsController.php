@@ -15,6 +15,7 @@ class PublicRobotsController extends Controller
             'Disallow: /admin/login',
             'Disallow: /*preview*',
             '',
+            'Sitemap: '.route('sitemap'),
         ]);
 
         return response($content, 200)

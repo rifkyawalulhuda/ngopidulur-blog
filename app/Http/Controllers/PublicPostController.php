@@ -34,8 +34,12 @@ class PublicPostController extends Controller
 
         return view('public.post', [
             'title' => $post->meta_title ?: $post->title,
+            'metaTitle' => $post->meta_title ?: $post->title,
             'post' => $post,
             'metaDescription' => $post->meta_description ?: $post->excerpt,
+            'canonicalUrl' => route('posts.show', $post->slug),
+            'ogImage' => $post->featured_image_url ?: BlogSettings::assetUrl('default_og_image'),
+            'ogType' => 'article',
             'siteName' => BlogSettings::get('site_name', 'Ngopi Dulur'),
             'defaultMetaDescription' => BlogSettings::get('default_meta_description', 'Personal blog CMS dengan nuansa hangat dan fondasi modern.'),
             'relatedPosts' => $relatedPosts,

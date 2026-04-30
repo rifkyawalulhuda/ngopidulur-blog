@@ -1,12 +1,5 @@
 @extends('layouts.public')
 
-@push('head')
-    <meta name="description" content="{{ $siteDescription }}">
-    <meta property="og:title" content="{{ $siteName }}">
-    <meta property="og:description" content="{{ $siteDescription }}">
-    <meta name="twitter:card" content="summary_large_image">
-@endpush
-
 @section('content')
     <section class="border-b border-coffee-100/70 bg-[linear-gradient(180deg,rgba(251,246,241,1)_0%,rgba(255,255,255,0.8)_100%)] dark:border-coffee-700/40 dark:bg-[linear-gradient(180deg,rgba(31,23,19,1)_0%,rgba(31,23,19,0.88)_100%)]">
         <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8 lg:py-20">
@@ -41,6 +34,15 @@
                         </button>
                     </div>
                 </form>
+
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('search') }}" class="inline-flex items-center justify-center rounded-full bg-coffee-700 px-5 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                        {{ $heroCtaText }}
+                    </a>
+                    <a href="#latest-articles" class="inline-flex items-center justify-center rounded-full border border-coffee-100 px-5 py-3 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-700/40 dark:text-coffee-100 dark:hover:bg-white/5">
+                        Baca terbaru
+                    </a>
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -126,7 +128,7 @@
         </div>
     </section>
 
-    <section class="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8">
+    <section id="latest-articles" class="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8">
         <div class="flex items-end justify-between gap-4">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Artikel terbaru</p>

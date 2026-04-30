@@ -1,6 +1,6 @@
 # Milestone Status - Ngopi Dulur
 
-Last updated: 2026-04-29
+Last updated: 2026-04-30
 
 ## Status Legend
 
@@ -19,8 +19,8 @@ Last updated: 2026-04-29
 | 03 Dashboard, Category, Tag | DONE | 2026-04-29 | Admin dashboard stats, category CRUD, tag CRUD, and TailAdmin-aware Vue admin pages completed and verified |
 | 04 Post CRUD, Editor, Upload, Preview | DONE | 2026-04-29 | Post management MVP, editor, upload WebP, secure preview, and public visibility guard completed and verified |
 | 05 Public Blog | DONE | 2026-04-29 | Public Blade blog, featured article, taxonomy pages, search, public theme, robots, and branded 404 completed and verified |
-| 06 Settings, Media, SEO, Sitemap, Robots | NOT_STARTED | - | - |
-| 07 Tests, Hardening, Polish | NOT_STARTED | - | - |
+| 06 Settings, Media, SEO, Sitemap, Robots | DONE | 2026-04-30 | Admin settings and media MVP, public SEO fallback, sitemap.xml, robots.txt, and noindex policy completed and verified |
+| 07 Tests, Hardening, Polish | DONE | 2026-04-30 | Required MVP tests, upload failure hardening, sitemap query polish, and MVP audit checklist completed and verified |
 | 08 Final Verification | NOT_STARTED | - | - |
 
 ## Milestone 00 Summary
@@ -390,6 +390,122 @@ Milestone 05 is complete. Do not continue to Milestone 06 unless explicitly requ
 - Laravel Boost MCP tools are unavailable in this Codex session and Artisan Boost commands are not registered.
 - Git metadata is now available in this checkout, but no commit has been created yet.
 
+## Milestone 06 Summary
+
+Status: DONE
+
+Requested scope completed: admin settings API and Vue page, media MVP list from post featured images, public SEO fallback metadata, sitemap XML, robots.txt sitemap reference, and noindex policy for admin/search/preview.
+
+### Milestone 06 Files Changed
+
+- Added `app/Services/SiteSettingsService.php`
+- Added `app/Http/Requests/Admin/SettingsUpdateRequest.php`
+- Added `app/Http/Controllers/AdminApi/SettingsController.php`
+- Added `app/Http/Controllers/AdminApi/MediaController.php`
+- Added `app/Http/Controllers/PublicSitemapController.php`
+- Added `resources/views/public/sitemap.blade.php`
+- Added `tests/Feature/AdminSettingsSeoTest.php`
+- Updated `app/Support/BlogSettings.php`
+- Updated `app/Providers/AppServiceProvider.php`
+- Updated `app/Helpers/MenuHelper.php`
+- Updated `app/Http/Controllers/PublicHomeController.php`
+- Updated `app/Http/Controllers/PublicPostController.php`
+- Updated `app/Http/Controllers/PublicCategoryController.php`
+- Updated `app/Http/Controllers/PublicTagController.php`
+- Updated `app/Http/Controllers/PublicSearchController.php`
+- Updated `app/Http/Controllers/PublicRobotsController.php`
+- Updated `database/seeders/DatabaseSeeder.php`
+- Updated `resources/js/admin.js`
+- Updated `resources/views/layouts/public.blade.php`
+- Updated `resources/views/layouts/app.blade.php`
+- Updated `resources/views/admin/dashboard.blade.php`
+- Updated `resources/views/public/home.blade.php`
+- Updated `resources/views/public/post.blade.php`
+- Updated `resources/views/public/category.blade.php`
+- Updated `resources/views/public/tag.blade.php`
+- Updated `resources/views/public/search.blade.php`
+- Updated `routes/web.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+- Updated `public/build/*` via `npm run build`
+
+### Milestone 06 Commands Run
+
+- `php -l app/Services/SiteSettingsService.php`
+- `php -l app/Http/Requests/Admin/SettingsUpdateRequest.php`
+- `php -l app/Http/Controllers/AdminApi/SettingsController.php`
+- `php -l app/Http/Controllers/AdminApi/MediaController.php`
+- `php -l app/Http/Controllers/PublicSitemapController.php`
+- `php -l tests/Feature/AdminSettingsSeoTest.php`
+- `php artisan route:list --path=admin/api`
+- `php artisan route:list --path=sitemap`
+- `php artisan route:list --path=robots`
+- `php artisan test tests/Feature/AdminSettingsSeoTest.php --compact`
+- `php artisan test --compact`
+- `npm run build`
+
+### Milestone 06 Tests / Build
+
+- `php artisan route:list --path=admin/api`: passed, routes registered for settings and media alongside the existing admin API surface
+- `php artisan route:list --path=sitemap`: passed, `sitemap.xml` route registered
+- `php artisan route:list --path=robots`: passed, `robots.txt` route registered
+- `php artisan test tests/Feature/AdminSettingsSeoTest.php --compact`: passed with warnings about `.env` file reads; settings update, media list, sitemap filtering, robots sitemap reference, search noindex, and SEO fallback assertions passed
+- `php artisan test --compact`: passed with warnings about `.env` file reads; entire suite passed
+- `npm run build`: passed with Vite `8.0.10`; admin settings/media SPA changes compile cleanly and the existing TailAdmin chunk warning remains
+
+### Milestone 06 Known Gaps
+
+- Media MVP intentionally remains read-only and tied to post featured images; there is still no bulk upload, foldering, tagging, or crop editor.
+- The current workspace still uses SQLite, so full-text production behavior remains aligned to the earlier conditional MySQL/MariaDB implementation.
+- PHPUnit in this checkout still emits warnings about missing `.env` file reads, although the suite passes.
+- TailAdmin's large application bundle warning still appears during build.
+
+### Milestone 06 Stop Point
+
+Milestone 06 is complete. Do not continue to Milestone 07 unless explicitly requested.
+
+## Milestone 07 Summary
+
+Status: DONE
+
+Requested scope completed: required MVP acceptance tests were expanded, upload conversion failures now return safe responses, sitemap query generation was tightened, and the MVP hardening audit is recorded in `docs/mvp-checklist.md`.
+
+### Milestone 07 Files Changed
+
+- Added `tests/Feature/MvpHardeningTest.php`
+- Added `docs/mvp-checklist.md`
+- Updated `app/Http/Controllers/AdminApi/PostController.php`
+- Updated `app/Http/Controllers/AdminApi/SettingsController.php`
+- Updated `app/Http/Controllers/PublicSitemapController.php`
+- Updated `docs/implementation-plan.md`
+- Updated `docs/milestone-status.md`
+
+### Milestone 07 Commands Run
+
+- `php -l app/Http/Controllers/AdminApi/PostController.php`
+- `php -l app/Http/Controllers/AdminApi/SettingsController.php`
+- `php -l app/Http/Controllers/PublicSitemapController.php`
+- `php -l tests/Feature/MvpHardeningTest.php`
+- `rtk powershell -NoProfile -Command "php artisan test tests/Feature/MvpHardeningTest.php --compact"`
+- `rtk powershell -NoProfile -Command "php artisan test --compact"`
+- `npm run build`
+
+### Milestone 07 Tests / Build
+
+- `rtk powershell -NoProfile -Command "php artisan test tests/Feature/MvpHardeningTest.php --compact"`: passed with environment warnings about `.env` reads; new hardening coverage for admin protection, public visibility, validation, upload rejection, safe WebP failure, pagination, and fillable checks passed
+- `rtk powershell -NoProfile -Command "php artisan test --compact"`: passed with the same `.env` warnings; full suite passed
+- `npm run build`: passed with the existing TailAdmin chunk warning still present
+
+### Milestone 07 Known Gaps
+
+- PHPUnit still emits `.env` read warnings in this checkout even though the test suite passes.
+- TailAdmin still produces a large bundle warning during build, but there is no blocking regression from this milestone.
+- The environment remains SQLite-based locally, so production MySQL/MariaDB full-text characteristics are still validated by code path rather than by local engine behavior.
+
+### Milestone 07 Stop Point
+
+Milestone 07 is complete. Do not continue to Milestone 08 unless explicitly requested.
+
 ## Next Recommended Prompt
 
-Milestone 03 - Dashboard, Category, Tag: build the admin data layer and lists on top of the new schema.
+Milestone 08 - Final Verification: run the end-to-end acceptance pass and launch-readiness checks without introducing new product scope.

@@ -1,9 +1,5 @@
 @extends('layouts.public')
 
-@push('head')
-    <meta name="description" content="Kumpulan artikel pada kategori {{ $category->name }}">
-@endpush
-
 @section('content')
     <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="space-y-4">
