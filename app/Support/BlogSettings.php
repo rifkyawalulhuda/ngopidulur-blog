@@ -5,7 +5,6 @@ namespace App\Support;
 use App\Models\SiteSetting;
 use App\Services\SiteSettingsService;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 
 class BlogSettings
 {
@@ -36,11 +35,7 @@ class BlogSettings
     {
         $path = trim((string) static::get($key, ''));
 
-        if ($path === '') {
-            return null;
-        }
-
-        return Storage::disk('public')->url($path);
+        return PublicAssetUrl::fromPublicDisk($path);
     }
 
     public static function socialLinks(): array

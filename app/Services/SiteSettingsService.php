@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SiteSetting;
+use App\Support\PublicAssetUrl;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -140,13 +141,7 @@ class SiteSettingsService
 
     public function assetUrl(mixed $path): ?string
     {
-        $path = trim((string) $path);
-
-        if ($path === '') {
-            return null;
-        }
-
-        return Storage::disk('public')->url($path);
+        return PublicAssetUrl::fromPublicDisk((string) $path);
     }
 
     public function decodeSocialLinks(mixed $value): array

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
+use App\Support\PublicAssetUrl;
 
 class Post extends Model
 {
@@ -95,6 +95,6 @@ class Post extends Model
 
     public function getFeaturedImageUrlAttribute(): ?string
     {
-        return $this->featured_image ? Storage::disk('public')->url($this->featured_image) : null;
+        return PublicAssetUrl::fromPublicDisk($this->featured_image);
     }
 }

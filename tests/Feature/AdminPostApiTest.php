@@ -133,6 +133,27 @@ test('upload featured image dikonversi ke webp', function () {
     Storage::disk('public')->assertExists($path);
 });
 
+test('featured image url memakai path relatif agar tetap cocok dengan host admin aktif', function () {
+    config()->set('app.url', 'http://localhost');
+    Storage::fake('public');
+
+    $response = $this->actingAs($this->admin)
+        ->post('/admin/api/posts', [
+            'title' => 'Artikel Host Relatif',
+            'slug' => '',
+            'excerpt' => null,
+            'content_format' => 'richtext',
+            'content' => '<p>Konten</p>',
+            'category_id' => $this->category->id,
+            'status' => 'draft',
+            'featured_image' => UploadedFile::fake()->image('cover.png', 1200, 800)->size(1200),
+        ])
+        ->assertCreated();
+
+    expect($response->json('item.featured_image_url'))->toStartWith('/storage/posts/');
+    expect($response->json('item.featured_image_url'))->not()->toStartWith('http://localhost');
+});
+
 test('featured image wajib saat publish', function () {
     $this->actingAs($this->admin)
         ->postJson('/admin/api/posts', [

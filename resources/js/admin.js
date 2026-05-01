@@ -608,6 +608,24 @@ createApp({
             this.postEditor.published_at = item.published_at ? item.published_at.slice(0, 16) : '';
         },
 
+        syncPostEditorFromItem(item) {
+            if (! item) {
+                return false;
+            }
+
+            const currentPostId = Number(this.postEditor.id || postIdFromPath(window.location.pathname) || 0);
+            const itemId = Number(item.id || 0);
+
+            if (! currentPostId || ! itemId || currentPostId !== itemId) {
+                return false;
+            }
+
+            this.postEditor.mode = 'edit';
+            this.fillPostEditor(item);
+
+            return true;
+        },
+
         openPostCreate() {
             this.navigate('/admin/posts/create');
         },
@@ -681,28 +699,50 @@ createApp({
         },
 
         async publishPost(item) {
+            const syncEditor = this.syncPostEditorFromItem({ id: item.id });
+
+            if (syncEditor) {
+                this.postEditor.saving = true;
+            }
+
             try {
                 const payload = await this.apiCall(`/admin/api/posts/${item.id}/publish`, {
                     method: 'POST',
                 });
 
+                this.syncPostEditorFromItem(payload.item);
                 this.toast(payload.message || 'Artikel berhasil diterbitkan.', 'success');
                 await this.loadPosts();
             } catch (error) {
                 this.toast(error.message, 'error');
+            } finally {
+                if (syncEditor) {
+                    this.postEditor.saving = false;
+                }
             }
         },
 
         async archivePost(item) {
+            const syncEditor = this.syncPostEditorFromItem({ id: item.id });
+
+            if (syncEditor) {
+                this.postEditor.saving = true;
+            }
+
             try {
                 const payload = await this.apiCall(`/admin/api/posts/${item.id}/archive`, {
                     method: 'POST',
                 });
 
+                this.syncPostEditorFromItem(payload.item);
                 this.toast(payload.message || 'Artikel berhasil diarsipkan.', 'success');
                 await this.loadPosts();
             } catch (error) {
                 this.toast(error.message, 'error');
+            } finally {
+                if (syncEditor) {
+                    this.postEditor.saving = false;
+                }
             }
         },
 
@@ -1700,16 +1740,16 @@ createApp({
                         <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
                             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi cepat</p>
                             <div class="mt-4 flex flex-wrap gap-2">
-                                <button @click="submitPost('draft')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
-                                    Simpan Draft
+                                <button @click="submitPost('draft')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                                    {{ postEditor.saving ? 'Memproses...' : 'Simpan Draft' }}
                                 </button>
-                                <button @click="submitPost('published')" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
-                                    Terbitkan
+                                <button @click="submitPost('published')" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800 disabled:cursor-not-allowed disabled:opacity-60" :disabled="postEditor.loading || postEditor.saving">
+                                    {{ postEditor.saving ? 'Memproses...' : 'Terbitkan' }}
                                 </button>
-                                <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="archivePost({ id: postEditor.id })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10">
-                                    Arsipkan
+                                <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="archivePost({ id: postEditor.id })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10" :disabled="postEditor.loading || postEditor.saving">
+                                    {{ postEditor.saving ? 'Memproses...' : 'Arsipkan' }}
                                 </button>
-                                <button v-if="postEditor.id" @click="promptDelete('post', { id: postEditor.id, slug: postEditor.slug || postEditor.id })" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                <button v-if="postEditor.id" @click="promptDelete('post', { id: postEditor.id, slug: postEditor.slug || postEditor.id })" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10" :disabled="postEditor.loading || postEditor.saving">
                                     Hapus
                                 </button>
                             </div>
