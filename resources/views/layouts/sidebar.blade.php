@@ -4,7 +4,7 @@
 @endphp
 
 <aside
-    class="fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-coffee-800/40 bg-coffee-950 text-neutralwarm-50 transition-all duration-300 ease-in-out"
+    class="fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-coffee-100 bg-neutralwarm-50 text-neutralwarm-900 transition-all duration-300 ease-in-out dark:border-coffee-800/40 dark:bg-coffee-950 dark:text-neutralwarm-50"
     x-data="{
         isActive(path) {
             return window.location.pathname === path || window.location.pathname === path + '/';
@@ -18,14 +18,14 @@
     }"
     @mouseenter="if (!$store.sidebar.isExpanded) $store.sidebar.setHovered(true)"
     @mouseleave="$store.sidebar.setHovered(false)">
-    <div class="flex h-20 items-center gap-3 border-b border-coffee-800/40 px-5">
+    <div class="flex h-20 items-center gap-3 border-b border-coffee-100 px-5 dark:border-coffee-800/40">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
             <div class="flex size-11 items-center justify-center rounded-2xl bg-coffee-500 text-white shadow-soft shadow-coffee-950/20">
                 <span class="text-sm font-bold tracking-[0.12em]">ND</span>
             </div>
             <div x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen" class="leading-tight">
-                <p class="font-lora text-lg font-semibold text-white">Ngopi Dulur</p>
-                <p class="text-xs text-neutralwarm-100/80">Warm Coffee Meets Modern Tech</p>
+                <p class="font-lora text-lg font-semibold text-coffee-900 dark:text-white">Ngopi Dulur</p>
+                <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/80">Warm Coffee Meets Modern Tech</p>
             </div>
         </a>
     </div>
@@ -33,7 +33,7 @@
     <div class="flex-1 overflow-y-auto px-4 py-5 no-scrollbar">
         @foreach ($menuGroups as $menuGroup)
             <div class="mb-6">
-                <h2 class="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-neutralwarm-100/60"
+                <h2 class="mb-3 px-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-coffee-500/70 dark:text-neutralwarm-100/60"
                     x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen">
                     {{ $menuGroup['title'] }}
                 </h2>
@@ -58,11 +58,11 @@
         @endforeach
     </div>
 
-    <div class="border-t border-coffee-800/40 p-4">
+    <div class="border-t border-coffee-100 p-4 dark:border-coffee-800/40">
         <form method="POST" action="{{ route('admin.api.logout') }}">
             @csrf
             <button type="submit"
-                class="menu-item w-full justify-start bg-coffee-900/40 text-neutralwarm-50 hover:bg-coffee-800/60">
+                class="menu-item w-full justify-start bg-coffee-100 text-coffee-900 hover:bg-coffee-200 dark:bg-coffee-900/40 dark:text-neutralwarm-50 dark:hover:bg-coffee-800/60">
                 <span class="menu-item-icon-inactive">
                     {!! MenuHelper::getIconSvg('authentication') !!}
                 </span>
