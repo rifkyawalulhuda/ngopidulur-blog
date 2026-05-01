@@ -963,3 +963,40 @@ pre[class*='language-'] {
     margin-right: -60px !important;
   }
 }
+
+.ngopi-tinymce .tox-tinymce {
+  border: 0 !important;
+  border-radius: 1.5rem !important;
+  box-shadow: none !important;
+}
+
+.ngopi-tinymce .tox .tox-editor-header {
+  border-bottom: 1px solid rgba(181, 106, 45, 0.14) !important;
+  box-shadow: none !important;
+}
+
+.ngopi-tinymce .tox .tox-toolbar,
+.ngopi-tinymce .tox .tox-toolbar__primary,
+.ngopi-tinymce .tox .tox-menubar {
+  background: #fffdfb !important;
+}
+
+.ngopi-tinymce .tox .tox-edit-area::before {
+  border: 0 !important;
+}
+
+.ngopi-tinymce .tox .tox-statusbar {
+  border-top: 1px solid rgba(181, 106, 45, 0.14) !important;
+}
+
+.dark .ngopi-tinymce .tox .tox-toolbar,
+.dark .ngopi-tinymce .tox .tox-toolbar__primary,
+.dark .ngopi-tinymce .tox .tox-menubar,
+.dark .ngopi-tinymce .tox .tox-editor-header {
+  background: #20140f !important;
+}
+
+.dark .ngopi-tinymce .tox .tox-statusbar,
+.dark .ngopi-tinymce .tox .tox-editor-header {
+  border-color: rgba(255, 239, 230, 0.08) !important;
+}

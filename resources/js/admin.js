@@ -1,6 +1,7 @@
-import { createApp } from 'vue';
+import { createApp, defineAsyncComponent } from 'vue';
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+const TinyMceEditor = defineAsyncComponent(() => import('./components/tinymce-vue-editor'));
 
 const pageFromPath = (path) => {
     if (path.startsWith('/admin/posts/create')) {
@@ -91,12 +92,19 @@ function useApi(app) {
 }
 
 createApp({
+    components: {
+        TinyMceEditor,
+    },
+
     data() {
         const current = pageFromPath(window.location.pathname);
 
         return {
             current,
             api: null,
+            themeObserver: null,
+            tinyMceTheme: 'light',
+            tinyMceMountKey: 0,
             toastTypes,
             dashboard: {
                 loading: true,
@@ -291,6 +299,60 @@ createApp({
 
         activeTags() {
             return this.tags.items;
+        },
+
+        tinyMceInit() {
+            const darkMode = this.tinyMceTheme === 'dark';
+
+            return {
+                menubar: false,
+                branding: false,
+                promotion: false,
+                browser_spellcheck: true,
+                min_height: 520,
+                autoresize_bottom_margin: 20,
+                resize: false,
+                toolbar_mode: 'sliding',
+                plugins: 'advlist autolink autoresize code help link lists preview visualblocks wordcount',
+                toolbar: 'undo redo | blocks | bold italic blockquote | bullist numlist | link | removeformat | code visualblocks preview',
+                block_formats: 'Paragraf=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Kutipan=blockquote; Preformatted=pre',
+                quickbars_selection_toolbar: 'bold italic | quicklink blockquote',
+                contextmenu: false,
+                skin: darkMode ? 'oxide-dark' : 'oxide',
+                content_css: darkMode ? 'dark' : 'default',
+                content_style: `
+                    body {
+                        font-family: Inter, "Plus Jakarta Sans", system-ui, sans-serif;
+                        font-size: 16px;
+                        line-height: 1.8;
+                        color: ${darkMode ? '#f7efe7' : '#2d1f18'};
+                        background-color: ${darkMode ? '#20140f' : '#fffdfb'};
+                        margin: 1rem;
+                    }
+                    p { margin: 0 0 1rem; }
+                    h1, h2, h3, h4, h5, h6 {
+                        font-family: Lora, Georgia, serif;
+                        color: ${darkMode ? '#fff7f0' : '#2a160e'};
+                        margin: 1.4rem 0 0.8rem;
+                    }
+                    blockquote {
+                        border-left: 4px solid ${darkMode ? '#a15f2a' : '#b56a2d'};
+                        margin: 1.25rem 0;
+                        padding: 0.1rem 0 0.1rem 1rem;
+                        color: ${darkMode ? '#e7d4c7' : '#6f513d'};
+                    }
+                    a {
+                        color: ${darkMode ? '#f2b26b' : '#8f5624'};
+                    }
+                    ul, ol {
+                        margin: 0 0 1rem 1.25rem;
+                    }
+                    code, pre {
+                        background: ${darkMode ? '#2c1c15' : '#f7efe8'};
+                        border-radius: 0.5rem;
+                    }
+                `,
+            };
         },
     },
 
@@ -706,10 +768,33 @@ createApp({
             };
         },
 
+        setPostContentFormat(format) {
+            if (this.postEditor.content_format === format) {
+                return;
+            }
+
+            this.postEditor.content_format = format;
+
+            if (format === 'richtext') {
+                this.$nextTick(() => {
+                    this.syncTinyMceTheme();
+                });
+            }
+        },
+
+        syncTinyMceTheme() {
+            const nextTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+            if (this.tinyMceTheme !== nextTheme) {
+                this.tinyMceTheme = nextTheme;
+                this.tinyMceMountKey += 1;
+            }
+        },
+
         applyPostFormatting(type) {
             const textarea = this.$refs.postContent;
 
-            if (! textarea) {
+            if (this.postEditor.content_format !== 'markdown' || ! textarea) {
                 return;
             }
 
@@ -727,44 +812,18 @@ createApp({
                 });
             };
 
-            if (this.postEditor.content_format === 'markdown') {
-                if (type === 'bold') {
-                    insert('**', '**');
-                } else if (type === 'italic') {
-                    insert('*', '*');
-                } else if (type === 'heading') {
-                    insert('# ', '');
-                } else if (type === 'quote') {
-                    insert('> ', '');
-                } else if (type === 'list') {
-                    insert('- ', '');
-                } else if (type === 'ordered') {
-                    insert('1. ', '');
-                } else if (type === 'link') {
-                    const url = window.prompt('Masukkan URL tautan');
-
-                    if (! url) {
-                        return;
-                    }
-
-                    insert('[', `](${url})`);
-                }
-
-                return;
-            }
-
             if (type === 'bold') {
-                insert('<strong>', '</strong>');
+                insert('**', '**');
             } else if (type === 'italic') {
-                insert('<em>', '</em>');
+                insert('*', '*');
             } else if (type === 'heading') {
-                insert('<h2>', '</h2>');
+                insert('# ', '');
             } else if (type === 'quote') {
-                insert('<blockquote>', '</blockquote>');
+                insert('> ', '');
             } else if (type === 'list') {
-                insert('<ul><li>', '</li></ul>');
+                insert('- ', '');
             } else if (type === 'ordered') {
-                insert('<ol><li>', '</li></ol>');
+                insert('1. ', '');
             } else if (type === 'link') {
                 const url = window.prompt('Masukkan URL tautan');
 
@@ -772,7 +831,7 @@ createApp({
                     return;
                 }
 
-                insert(`<a href="${url}" rel="noreferrer noopener">`, '</a>');
+                insert('[', `](${url})`);
             }
         },
 
@@ -1149,11 +1208,18 @@ createApp({
 
     async mounted() {
         this.api = useApi(this);
+        this.syncTinyMceTheme();
+        this.themeObserver = new MutationObserver(() => this.syncTinyMceTheme());
+        this.themeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class'],
+        });
         window.addEventListener('popstate', this.handlePopState);
         await this.loadCurrentPage();
     },
 
     beforeUnmount() {
+        this.themeObserver?.disconnect();
         window.removeEventListener('popstate', this.handlePopState);
     },
 
@@ -1489,16 +1555,16 @@ createApp({
                                     <p class="mt-1 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Mode Visual menyimpan HTML, Mode Markdown menyimpan markdown asli.</p>
                                 </div>
                                 <div class="inline-flex rounded-full border border-coffee-100 bg-coffee-50 p-1 dark:border-coffee-800/50 dark:bg-white/5">
-                                    <button @click="postEditor.content_format = 'richtext'" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'richtext' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
+                                    <button @click="setPostContentFormat('richtext')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'richtext' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
                                         Mode Visual
                                     </button>
-                                    <button @click="postEditor.content_format = 'markdown'" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'markdown' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
+                                    <button @click="setPostContentFormat('markdown')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'markdown' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
                                         Mode Markdown
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="mt-4 flex flex-wrap gap-2">
+                            <div v-if="postEditor.content_format === 'markdown'" class="mt-4 flex flex-wrap gap-2">
                                 <button @click="applyPostFormatting('bold')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">B</button>
                                 <button @click="applyPostFormatting('italic')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">I</button>
                                 <button @click="applyPostFormatting('heading')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">H1</button>
@@ -1509,12 +1575,22 @@ createApp({
                             </div>
 
                             <div class="mt-4 space-y-3">
+                                <div v-if="postEditor.content_format === 'richtext'" class="ngopi-tinymce overflow-hidden rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/50 dark:bg-neutralwarm-900">
+                                    <tiny-mce-editor
+                                        :key="'tinymce-' + tinyMceTheme + '-' + tinyMceMountKey"
+                                        v-model="postEditor.content"
+                                        license-key="gpl"
+                                        output-format="html"
+                                        tinymce-script-src="/vendor/tinymce/tinymce.min.js"
+                                        :init="tinyMceInit" />
+                                </div>
                                 <textarea
+                                    v-else
                                     ref="postContent"
                                     v-model="postEditor.content"
                                     rows="16"
                                     class="w-full rounded-3xl border border-coffee-100 bg-white px-4 py-3 text-sm leading-7 text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
-                                    :placeholder="postEditor.content_format === 'markdown' ? '# Judul artikel' : '<p>Mulai menulis di sini...</p>'"></textarea>
+                                    placeholder="# Judul artikel"></textarea>
 
                                 <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/60">
                                     {{ postEditor.content_format === 'markdown' ? 'Markdown akan dirender dan disanitasi di server.' : 'Konten visual disimpan sebagai HTML yang sudah disanitasi di server.' }}

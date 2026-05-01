@@ -1,0 +1,29 @@
+- main [ref=e4]:
+  - generic [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - generic [ref=e10]: Ngopi Dulur Admin
+          - heading "Masuk ke ruang tulis." [level=1] [ref=e11]
+          - paragraph [ref=e12]: Gunakan akun admin untuk membuka dashboard, menulis, dan menjaga ritme publikasi tetap hangat.
+        - button "Ubah ke tema dark espresso" [ref=e13] [cursor=pointer]:
+          - img [ref=e15]
+          - generic [ref=e17]: Dark Espresso
+      - generic [ref=e18]:
+        - generic [ref=e19]:
+          - text: Email
+          - textbox "Email" [ref=e20]:
+            - /placeholder: admin@ngopidulur.test
+        - generic [ref=e21]:
+          - text: Kata sandi
+          - textbox "Kata sandi" [ref=e22]:
+            - /placeholder: password
+        - generic [ref=e23]:
+          - checkbox "Ingat saya" [ref=e24]
+          - text: Ingat saya
+        - button "Masuk" [ref=e25] [cursor=pointer]
+    - complementary [ref=e26]:
+      - generic [ref=e27]:
+        - paragraph [ref=e28]: Warm Coffee Meets Modern Tech
+        - heading "Fondasi sudah siap, cerita tinggal diisi." [level=2] [ref=e29]
+        - paragraph [ref=e30]: TailAdmin tetap menjadi dasar tampilan admin, sementara bahasa visual Ngopi Dulur masuk lewat warna, typography, dan suasana.
