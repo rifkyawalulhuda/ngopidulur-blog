@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 class PostController extends Controller
@@ -270,7 +269,7 @@ class PostController extends Controller
             'author_name' => $post->author?->name,
             'tags_count' => $post->tags->count(),
             'featured_image' => $post->featured_image,
-            'featured_image_url' => $post->featured_image ? Storage::disk('public')->url($post->featured_image) : null,
+            'featured_image_url' => $post->featured_image_url,
         ];
     }
 
@@ -288,7 +287,7 @@ class PostController extends Controller
             'rendered_content' => $post->rendered_content,
             'reading_time_minutes' => $post->reading_time_minutes,
             'featured_image' => $post->featured_image,
-            'featured_image_url' => $post->featured_image ? Storage::disk('public')->url($post->featured_image) : null,
+            'featured_image_url' => $post->featured_image_url,
             'featured_image_alt' => $post->featured_image_alt,
             'is_featured' => (bool) $post->is_featured,
             'status' => $post->status,
