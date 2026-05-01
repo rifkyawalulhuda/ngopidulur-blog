@@ -49,9 +49,35 @@ const apiHeaders = {
 };
 
 const toastTypes = {
-    success: 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-100',
-    error: 'border-red-200 bg-red-50 text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-100',
-    info: 'border-coffee-200 bg-coffee-50 text-coffee-900 dark:border-coffee-800/50 dark:bg-coffee-500/10 dark:text-coffee-50',
+    success: {
+        card: 'border-emerald-200/80 bg-white text-neutralwarm-900 shadow-[0_18px_45px_-24px_rgba(38,78,54,0.45)] dark:border-emerald-500/20 dark:bg-neutralwarm-900 dark:text-neutralwarm-50',
+        iconWrap: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-100',
+        accent: 'bg-emerald-500',
+        title: 'Perubahan tersimpan',
+        icon: 'check',
+    },
+    error: {
+        card: 'border-red-200/80 bg-white text-neutralwarm-900 shadow-[0_18px_45px_-24px_rgba(127,29,29,0.45)] dark:border-red-500/20 dark:bg-neutralwarm-900 dark:text-neutralwarm-50',
+        iconWrap: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-100',
+        accent: 'bg-red-500',
+        title: 'Aksi belum berhasil',
+        icon: 'x',
+    },
+    info: {
+        card: 'border-coffee-200/80 bg-white text-neutralwarm-900 shadow-[0_18px_45px_-24px_rgba(90,58,37,0.35)] dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50',
+        iconWrap: 'bg-coffee-100 text-coffee-700 dark:bg-coffee-500/15 dark:text-coffee-100',
+        accent: 'bg-coffee-500',
+        title: 'Info singkat',
+        icon: 'info',
+    },
+};
+
+const makeToastId = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+    }
+
+    return `toast-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 };
 
 function useApi(app) {
@@ -231,6 +257,16 @@ createApp({
                 kind: 'category',
                 item: null,
                 loading: false,
+            },
+            actionConfirm: {
+                open: false,
+                action: '',
+                loading: false,
+                title: '',
+                message: '',
+                confirm_label: '',
+                confirm_class: '',
+                item: null,
             },
             toasts: [],
         };
@@ -626,6 +662,36 @@ createApp({
             return true;
         },
 
+        syncPostListItem(item) {
+            if (! item?.id) {
+                return;
+            }
+
+            const index = this.posts.items.findIndex((post) => Number(post.id) === Number(item.id));
+
+            if (index === -1) {
+                return;
+            }
+
+            const current = this.posts.items[index];
+
+            this.posts.items[index] = {
+                ...current,
+                id: item.id,
+                title: item.title ?? current.title,
+                slug: item.slug ?? current.slug,
+                category_name: item.category?.name ?? current.category_name,
+                category_slug: item.category?.slug ?? current.category_slug,
+                status: item.status ?? current.status,
+                published_at: item.published_at ?? current.published_at,
+                updated_at: item.updated_at ?? current.updated_at,
+                author_name: item.author?.name ?? current.author_name,
+                featured_image: item.featured_image ?? current.featured_image,
+                featured_image_url: item.featured_image_url ?? current.featured_image_url,
+                tags_count: Array.isArray(item.tags) ? item.tags.length : current.tags_count,
+            };
+        },
+
         openPostCreate() {
             this.navigate('/admin/posts/create');
         },
@@ -691,8 +757,10 @@ createApp({
                 }
 
                 await this.loadPosts();
+                return true;
             } catch (error) {
                 this.toast(error.message, 'error');
+                return false;
             } finally {
                 this.postEditor.saving = false;
             }
@@ -711,10 +779,13 @@ createApp({
                 });
 
                 this.syncPostEditorFromItem(payload.item);
+                this.syncPostListItem(payload.item);
                 this.toast(payload.message || 'Artikel berhasil diterbitkan.', 'success');
                 await this.loadPosts();
+                return true;
             } catch (error) {
                 this.toast(error.message, 'error');
+                return false;
             } finally {
                 if (syncEditor) {
                     this.postEditor.saving = false;
@@ -735,10 +806,13 @@ createApp({
                 });
 
                 this.syncPostEditorFromItem(payload.item);
+                this.syncPostListItem(payload.item);
                 this.toast(payload.message || 'Artikel berhasil diarsipkan.', 'success');
                 await this.loadPosts();
+                return true;
             } catch (error) {
                 this.toast(error.message, 'error');
+                return false;
             } finally {
                 if (syncEditor) {
                     this.postEditor.saving = false;
@@ -1166,6 +1240,83 @@ createApp({
             }
         },
 
+        promptPostAction(action, item = null) {
+            if (this.postEditor.loading || this.postEditor.saving) {
+                return;
+            }
+
+            const currentTitle = this.postEditor.title || item?.title || 'tulisan ini';
+            const isDraft = action === 'draft';
+            const isPublish = action === 'published';
+
+            this.actionConfirm = {
+                open: true,
+                action,
+                loading: false,
+                title: isDraft
+                    ? 'Simpan sebagai draft?'
+                    : isPublish
+                        ? 'Terbitkan tulisan ini?'
+                        : 'Arsipkan tulisan ini?',
+                message: isDraft
+                    ? `Perubahan pada "${currentTitle}" akan disimpan dan statusnya menjadi draft.`
+                    : isPublish
+                        ? `"${currentTitle}" akan tampil di blog publik setelah diterbitkan.`
+                        : `"${currentTitle}" akan disembunyikan dari blog publik dan dipindahkan ke status arsip.`,
+                confirm_label: isDraft
+                    ? 'Ya, simpan draft'
+                    : isPublish
+                        ? 'Ya, terbitkan'
+                        : 'Ya, arsipkan',
+                confirm_class: isDraft
+                    ? 'bg-coffee-700 hover:bg-coffee-800'
+                    : isPublish
+                        ? 'bg-emerald-600 hover:bg-emerald-700'
+                        : 'bg-amber-500 text-coffee-950 hover:bg-amber-400',
+                item,
+            };
+        },
+
+        closeActionConfirm() {
+            this.actionConfirm = {
+                open: false,
+                action: '',
+                loading: false,
+                title: '',
+                message: '',
+                confirm_label: '',
+                confirm_class: '',
+                item: null,
+            };
+        },
+
+        async confirmPostAction() {
+            if (! this.actionConfirm.action) {
+                return;
+            }
+
+            this.actionConfirm.loading = true;
+            let success = false;
+
+            if (this.actionConfirm.action === 'draft') {
+                success = await this.submitPost('draft');
+            } else if (this.actionConfirm.action === 'published') {
+                if (this.actionConfirm.item?.id && this.current === 'posts') {
+                    success = await this.publishPost(this.actionConfirm.item);
+                } else {
+                    success = await this.submitPost('published');
+                }
+            } else if (this.actionConfirm.action === 'archived' && this.actionConfirm.item?.id) {
+                success = await this.archivePost(this.actionConfirm.item);
+            }
+
+            if (success) {
+                this.closeActionConfirm();
+            } else {
+                this.actionConfirm.loading = false;
+            }
+        },
+
         promptDelete(kind, item) {
             this.deleting = {
                 open: true,
@@ -1227,13 +1378,23 @@ createApp({
         },
 
         toast(message, type = 'info') {
-            const id = crypto.randomUUID();
+            const id = makeToastId();
+            const config = this.toastTypes[type] || this.toastTypes.info;
 
-            this.toasts.push({ id, message, type });
+            this.toasts.push({
+                id,
+                message,
+                type,
+                title: config.title,
+            });
 
             window.setTimeout(() => {
-                this.toasts = this.toasts.filter((toast) => toast.id !== id);
+                this.removeToast(id);
             }, 3500);
+        },
+
+        removeToast(id) {
+            this.toasts = this.toasts.filter((toast) => toast.id !== id);
         },
 
         slugHint(name) {
@@ -1512,10 +1673,10 @@ createApp({
                                             <button @click="openPostEdit(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
                                                 Ubah
                                             </button>
-                                            <button v-if="item.status !== 'published'" @click="publishPost(item)" class="rounded-full border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-100 dark:hover:bg-emerald-500/10">
+                                            <button v-if="item.status !== 'published'" @click="promptPostAction('published', item)" class="rounded-full border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-100 dark:hover:bg-emerald-500/10">
                                                 Terbitkan
                                             </button>
-                                            <button v-if="item.status !== 'archived'" @click="archivePost(item)" class="rounded-full border border-amber-200 px-3 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10">
+                                            <button v-if="item.status !== 'archived'" @click="promptPostAction('archived', item)" class="rounded-full border border-amber-200 px-3 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10">
                                                 Arsipkan
                                             </button>
                                             <button @click="promptDelete('post', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
@@ -1545,10 +1706,10 @@ createApp({
                         <button @click="previewPost" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
                             Preview
                         </button>
-                        <button @click="submitPost('draft')" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                        <button @click="promptPostAction('draft')" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
                             {{ postEditor.saving ? 'Menyimpan...' : 'Simpan Draft' }}
                         </button>
-                        <button @click="submitPost('published')" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="postEditor.loading || postEditor.saving">
+                        <button @click="promptPostAction('published')" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="postEditor.loading || postEditor.saving">
                             {{ postEditor.saving ? 'Menyimpan...' : 'Terbitkan' }}
                         </button>
                     </div>
@@ -1740,13 +1901,13 @@ createApp({
                         <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
                             <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi cepat</p>
                             <div class="mt-4 flex flex-wrap gap-2">
-                                <button @click="submitPost('draft')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                                <button @click="promptPostAction('draft')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
                                     {{ postEditor.saving ? 'Memproses...' : 'Simpan Draft' }}
                                 </button>
-                                <button @click="submitPost('published')" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800 disabled:cursor-not-allowed disabled:opacity-60" :disabled="postEditor.loading || postEditor.saving">
+                                <button @click="promptPostAction('published')" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800 disabled:cursor-not-allowed disabled:opacity-60" :disabled="postEditor.loading || postEditor.saving">
                                     {{ postEditor.saving ? 'Memproses...' : 'Terbitkan' }}
                                 </button>
-                                <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="archivePost({ id: postEditor.id })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10" :disabled="postEditor.loading || postEditor.saving">
+                                <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="promptPostAction('archived', { id: postEditor.id, title: postEditor.title })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10" :disabled="postEditor.loading || postEditor.saving">
                                     {{ postEditor.saving ? 'Memproses...' : 'Arsipkan' }}
                                 </button>
                                 <button v-if="postEditor.id" @click="promptDelete('post', { id: postEditor.id, slug: postEditor.slug || postEditor.id })" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10" :disabled="postEditor.loading || postEditor.saving">
@@ -2151,6 +2312,29 @@ createApp({
             </div>
 
             <div
+                v-if="actionConfirm.open"
+                class="fixed inset-0 z-[79] flex items-center justify-center bg-neutralwarm-950/45 px-4 py-8 backdrop-blur-sm">
+                <div class="w-full max-w-lg rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Konfirmasi aksi</p>
+                    <h3 class="mt-2 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                        {{ actionConfirm.title }}
+                    </h3>
+                    <p class="mt-3 text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                        {{ actionConfirm.message }}
+                    </p>
+
+                    <div class="mt-6 flex items-center justify-end gap-3">
+                        <button @click="closeActionConfirm" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="actionConfirm.loading">
+                            Batal
+                        </button>
+                        <button @click="confirmPostAction" class="rounded-full px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60" :class="actionConfirm.confirm_class" :disabled="actionConfirm.loading">
+                            {{ actionConfirm.loading ? 'Memproses...' : actionConfirm.confirm_label }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div
                 v-if="deleting.open"
                 class="fixed inset-0 z-[80] flex items-center justify-center bg-neutralwarm-950/50 px-4 py-8 backdrop-blur-sm">
                 <div class="w-full max-w-lg rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
@@ -2202,13 +2386,43 @@ createApp({
                 </div>
             </div>
 
-            <div class="fixed right-4 top-4 z-[90] flex w-full max-w-sm flex-col gap-3">
+            <div class="pointer-events-none fixed right-4 top-4 z-[90] flex w-full max-w-sm flex-col gap-3 sm:right-6 sm:top-6">
                 <div
                     v-for="toast in toasts"
                     :key="toast.id"
-                    class="rounded-2xl border px-4 py-3 text-sm shadow-soft"
-                    :class="toastTypes[toast.type] || toastTypes.info">
-                    {{ toast.message }}
+                    class="pointer-events-auto relative overflow-hidden rounded-2xl border p-4 transition duration-200 ease-out"
+                    :class="(toastTypes[toast.type] || toastTypes.info).card">
+                    <div class="absolute inset-y-0 left-0 w-1.5 rounded-l-2xl" :class="(toastTypes[toast.type] || toastTypes.info).accent"></div>
+
+                    <div class="flex items-start gap-3 pl-2">
+                        <div class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl" :class="(toastTypes[toast.type] || toastTypes.info).iconWrap">
+                            <svg v-if="(toastTypes[toast.type] || toastTypes.info).icon === 'check'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 .006 1.414l-8.25 8.32a1 1 0 0 1-1.42 0l-3.75-3.783a1 1 0 1 1 1.42-1.408l3.04 3.066 7.54-7.604a1 1 0 0 1 1.414-.005Z" clip-rule="evenodd" />
+                            </svg>
+                            <svg v-else-if="(toastTypes[toast.type] || toastTypes.info).icon === 'x'" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd" />
+                            </svg>
+                            <svg v-else class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M18 10A8 8 0 1 1 2 10a8 8 0 0 1 16 0Zm-7-4a1 1 0 1 0-2 0 1 1 0 0 0 2 0ZM9 9a1 1 0 0 0 0 2v3a1 1 0 1 0 2 0v-3a1 1 0 1 0-2 0Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <p class="text-sm font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ toast.title }}</p>
+                                    <p class="mt-1 text-sm leading-6 text-neutralwarm-600 dark:text-neutralwarm-100/75">{{ toast.message }}</p>
+                                </div>
+
+                                <button @click="removeToast(toast.id)" type="button" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-coffee-100 text-neutralwarm-500 transition hover:bg-coffee-50 hover:text-coffee-900 dark:border-coffee-800/50 dark:text-neutralwarm-100/70 dark:hover:bg-white/5 dark:hover:text-neutralwarm-50">
+                                    <span class="sr-only">Tutup notifikasi</span>
+                                    <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
