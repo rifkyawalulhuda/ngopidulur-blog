@@ -8,10 +8,12 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Services\PostPublishingService;
+use App\Support\PublicAssetUrl;
 use App\Support\UniqueSlug;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -128,7 +130,11 @@ class PostController extends Controller
 
     public function destroy(Post $post): JsonResponse
     {
-        $post->delete();
+        DB::transaction(function () use ($post) {
+            $post->slug = $this->trashedSlug($post->slug, $post->id);
+            $post->saveQuietly();
+            $post->delete();
+        });
 
         return response()->json([
             'message' => 'Artikel berhasil dihapus.',
@@ -173,6 +179,32 @@ class PostController extends Controller
             'item' => $this->transformDetail($post->load(['author', 'category', 'tags'])),
             'preview_html' => $rendered,
         ])->header('X-Robots-Tag', 'noindex, nofollow');
+    }
+
+    public function uploadEditorImage(Request $request, PostPublishingService $service): JsonResponse
+    {
+        $validated = $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ], [
+            'image.required' => 'Gambar editor wajib dipilih.',
+            'image.image' => 'File editor harus berupa gambar.',
+            'image.mimes' => 'Format gambar editor harus JPG, JPEG, PNG, atau WebP.',
+            'image.max' => 'Ukuran gambar editor maksimal 2 MB.',
+        ]);
+
+        try {
+            $path = $service->storeContentImage($validated['image']);
+        } catch (RuntimeException $exception) {
+            return response()->json([
+                'message' => $exception->getMessage(),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Gambar editor berhasil diunggah.',
+            'location' => PublicAssetUrl::fromPublicDisk($path),
+            'path' => $path,
+        ]);
     }
 
     private function persistPost(Post $post, PostRequest $request, UniqueSlug $slugger, PostPublishingService $service): Post
@@ -253,6 +285,15 @@ class PostController extends Controller
         }
 
         return $post->published_at;
+    }
+
+    private function trashedSlug(string $slug, int $postId): string
+    {
+        $suffix = '--trashed-'.$postId;
+        $maxLength = 255 - strlen($suffix);
+        $base = Str::limit($slug, $maxLength, '');
+
+        return $base.$suffix;
     }
 
     private function transformList(Post $post): array

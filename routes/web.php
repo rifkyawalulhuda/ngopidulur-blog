@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/posts', [AdminPostApiController::class, 'index'])->name('admin.api.posts.index');
         Route::post('/posts', [AdminPostApiController::class, 'store'])->name('admin.api.posts.store');
+        Route::post('/posts/images', [AdminPostApiController::class, 'uploadEditorImage'])->name('admin.api.posts.images.store');
         Route::get('/posts/{post}', [AdminPostApiController::class, 'show'])->name('admin.api.posts.show');
         Route::put('/posts/{post}', [AdminPostApiController::class, 'update'])->name('admin.api.posts.update');
         Route::delete('/posts/{post}', [AdminPostApiController::class, 'destroy'])->name('admin.api.posts.destroy');

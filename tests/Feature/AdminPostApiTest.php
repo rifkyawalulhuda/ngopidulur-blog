@@ -133,6 +133,38 @@ test('upload featured image dikonversi ke webp', function () {
     Storage::disk('public')->assertExists($path);
 });
 
+test('upload gambar editor mengembalikan lokasi relatif webp', function () {
+    config()->set('app.url', 'http://localhost');
+    Storage::fake('public');
+
+    $response = $this->actingAs($this->admin)
+        ->post('/admin/api/posts/images', [
+            'image' => UploadedFile::fake()->image('inline.png', 1200, 800)->size(900),
+        ])
+        ->assertOk();
+
+    $path = $response->json('path');
+
+    expect($path)->toStartWith('posts/content/');
+    expect($path)->toEndWith('.webp');
+    expect($response->json('location'))->toStartWith('/storage/posts/content/');
+    Storage::disk('public')->assertExists($path);
+});
+
+test('upload gambar editor menolak file non gambar', function () {
+    Storage::fake('public');
+
+    $this->actingAs($this->admin)
+        ->post('/admin/api/posts/images', [
+            'image' => UploadedFile::fake()->create('dokumen.pdf', 120, 'application/pdf'),
+        ], [
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])
+        ->assertStatus(422)
+        ->assertJsonValidationErrors(['image']);
+});
+
 test('featured image url memakai path relatif agar tetap cocok dengan host admin aktif', function () {
     config()->set('app.url', 'http://localhost');
     Storage::fake('public');
@@ -225,7 +257,45 @@ test('admin dapat publish, archive, dan menghapus artikel', function () {
         ->assertOk()
         ->assertJsonPath('message', 'Artikel berhasil dihapus.');
 
-    expect(Post::withTrashed()->where('slug', $create['slug'])->first()?->trashed())->toBeTrue();
+    $deletedPost = Post::withTrashed()->find($create['id']);
+
+    expect($deletedPost?->trashed())->toBeTrue();
+    expect($deletedPost?->slug)->toContain('--trashed-');
+});
+
+test('slug artikel yang sudah dihapus dapat dipakai lagi untuk artikel baru', function () {
+    $deleted = $this->actingAs($this->admin)
+        ->postJson('/admin/api/posts', [
+            'title' => 'Lorem Ipsum',
+            'slug' => '',
+            'excerpt' => null,
+            'content_format' => 'markdown',
+            'content' => '# Pertama',
+            'category_id' => $this->category->id,
+            'status' => 'draft',
+        ])
+        ->assertCreated()
+        ->json('item');
+
+    $this->actingAs($this->admin)
+        ->deleteJson("/admin/api/posts/{$deleted['slug']}")
+        ->assertOk();
+
+    $recreated = $this->actingAs($this->admin)
+        ->postJson('/admin/api/posts', [
+            'title' => 'Lorem Ipsum',
+            'slug' => '',
+            'excerpt' => null,
+            'content_format' => 'markdown',
+            'content' => '# Kedua',
+            'category_id' => $this->category->id,
+            'status' => 'draft',
+        ])
+        ->assertCreated()
+        ->json('item');
+
+    expect($recreated['slug'])->toBe('lorem-ipsum');
+    expect(Post::withTrashed()->where('id', $deleted['id'])->value('slug'))->toContain('--trashed-');
 });
 
 test('public post route hanya menampilkan artikel published', function () {

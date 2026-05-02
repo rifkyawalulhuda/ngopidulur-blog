@@ -349,11 +349,51 @@ createApp({
                 autoresize_bottom_margin: 20,
                 resize: false,
                 toolbar_mode: 'sliding',
-                plugins: 'advlist autolink autoresize code help link lists preview visualblocks wordcount',
-                toolbar: 'undo redo | blocks | bold italic blockquote | bullist numlist | link | removeformat | code visualblocks preview',
+                plugins: 'advlist autolink autoresize code help image link lists preview visualblocks wordcount',
+                toolbar: 'undo redo | blocks | bold italic blockquote | bullist numlist | link image | removeformat | code visualblocks preview',
                 block_formats: 'Paragraf=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Kutipan=blockquote; Preformatted=pre',
                 quickbars_selection_toolbar: 'bold italic | quicklink blockquote',
                 contextmenu: false,
+                image_title: true,
+                automatic_uploads: true,
+                paste_data_images: false,
+                file_picker_types: 'image',
+                images_upload_handler: async (blobInfo, progress) => {
+                    const payload = await this.uploadEditorImage(blobInfo.blob());
+                    progress(100);
+
+                    return payload.location;
+                },
+                file_picker_callback: async (callback, _value, meta) => {
+                    if (meta.filetype !== 'image') {
+                        return;
+                    }
+
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp';
+
+                    input.addEventListener('change', async () => {
+                        const [file] = Array.from(input.files || []);
+
+                        if (! file) {
+                            return;
+                        }
+
+                        try {
+                            const payload = await this.uploadEditorImage(file);
+                            callback(payload.location, {
+                                alt: file.name.replace(/\.[^.]+$/, ''),
+                                title: file.name,
+                            });
+                            this.toast('Gambar editor berhasil ditambahkan.', 'success');
+                        } catch (error) {
+                            this.toast(error.message || 'Upload gambar editor gagal.', 'error');
+                        }
+                    });
+
+                    input.click();
+                },
                 skin: darkMode ? 'oxide-dark' : 'oxide',
                 content_css: darkMode ? 'dark' : 'default',
                 content_style: `
@@ -395,6 +435,16 @@ createApp({
     methods: {
         apiCall(url, options = {}) {
             return useApi(this)(url, options);
+        },
+
+        async uploadEditorImage(file) {
+            const formData = new FormData();
+            formData.append('image', file, file.name || 'editor-image.png');
+
+            return this.apiCall('/admin/api/posts/images', {
+                method: 'POST',
+                body: formData,
+            });
         },
 
         navigate(path) {

@@ -51,6 +51,25 @@ class PostPublishingService
 
     public function storeFeaturedImage(UploadedFile $file): string
     {
+        return $this->storeImageAsWebp($file, 'posts');
+    }
+
+    public function storeContentImage(UploadedFile $file): string
+    {
+        return $this->storeImageAsWebp($file, 'posts/content');
+    }
+
+    public function deleteFeaturedImage(?string $path): void
+    {
+        if ($path === null || $path === '') {
+            return;
+        }
+
+        Storage::disk('public')->delete($path);
+    }
+
+    private function storeImageAsWebp(UploadedFile $file, string $directory): string
+    {
         $binary = file_get_contents($file->getRealPath());
 
         if ($binary === false) {
@@ -66,9 +85,15 @@ class PostPublishingService
         imagealphablending($image, true);
         imagesavealpha($image, true);
 
-        $relativePath = 'posts/'.Str::uuid().'.webp';
+        $relativePath = trim($directory, '/').'/'.Str::uuid().'.webp';
         $absolutePath = Storage::disk('public')->path($relativePath);
-        File::ensureDirectoryExists(dirname($absolutePath));
+        $targetDirectory = dirname($absolutePath);
+
+        if (! is_dir($targetDirectory) && ! mkdir($targetDirectory, 0755, true) && ! is_dir($targetDirectory)) {
+            imagedestroy($image);
+
+            throw new RuntimeException('Gagal menyiapkan folder gambar.');
+        }
 
         if (! imagewebp($image, $absolutePath, 85)) {
             imagedestroy($image);
@@ -79,15 +104,6 @@ class PostPublishingService
         imagedestroy($image);
 
         return $relativePath;
-    }
-
-    public function deleteFeaturedImage(?string $path): void
-    {
-        if ($path === null || $path === '') {
-            return;
-        }
-
-        Storage::disk('public')->delete($path);
     }
 
     private function sanitizeHtml(string $html): string

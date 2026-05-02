@@ -95,9 +95,6 @@
                         </svg>
                     </button>
 
-                    <a href="{{ route('login') }}" class="rounded-full border border-coffee-100 px-4 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-700/50 dark:text-coffee-100 dark:hover:bg-white/5">
-                        Masuk Admin
-                    </a>
                 </div>
             </div>
         </header>
