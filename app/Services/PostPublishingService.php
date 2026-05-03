@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -11,14 +10,27 @@ use RuntimeException;
 class PostPublishingService
 {
     private const ALLOWED_TAGS = [
-        'a', 'b', 'blockquote', 'br', 'code', 'div', 'em', 'figcaption', 'figure',
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'li', 'ol', 'p',
-        'pre', 'span', 'strong', 'ul',
+        'a', 'b', 'blockquote', 'br', 'caption', 'code', 'col', 'colgroup', 'div',
+        'em', 'figcaption', 'figure', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
+        'i', 'img', 'li', 'ol', 'p', 'pre', 's', 'span', 'strong', 'sub', 'sup',
+        'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u', 'ul',
     ];
 
-    private const ALLOWED_IMAGE_ATTRS = ['alt', 'decoding', 'height', 'loading', 'src', 'title', 'width'];
-    private const ALLOWED_LINK_ATTRS = ['href', 'rel', 'target', 'title'];
-    private const ALLOWED_GENERIC_ATTRS = ['class'];
+    private const ALLOWED_GENERIC_ATTRS = ['class', 'style'];
+    private const ALLOWED_IMAGE_ATTRS = ['alt', 'class', 'decoding', 'height', 'loading', 'src', 'style', 'title', 'width'];
+    private const ALLOWED_LINK_ATTRS = ['class', 'href', 'rel', 'target', 'title'];
+    private const ALLOWED_TABLE_CELL_ATTRS = ['class', 'colspan', 'rowspan', 'scope', 'style'];
+    private const ALLOWED_TABLE_ATTRS = ['class', 'style'];
+    private const ALLOWED_TABLE_COLUMN_ATTRS = ['class', 'span', 'style', 'width'];
+    private const ALLOWED_STYLE_RULES = [
+        'display' => '/^(block|inline|inline-block)$/i',
+        'float' => '/^(left|right|none)$/i',
+        'height' => '/^(auto|0|[0-9]+(?:\.[0-9]+)?(?:px|%|rem|em|vh))$/i',
+        'margin-left' => '/^(auto|0|[0-9]+(?:\.[0-9]+)?(?:px|%|rem|em))$/i',
+        'margin-right' => '/^(auto|0|[0-9]+(?:\.[0-9]+)?(?:px|%|rem|em))$/i',
+        'text-align' => '/^(left|right|center|justify)$/i',
+        'width' => '/^(auto|0|[0-9]+(?:\.[0-9]+)?(?:px|%|rem|em|vw))$/i',
+    ];
 
     public function renderContent(string $format, string $content): string
     {
@@ -185,13 +197,7 @@ class PostPublishingService
 
     private function sanitizeAttributes(\DOMElement $element, string $tagName): void
     {
-        $allowed = self::ALLOWED_GENERIC_ATTRS;
-
-        if ($tagName === 'a') {
-            $allowed = self::ALLOWED_LINK_ATTRS;
-        } elseif ($tagName === 'img') {
-            $allowed = self::ALLOWED_IMAGE_ATTRS;
-        }
+        $allowed = $this->allowedAttributesForTag($tagName);
 
         foreach (iterator_to_array($element->attributes ?? []) as $attribute) {
             $name = strtolower($attribute->nodeName);
@@ -204,6 +210,22 @@ class PostPublishingService
             if (($name === 'href' || $name === 'src') && ! $this->isSafeUrl($attribute->nodeValue)) {
                 $element->removeAttribute($name);
                 continue;
+            }
+
+            if ($name === 'target' && ! in_array(strtolower($attribute->nodeValue), ['_blank', '_self', '_parent', '_top'], true)) {
+                $element->removeAttribute($name);
+                continue;
+            }
+
+            if ($name === 'style') {
+                $sanitizedStyle = $this->sanitizeStyleValue($attribute->nodeValue);
+
+                if ($sanitizedStyle === null) {
+                    $element->removeAttribute($name);
+                    continue;
+                }
+
+                $element->setAttribute('style', $sanitizedStyle);
             }
 
             if (str_starts_with($name, 'on')) {
@@ -223,6 +245,47 @@ class PostPublishingService
                 $element->setAttribute('alt', '');
             }
         }
+    }
+
+    private function allowedAttributesForTag(string $tagName): array
+    {
+        return match ($tagName) {
+            'a' => self::ALLOWED_LINK_ATTRS,
+            'img' => self::ALLOWED_IMAGE_ATTRS,
+            'table', 'thead', 'tbody', 'tfoot', 'tr', 'figure', 'figcaption', 'p', 'div', 'span', 'blockquote', 'pre', 'code', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li' => self::ALLOWED_GENERIC_ATTRS,
+            'th', 'td' => self::ALLOWED_TABLE_CELL_ATTRS,
+            'col', 'colgroup' => self::ALLOWED_TABLE_COLUMN_ATTRS,
+            default => [],
+        };
+    }
+
+    private function sanitizeStyleValue(string $style): ?string
+    {
+        $declarations = array_filter(array_map('trim', explode(';', $style)));
+        $allowedDeclarations = [];
+
+        foreach ($declarations as $declaration) {
+            if (! str_contains($declaration, ':')) {
+                continue;
+            }
+
+            [$property, $value] = array_map('trim', explode(':', $declaration, 2));
+            $property = strtolower($property);
+
+            $rule = self::ALLOWED_STYLE_RULES[$property] ?? null;
+
+            if ($rule === null || ! preg_match($rule, $value)) {
+                continue;
+            }
+
+            $allowedDeclarations[$property] = $property.':'.$value;
+        }
+
+        if ($allowedDeclarations === []) {
+            return null;
+        }
+
+        return implode('; ', array_values($allowedDeclarations));
     }
 
     private function isSafeUrl(string $value): bool

@@ -341,23 +341,59 @@ createApp({
             const darkMode = this.tinyMceTheme === 'dark';
 
             return {
-                menubar: false,
+                menubar: 'edit view insert format table tools help',
                 branding: false,
                 promotion: false,
                 browser_spellcheck: true,
+                statusbar: true,
+                elementpath: true,
                 min_height: 520,
                 autoresize_bottom_margin: 20,
                 resize: false,
                 toolbar_mode: 'sliding',
-                plugins: 'advlist autolink autoresize code help image link lists preview visualblocks wordcount',
-                toolbar: 'undo redo | blocks | bold italic blockquote | bullist numlist | link image | removeformat | code visualblocks preview',
-                block_formats: 'Paragraf=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Kutipan=blockquote; Preformatted=pre',
-                quickbars_selection_toolbar: 'bold italic | quicklink blockquote',
-                contextmenu: false,
+                toolbar_sticky: true,
+                plugins: 'advlist anchor autolink autoresize autosave charmap code codesample directionality fullscreen help image insertdatetime link lists nonbreaking preview quickbars searchreplace table visualblocks visualchars wordcount emoticons',
+                toolbar: 'undo redo restoredraft | blocks | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote hr | link anchor image table codesample charmap emoticons | insertdatetime nonbreaking | searchreplace visualblocks visualchars | code fullscreen preview',
+                block_formats: 'Paragraf=p; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Kutipan=blockquote; Preformatted=pre',
+                style_formats: [
+                    { title: 'Paragraf standar', block: 'p' },
+                    { title: 'Lead paragraph', block: 'p', classes: 'lead' },
+                    { title: 'Kutipan', block: 'blockquote' },
+                    { title: 'Kode inline', inline: 'code' },
+                ],
+                quickbars_selection_toolbar: 'bold italic underline | blocks blockquote | alignleft aligncenter alignright | bullist numlist | quicklink',
+                quickbars_insert_toolbar: 'image table hr codesample',
+                quickbars_image_toolbar: 'alignleft aligncenter alignright | imageoptions',
+                contextmenu: 'link image table',
                 image_title: true,
+                image_caption: true,
+                image_description: true,
+                image_dimensions: true,
                 automatic_uploads: true,
                 paste_data_images: false,
                 file_picker_types: 'image',
+                object_resizing: 'img table',
+                link_default_protocol: 'https',
+                table_default_attributes: {
+                    class: 'table table-content',
+                },
+                table_default_styles: {
+                    width: '100%',
+                },
+                table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol',
+                table_sizing_mode: 'responsive',
+                codesample_languages: [
+                    { text: 'HTML/XML', value: 'markup' },
+                    { text: 'CSS', value: 'css' },
+                    { text: 'JavaScript', value: 'javascript' },
+                    { text: 'PHP', value: 'php' },
+                    { text: 'JSON', value: 'json' },
+                    { text: 'Markdown', value: 'markdown' },
+                    { text: 'Bash', value: 'bash' },
+                ],
+                autosave_ask_before_unload: true,
+                autosave_interval: '20s',
+                autosave_restore_when_empty: true,
                 images_upload_handler: async (blobInfo, progress) => {
                     const payload = await this.uploadEditorImage(blobInfo.blob());
                     progress(100);
@@ -422,6 +458,46 @@ createApp({
                     }
                     ul, ol {
                         margin: 0 0 1rem 1.25rem;
+                    }
+                    hr {
+                        border: 0;
+                        border-top: 1px solid ${darkMode ? 'rgba(247, 239, 231, 0.18)' : 'rgba(123, 69, 32, 0.18)'};
+                        margin: 2rem 0;
+                    }
+                    figure {
+                        margin: 2rem 0;
+                    }
+                    figure.image {
+                        display: table;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                    figure.image img {
+                        display: block;
+                        max-width: 100%;
+                        height: auto;
+                        border-radius: 1.25rem;
+                    }
+                    figcaption {
+                        display: table-caption;
+                        caption-side: bottom;
+                        color: ${darkMode ? '#cfb7a7' : '#7b5a46'};
+                        font-size: 0.92rem;
+                        margin-top: 0.75rem;
+                        text-align: center;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        margin: 2rem 0;
+                    }
+                    th, td {
+                        border: 1px solid ${darkMode ? 'rgba(247, 239, 231, 0.16)' : 'rgba(123, 69, 32, 0.15)'};
+                        padding: 0.75rem 0.9rem;
+                        vertical-align: top;
+                    }
+                    th {
+                        background: ${darkMode ? 'rgba(255,255,255,0.04)' : '#f8efe6'};
                     }
                     code, pre {
                         background: ${darkMode ? '#2c1c15' : '#f7efe8'};

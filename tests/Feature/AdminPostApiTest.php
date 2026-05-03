@@ -225,6 +225,52 @@ test('konten tersanitasi dan preview aman', function () {
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 });
 
+test('richtext editor full featured tetap aman setelah sanitasi', function () {
+    $content = <<<'HTML'
+<p class="lead">Pembuka artikel.</p>
+<figure class="image" style="margin-left:auto;margin-right:auto">
+    <img src="/storage/posts/content/demo.webp" alt="Demo" width="640" height="360">
+    <figcaption style="text-align:center;color:red">Caption aman</figcaption>
+</figure>
+<table style="width:100%;position:absolute">
+    <tbody>
+        <tr>
+            <th scope="col" style="text-align:left">Kolom</th>
+            <td colspan="2" style="text-align:center" onclick="alert('xss')">Isi tabel</td>
+        </tr>
+    </tbody>
+</table>
+<pre class="language-php"><code>&lt;?php echo 'kopi';</code></pre>
+<hr>
+<iframe src="https://example.com/embed"></iframe>
+HTML;
+
+    $response = $this->actingAs($this->admin)
+        ->postJson('/admin/api/posts', [
+            'title' => 'Editor Lengkap',
+            'slug' => '',
+            'excerpt' => null,
+            'content_format' => 'richtext',
+            'content' => $content,
+            'category_id' => $this->category->id,
+            'status' => 'draft',
+        ])
+        ->assertCreated();
+
+    $rendered = $response->json('item.rendered_content');
+
+    expect($rendered)->toContain('<figure class="image" style="margin-left:auto; margin-right:auto">');
+    expect($rendered)->toContain('<figcaption style="text-align:center">Caption aman</figcaption>');
+    expect($rendered)->toContain('<table style="width:100%">');
+    expect($rendered)->toContain('<td colspan="2" style="text-align:center">Isi tabel</td>');
+    expect($rendered)->toContain('<pre class="language-php"><code>');
+    expect($rendered)->toContain('<hr>');
+    expect($rendered)->not()->toContain('position:absolute');
+    expect($rendered)->not()->toContain('onclick=');
+    expect($rendered)->not()->toContain('<iframe');
+    expect($rendered)->not()->toContain('color:red');
+});
+
 test('admin dapat publish, archive, dan menghapus artikel', function () {
     Storage::fake('public');
 

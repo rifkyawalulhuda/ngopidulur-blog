@@ -222,6 +222,10 @@
     @apply text-base leading-8 text-neutralwarm-500 dark:text-neutralwarm-100/85;
   }
 
+  .post-content p.lead {
+    @apply text-lg font-medium leading-9 text-coffee-900 dark:text-neutralwarm-50;
+  }
+
   .post-content a {
     @apply text-coffee-700 underline decoration-coffee-300 decoration-2 underline-offset-4 transition hover:text-coffee-900 dark:text-coffee-100 dark:decoration-coffee-500;
   }
@@ -243,8 +247,28 @@
     @apply border-l-4 border-coffee-300 bg-coffee-50 px-5 py-4 font-medium text-coffee-900 dark:border-coffee-500 dark:bg-coffee-500/10 dark:text-neutralwarm-50;
   }
 
+  .post-content hr {
+    @apply my-10 border-0 border-t border-coffee-100 dark:border-coffee-700/40;
+  }
+
+  .post-content figure {
+    @apply my-8;
+  }
+
+  .post-content figure.image {
+    @apply mx-auto table;
+  }
+
   .post-content img {
     @apply my-8 rounded-[1.5rem] border border-coffee-100 shadow-soft dark:border-coffee-700/40;
+  }
+
+  .post-content figure img {
+    @apply my-0;
+  }
+
+  .post-content figcaption {
+    @apply mt-3 text-center text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70;
   }
 
   .post-content pre {
@@ -261,6 +285,10 @@
 
   .post-content table {
     @apply my-8 w-full overflow-hidden rounded-[1.5rem] border border-coffee-100 text-left dark:border-coffee-700/40;
+  }
+
+  .post-content thead {
+    @apply bg-coffee-50 dark:bg-white/5;
   }
 
   .post-content th,
