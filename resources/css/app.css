@@ -206,6 +206,46 @@
 }
 
 @layer components {
+  .ngopi-shell {
+    @apply relative overflow-hidden bg-[linear-gradient(180deg,#fffdfa_0%,#fbf4eb_48%,#f9f0e5_100%)] dark:bg-[linear-gradient(180deg,#1f1713_0%,#211812_48%,#1a1411_100%)];
+  }
+
+  .ngopi-shell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 32%),
+      radial-gradient(circle at top right, rgba(201, 136, 81, 0.15), transparent 34%),
+      radial-gradient(circle at bottom left, rgba(201, 136, 81, 0.12), transparent 28%);
+    opacity: 0.9;
+  }
+
+  .ngopi-panel {
+    @apply rounded-[2rem] border border-[#f0dfcf] bg-white/86 shadow-[0_30px_70px_-42px_rgba(86,46,20,0.34)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/78;
+  }
+
+  .ngopi-outline-button {
+    @apply inline-flex items-center justify-center rounded-[1.15rem] border border-[#ebd8c8] bg-white/88 px-5 py-3 text-sm font-semibold text-[#7d4018] transition hover:-translate-y-0.5 hover:border-[#d7b08b] hover:bg-[#fff8f1] dark:border-coffee-700/40 dark:bg-neutralwarm-900/65 dark:text-coffee-100 dark:hover:bg-white/5;
+  }
+
+  .ngopi-solid-button {
+    @apply inline-flex items-center justify-center rounded-[1.15rem] bg-[#8b4a22] px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_30px_-24px_rgba(90,46,22,0.95)] transition hover:-translate-y-0.5 hover:bg-[#6f3917];
+  }
+
+  .ngopi-section-label {
+    @apply text-xs font-semibold uppercase tracking-[0.26em] text-[#8b4a22] dark:text-coffee-100;
+  }
+
+  .ngopi-empty-icon {
+    @apply inline-flex size-[4.5rem] items-center justify-center rounded-full border border-[#f1dfcf] bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.94),rgba(247,236,225,0.9))] text-[#8b4a22] shadow-[0_18px_35px_-28px_rgba(90,46,22,0.5)] dark:border-coffee-700/40 dark:bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.1),rgba(255,255,255,0.04))] dark:text-coffee-100;
+  }
+
+  .ngopi-reveal {
+    animation: ngopi-fade-up 0.7s ease-out both;
+  }
+
   .post-content {
     @apply space-y-6 text-base leading-8 text-neutralwarm-500 dark:text-neutralwarm-100/85;
   }
@@ -294,6 +334,18 @@
   .post-content th,
   .post-content td {
     @apply border-b border-coffee-100 px-4 py-3 dark:border-coffee-700/40;
+  }
+}
+
+@keyframes ngopi-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
