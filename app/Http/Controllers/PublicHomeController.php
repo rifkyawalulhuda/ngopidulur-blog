@@ -36,7 +36,6 @@ class PublicHomeController extends Controller
         $latestPostsQuery = Post::query()
             ->published()
             ->withPublicRelations()
-            ->when($featuredPost, fn ($query) => $query->whereKeyNot($featuredPost->id))
             ->latest('published_at')
             ->latest('id');
 

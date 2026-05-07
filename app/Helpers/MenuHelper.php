@@ -49,11 +49,11 @@ class MenuHelper
     {
         return array_values(array_filter([
             [
-                'title' => 'Ngopi Dulur',
+                'title' => 'Menu',
                 'items' => self::getMainNavItems(),
             ],
             [
-                'title' => 'Kelola',
+                'title' => 'Lainnya',
                 'items' => self::getOthersItems(),
             ],
         ], fn ($group) => ! empty($group['items'])));

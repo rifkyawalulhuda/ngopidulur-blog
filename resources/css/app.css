@@ -987,13 +987,25 @@ pre[class*='language-'] {
 .dark code[class*='language-'],
 .dark pre[class*='language-'] {
   text-shadow: none;
-  color: #98a2b3;
+  color: #f3e9de !important;
+}
+.post-content pre[class*='language-'] {
+  @apply my-8 overflow-x-auto rounded-[1.5rem] border border-coffee-100 bg-[#fffaf5] px-5 py-4 text-sm shadow-soft dark:border-coffee-700/40 dark:bg-[#16110f];
+}
+.post-content pre[class*='language-'] code[class*='language-'] {
+  @apply block min-w-full bg-transparent p-0 text-[0.92rem] leading-7;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+.dark .post-content pre[class*='language-'],
+.dark .post-content pre[class*='language-'] code[class*='language-'] {
+  background: #16110f !important;
+  color: #f3e9de !important;
 }
 .language-html {
   background-color: #ffffff !important;
 }
 .dark .language-html {
-  background-color: #ffffff00 !important;
+  background-color: transparent !important;
 }
 .token {
   text-shadow: none;
@@ -1026,6 +1038,24 @@ pre[class*='language-'] {
 }
 .dark .token.punctuation {
   color: #98a2b3;
+}
+.dark .token.doctype-tag,
+.dark .token.name,
+.dark .token.selector {
+  color: #9ad18b;
+}
+.dark .token.tag,
+.dark .token.property {
+  color: #8fc9ff;
+}
+.dark .token.language-css {
+  color: #c4b5fd;
+}
+.dark .token.attr-name {
+  color: #d7b08b;
+}
+.dark .token.attr-value {
+  color: #ffb38a;
 }
 .custom-datepicker .flatpickr-calendar.static.open {
   left: 0;

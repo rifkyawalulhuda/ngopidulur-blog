@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <aside class="space-y-6">
+            <aside class="space-y-6 lg:sticky lg:top-28 lg:self-start">
                 <div class="rounded-[1.6rem] border border-coffee-100 bg-white p-5 shadow-soft dark:border-coffee-700/40 dark:bg-neutralwarm-900">
                     <p class="text-xs font-semibold uppercase tracking-[0.22em] text-coffee-700 dark:text-coffee-100">Tags</p>
                     <div class="mt-4 flex flex-wrap gap-2">
@@ -57,30 +57,32 @@
                     </div>
                 </div>
 
-                @if ($relatedPosts->isNotEmpty())
-                    <div class="rounded-[1.6rem] border border-coffee-100 bg-white p-5 shadow-soft dark:border-coffee-700/40 dark:bg-neutralwarm-900">
-                        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-coffee-700 dark:text-coffee-100">Artikel terkait</p>
-                        <div class="mt-4 space-y-4">
-                            @foreach ($relatedPosts as $relatedPost)
-                                <a href="{{ route('posts.show', $relatedPost->slug) }}" class="group flex gap-3">
-                                    <div class="size-16 shrink-0 overflow-hidden rounded-2xl bg-coffee-100 dark:bg-coffee-500/15">
-                                        @if ($relatedPost->featured_image_url)
-                                            <img src="{{ $relatedPost->featured_image_url }}" alt="{{ $relatedPost->featured_image_alt ?? $relatedPost->title }}" class="h-full w-full object-cover">
-                                        @endif
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="truncate text-sm font-semibold text-coffee-900 transition group-hover:text-coffee-700 dark:text-neutralwarm-50 dark:group-hover:text-coffee-100">
-                                            {{ $relatedPost->title }}
-                                        </p>
-                                        <p class="mt-1 text-xs text-neutralwarm-500 dark:text-neutralwarm-100/70">
-                                            {{ $relatedPost->published_at?->translatedFormat('d M Y') }}
-                                        </p>
-                                    </div>
-                                </a>
-                            @endforeach
-                        </div>
+                <div class="rounded-[1.6rem] border border-coffee-100 bg-white p-5 shadow-soft dark:border-coffee-700/40 dark:bg-neutralwarm-900">
+                    <p class="text-xs font-semibold uppercase tracking-[0.22em] text-coffee-700 dark:text-coffee-100">Artikel terkait</p>
+                    <div class="mt-4 space-y-4">
+                        @forelse ($relatedPosts as $relatedPost)
+                            <a href="{{ route('posts.show', $relatedPost->slug) }}" class="group flex gap-3">
+                                <div class="size-16 shrink-0 overflow-hidden rounded-2xl bg-coffee-100 dark:bg-coffee-500/15">
+                                    @if ($relatedPost->featured_image_url)
+                                        <img src="{{ $relatedPost->featured_image_url }}" alt="{{ $relatedPost->featured_image_alt ?? $relatedPost->title }}" class="h-full w-full object-cover">
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="truncate text-sm font-semibold text-coffee-900 transition group-hover:text-coffee-700 dark:text-neutralwarm-50 dark:group-hover:text-coffee-100">
+                                        {{ $relatedPost->title }}
+                                    </p>
+                                    <p class="mt-1 text-xs text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                                        {{ $relatedPost->published_at?->translatedFormat('d M Y') }}
+                                    </p>
+                                </div>
+                            </a>
+                        @empty
+                            <p class="text-sm leading-7 text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                                Belum ada artikel lain yang bisa direkomendasikan untuk bacaan selanjutnya.
+                            </p>
+                        @endforelse
                     </div>
-                @endif
+                </div>
             </aside>
         </div>
     </article>

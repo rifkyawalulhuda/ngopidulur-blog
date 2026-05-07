@@ -50,23 +50,23 @@ const apiHeaders = {
 
 const toastTypes = {
     success: {
-        card: 'border-emerald-200/80 bg-white text-neutralwarm-900 shadow-[0_18px_45px_-24px_rgba(38,78,54,0.45)] dark:border-emerald-500/20 dark:bg-neutralwarm-900 dark:text-neutralwarm-50',
+        card: 'border-emerald-200/80 bg-white text-gray-900 shadow-theme-sm dark:border-emerald-500/20 dark:bg-gray-900 dark:text-white',
         iconWrap: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-100',
         accent: 'bg-emerald-500',
         title: 'Perubahan tersimpan',
         icon: 'check',
     },
     error: {
-        card: 'border-red-200/80 bg-white text-neutralwarm-900 shadow-[0_18px_45px_-24px_rgba(127,29,29,0.45)] dark:border-red-500/20 dark:bg-neutralwarm-900 dark:text-neutralwarm-50',
+        card: 'border-red-200/80 bg-white text-gray-900 shadow-theme-sm dark:border-red-500/20 dark:bg-gray-900 dark:text-white',
         iconWrap: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-100',
         accent: 'bg-red-500',
         title: 'Aksi belum berhasil',
         icon: 'x',
     },
     info: {
-        card: 'border-coffee-200/80 bg-white text-neutralwarm-900 shadow-[0_18px_45px_-24px_rgba(90,58,37,0.35)] dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50',
-        iconWrap: 'bg-coffee-100 text-coffee-700 dark:bg-coffee-500/15 dark:text-coffee-100',
-        accent: 'bg-coffee-500',
+        card: 'border-brand-200/80 bg-white text-gray-900 shadow-theme-sm dark:border-brand-500/20 dark:bg-gray-900 dark:text-white',
+        iconWrap: 'bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300',
+        accent: 'bg-gray-500',
         title: 'Info singkat',
         icon: 'info',
     },
@@ -1395,10 +1395,10 @@ createApp({
                         ? 'Ya, terbitkan'
                         : 'Ya, arsipkan',
                 confirm_class: isDraft
-                    ? 'bg-coffee-700 hover:bg-coffee-800'
+                    ? 'bg-brand-500 hover:bg-brand-600'
                     : isPublish
                         ? 'bg-emerald-600 hover:bg-emerald-700'
-                        : 'bg-amber-500 text-coffee-950 hover:bg-amber-400',
+                        : 'bg-amber-500 text-white hover:bg-amber-400',
                 item,
             };
         },
@@ -1552,16 +1552,16 @@ createApp({
 
     template: `
         <div class="space-y-6">
-            <section class="rounded-3xl border border-coffee-100 bg-white px-6 py-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <section class="rounded-2xl border border-gray-200 bg-white px-5 py-5 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900 md:px-6">
+                <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                     <div class="space-y-2">
-                        <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-coffee-700 dark:text-coffee-100">
-                            Ngopi Dulur Admin
+                        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-brand-500">
+                            TailAdmin Workspace
                         </p>
-                        <h2 class="font-lora text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white md:text-3xl">
                             {{ pageTitle }}
                         </h2>
-                        <p class="max-w-2xl text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/75">
+                        <p class="max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
                             {{ pageSubtitle }}
                         </p>
                     </div>
@@ -1569,38 +1569,38 @@ createApp({
                     <div class="flex flex-wrap gap-2">
                         <button
                             @click="navigate('/admin/dashboard')"
-                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                            :class="current === 'dashboard' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            class="inline-flex rounded-lg border px-4 py-2 text-sm font-medium transition"
+                            :class="current === 'dashboard' ? 'border-brand-500 bg-brand-500 text-white shadow-theme-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'">
                             Dashboard
                         </button>
                         <button
                             @click="navigate('/admin/posts')"
-                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                            :class="current === 'posts' || current === 'post-create' || current === 'post-edit' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            class="inline-flex rounded-lg border px-4 py-2 text-sm font-medium transition"
+                            :class="current === 'posts' || current === 'post-create' || current === 'post-edit' ? 'border-brand-500 bg-brand-500 text-white shadow-theme-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'">
                             Tulisan
                         </button>
                         <button
                             @click="navigate('/admin/categories')"
-                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                            :class="current === 'categories' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            class="inline-flex rounded-lg border px-4 py-2 text-sm font-medium transition"
+                            :class="current === 'categories' ? 'border-brand-500 bg-brand-500 text-white shadow-theme-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'">
                             Kategori
                         </button>
                         <button
                             @click="navigate('/admin/tags')"
-                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                            :class="current === 'tags' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            class="inline-flex rounded-lg border px-4 py-2 text-sm font-medium transition"
+                            :class="current === 'tags' ? 'border-brand-500 bg-brand-500 text-white shadow-theme-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'">
                             Tag
                         </button>
                         <button
                             @click="navigate('/admin/media')"
-                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                            :class="current === 'media' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            class="inline-flex rounded-lg border px-4 py-2 text-sm font-medium transition"
+                            :class="current === 'media' ? 'border-brand-500 bg-brand-500 text-white shadow-theme-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'">
                             Media
                         </button>
                         <button
                             @click="navigate('/admin/settings')"
-                            class="rounded-full border px-4 py-2 text-sm font-semibold transition"
-                            :class="current === 'settings' ? 'border-coffee-700 bg-coffee-700 text-white' : 'border-coffee-100 bg-white text-coffee-700 hover:bg-coffee-50 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5'">
+                            class="inline-flex rounded-lg border px-4 py-2 text-sm font-medium transition"
+                            :class="current === 'settings' ? 'border-brand-500 bg-brand-500 text-white shadow-theme-xs' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'">
                             Pengaturan
                         </button>
                     </div>
@@ -1609,75 +1609,75 @@ createApp({
 
             <section v-if="current === 'dashboard'" class="space-y-6">
                 <div v-if="dashboard.loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <div v-for="n in 6" :key="n" class="h-28 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    <div v-for="n in 6" :key="n" class="h-28 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                 </div>
 
                 <template v-else>
                     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Total Posts</p>
-                            <p class="mt-2 text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ dashboard.stats.total_posts }}</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Total Posts</p>
+                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.total_posts }}</p>
                         </div>
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Published</p>
-                            <p class="mt-2 text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ dashboard.stats.published_posts }}</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Published</p>
+                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.published_posts }}</p>
                         </div>
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Draft</p>
-                            <p class="mt-2 text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ dashboard.stats.draft_posts }}</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Draft</p>
+                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.draft_posts }}</p>
                         </div>
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Archived</p>
-                            <p class="mt-2 text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ dashboard.stats.archived_posts }}</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Archived</p>
+                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.archived_posts }}</p>
                         </div>
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Kategori</p>
-                            <p class="mt-2 text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ dashboard.stats.total_categories }}</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Kategori</p>
+                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.total_categories }}</p>
                         </div>
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Tag</p>
-                            <p class="mt-2 text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ dashboard.stats.total_tags }}</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Tag</p>
+                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.total_tags }}</p>
                         </div>
                     </div>
 
-                    <div class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                        <div class="border-b border-coffee-100 px-6 py-4 dark:border-coffee-800/40">
-                            <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Tulisan terbaru</h3>
+                    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                        <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+                            <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Tulisan terbaru</h3>
                         </div>
 
                         <div v-if="dashboard.latest_posts.length === 0" class="px-6 py-12">
-                            <div class="rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 px-6 py-10 text-center dark:border-coffee-800/50 dark:bg-coffee-500/10">
-                                <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada tulisan</p>
-                                <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Dashboard akan menampilkan tulisan terbaru saat data sudah masuk.</p>
+                            <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-white/5">
+                                <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada tulisan</p>
+                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Dashboard akan menampilkan tulisan terbaru saat data sudah masuk.</p>
                             </div>
                         </div>
 
                         <div v-else class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-coffee-100 dark:divide-coffee-800/40">
-                                <thead class="bg-coffee-50/70 dark:bg-white/5">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                                <thead class="bg-gray-50 dark:bg-white/5">
                                     <tr>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Judul</th>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Kategori</th>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Status</th>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Publish</th>
+                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Judul</th>
+                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Kategori</th>
+                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Status</th>
+                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Publish</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-coffee-100 dark:divide-coffee-800/30">
-                                    <tr v-for="post in dashboard.latest_posts" :key="post.id" class="transition hover:bg-coffee-50/70 dark:hover:bg-white/5">
+                                <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                                    <tr v-for="post in dashboard.latest_posts" :key="post.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
                                         <td class="px-6 py-4">
                                             <div class="space-y-1">
-                                                <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ post.title }}</p>
-                                                <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ post.author_name || 'Admin' }}</p>
+                                                <p class="font-semibold text-gray-900 dark:text-white">{{ post.title }}</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ post.author_name || 'Admin' }}</p>
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ post.category_name || '-' }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ post.category_name || '-' }}</td>
                                         <td class="px-6 py-4">
                                             <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
-                                                :class="post.status === 'published' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : post.status === 'draft' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-neutralwarm-100'">
+                                                :class="post.status === 'published' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : post.status === 'draft' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-gray-300'">
                                                 {{ post.status }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ post.published_at || '-' }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ post.published_at || '-' }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1687,21 +1687,31 @@ createApp({
             </section>
 
             <section v-if="current === 'posts'" class="space-y-6">
-                <div class="rounded-3xl border border-coffee-100 bg-white p-5 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                    <div class="grid gap-4 lg:grid-cols-12 lg:items-end">
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex flex-col gap-4 border-b border-gray-100 pb-4 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Daftar tulisan</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola artikel, filter cepat, dan aksi publikasi dari satu tempat.</p>
+                        </div>
+                        <button @click="openPostCreate" class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
+                            Tulis Artikel Baru
+                        </button>
+                    </div>
+
+                    <div class="mt-5 grid gap-4 lg:grid-cols-12 lg:items-end">
                         <label class="space-y-2 lg:col-span-4">
-                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Cari judul</span>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Cari judul</span>
                             <input
                                 v-model="posts.filters.search"
                                 @keyup.enter="loadPosts"
                                 type="search"
-                                class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
+                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
                                 placeholder="Cari tulisan...">
                         </label>
 
                         <label class="space-y-2 lg:col-span-2">
-                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Status</span>
-                            <select v-model="posts.filters.status" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Status</span>
+                            <select v-model="posts.filters.status" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
                                 <option value="">Semua</option>
                                 <option value="draft">Draft</option>
                                 <option value="published">Published</option>
@@ -1710,8 +1720,8 @@ createApp({
                         </label>
 
                         <label class="space-y-2 lg:col-span-2">
-                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Kategori</span>
-                            <select v-model="posts.filters.category" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Kategori</span>
+                            <select v-model="posts.filters.category" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
                                 <option value="">Semua</option>
                                 <option v-for="category in categories.items" :key="category.id" :value="category.slug">
                                     {{ category.name }}
@@ -1720,92 +1730,91 @@ createApp({
                         </label>
 
                         <label class="space-y-2 lg:col-span-2">
-                            <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Urutkan</span>
-                            <select v-model="posts.filters.sort" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Urutkan</span>
+                            <select v-model="posts.filters.sort" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
                                 <option value="updated_at">Update terbaru</option>
                                 <option value="published_at">Tanggal publish</option>
                             </select>
                         </label>
 
                         <div class="flex flex-wrap gap-2 lg:col-span-2 lg:justify-end">
-                            <button @click="loadPosts" class="inline-flex items-center justify-center rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                            <button @click="loadPosts" class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
                                 Terapkan
                             </button>
-                            <button @click="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at' }); loadPosts()" class="inline-flex items-center justify-center rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                            <button @click="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at' }); loadPosts()" class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                 Reset
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-between gap-3">
-                    <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Daftar artikel terbaru dengan filter yang cepat dipakai.</p>
-                    <button @click="openPostCreate" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
-                        Tulis Artikel Baru
-                    </button>
-                </div>
-
                 <div v-if="posts.loading" class="grid gap-4">
-                    <div v-for="n in 3" :key="n" class="h-28 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    <div v-for="n in 3" :key="n" class="h-28 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                 </div>
 
-                <div v-else-if="posts.items.length === 0" class="rounded-3xl border border-dashed border-coffee-200 bg-white px-6 py-12 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else-if="posts.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
                     <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada artikel</p>
-                        <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Mulai dengan draft pertama, lalu terbitkan saat kontennya siap.</p>
-                        <button @click="openPostCreate" class="mt-6 inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada artikel</p>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Mulai dengan draft pertama, lalu terbitkan saat kontennya siap.</p>
+                        <button @click="openPostCreate" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
                             Tulis Artikel Baru
                         </button>
                     </div>
                 </div>
 
-                <div v-else class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-800">
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Artikel terbaru</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ posts.meta.total }} artikel ditemukan</p>
+                        </div>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-coffee-100 dark:divide-coffee-800/40">
-                            <thead class="bg-coffee-50/70 dark:bg-white/5">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                            <thead class="bg-gray-50 dark:bg-white/5">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Judul</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Slug</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Kategori</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Tanggal Publish</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Update Terakhir</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi</th>
+                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Judul</th>
+                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Slug</th>
+                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Kategori</th>
+                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Status</th>
+                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Tanggal Publish</th>
+                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Update Terakhir</th>
+                                    <th class="px-5 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-coffee-100 dark:divide-coffee-800/30">
-                                <tr v-for="item in posts.items" :key="item.id" class="transition hover:bg-coffee-50/70 dark:hover:bg-white/5">
-                                    <td class="px-6 py-4">
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                                <tr v-for="item in posts.items" :key="item.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
+                                    <td class="px-5 py-4">
                                         <div class="space-y-1">
-                                            <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ item.title }}</p>
-                                            <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.author_name || 'Admin' }}</p>
+                                            <p class="font-medium text-gray-900 dark:text-white">{{ item.title }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.author_name || 'Admin' }}</p>
                                         </div>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.slug }}</td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.category_name || '-' }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
-                                            :class="item.status === 'published' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : item.status === 'draft' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-neutralwarm-100'">
+                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.slug }}</td>
+                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.category_name || '-' }}</td>
+                                    <td class="px-5 py-4">
+                                        <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize"
+                                            :class="item.status === 'published' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300' : item.status === 'draft' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'">
                                             {{ item.status }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.published_at || '-' }}</td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.updated_at || '-' }}</td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.published_at || '-' }}</td>
+                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.updated_at || '-' }}</td>
+                                    <td class="px-5 py-4">
                                         <div class="flex justify-end gap-2">
-                                            <button @click="previewPostById(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                            <button @click="previewPostById(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                                 Preview
                                             </button>
-                                            <button @click="openPostEdit(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                            <button @click="openPostEdit(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                                 Ubah
                                             </button>
-                                            <button v-if="item.status !== 'published'" @click="promptPostAction('published', item)" class="rounded-full border border-emerald-200 px-3 py-2 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-100 dark:hover:bg-emerald-500/10">
+                                            <button v-if="item.status !== 'published'" @click="promptPostAction('published', item)" class="rounded-lg border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-300 dark:hover:bg-emerald-500/10">
                                                 Terbitkan
                                             </button>
-                                            <button v-if="item.status !== 'archived'" @click="promptPostAction('archived', item)" class="rounded-full border border-amber-200 px-3 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10">
+                                            <button v-if="item.status !== 'archived'" @click="promptPostAction('archived', item)" class="rounded-lg border border-amber-200 px-3 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-300 dark:hover:bg-amber-500/10">
                                                 Arsipkan
                                             </button>
-                                            <button @click="promptDelete('post', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
+                                            <button @click="promptDelete('post', item)" class="rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10">
                                                 Hapus
                                             </button>
                                         </div>
@@ -1820,22 +1829,22 @@ createApp({
             <section v-else-if="current === 'post-create' || current === 'post-edit'" class="space-y-6">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center gap-2">
-                        <button @click="navigate('/admin/posts')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                        <button @click="navigate('/admin/posts')" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                             Kembali
                         </button>
-                        <span class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                        <span class="text-sm text-gray-500 dark:text-gray-400">
                             {{ postEditor.mode === 'create' ? 'Mode membuat draft baru' : 'Mode mengedit artikel' }}
                         </span>
                     </div>
 
                     <div class="flex flex-wrap gap-2">
-                        <button @click="previewPost" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                        <button @click="previewPost" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white" :disabled="postEditor.loading || postEditor.saving">
                             Preview
                         </button>
-                        <button @click="promptPostAction('draft')" class="inline-flex items-center gap-2 rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                        <button @click="promptPostAction('draft')" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white" :disabled="postEditor.loading || postEditor.saving">
                             {{ postEditor.saving ? 'Menyimpan...' : 'Simpan Draft' }}
                         </button>
-                        <button @click="promptPostAction('published')" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="postEditor.loading || postEditor.saving">
+                        <button @click="promptPostAction('published')" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600" :disabled="postEditor.loading || postEditor.saving">
                             {{ postEditor.saving ? 'Menyimpan...' : 'Terbitkan' }}
                         </button>
                     </div>
@@ -1843,66 +1852,66 @@ createApp({
 
                 <div v-if="postEditor.loading" class="grid gap-4 xl:grid-cols-12">
                     <div class="xl:col-span-8 space-y-4">
-                        <div class="h-16 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
-                        <div class="h-16 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
-                        <div class="h-64 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-16 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
+                        <div class="h-16 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
+                        <div class="h-64 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                     </div>
                     <div class="xl:col-span-4 space-y-4">
-                        <div class="h-48 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
-                        <div class="h-64 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-48 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
+                        <div class="h-64 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                     </div>
                 </div>
 
                 <div v-else class="grid gap-6 xl:grid-cols-12">
                     <div class="space-y-6 xl:col-span-8">
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
                             <div class="grid gap-4">
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Judul</span>
-                                    <input v-model="postEditor.title" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Contoh: Secangkir Pagi">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Judul</span>
+                                    <input v-model="postEditor.title" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Contoh: Secangkir Pagi">
                                 </label>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Slug</span>
-                                    <input v-model="postEditor.slug" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="otomatis-dari-judul">
-                                    <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/60">Kosongkan untuk slug otomatis. Jika diisi manual, slug harus unik.</p>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Slug</span>
+                                    <input v-model="postEditor.slug" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="otomatis-dari-judul">
+                                    <p class="text-xs text-gray-500 dark:text-gray-500">Kosongkan untuk slug otomatis. Jika diisi manual, slug harus unik.</p>
                                 </label>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Ringkasan</span>
-                                    <textarea v-model="postEditor.excerpt" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional, untuk kartu artikel dan SEO"></textarea>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Ringkasan</span>
+                                    <textarea v-model="postEditor.excerpt" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional, untuk kartu artikel dan SEO"></textarea>
                                 </label>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
                             <div class="flex flex-wrap items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Editor</p>
-                                    <p class="mt-1 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Mode Visual menyimpan HTML, Mode Markdown menyimpan markdown asli.</p>
+                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Editor</p>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Mode Visual menyimpan HTML, Mode Markdown menyimpan markdown asli.</p>
                                 </div>
-                                <div class="inline-flex rounded-full border border-coffee-100 bg-coffee-50 p-1 dark:border-coffee-800/50 dark:bg-white/5">
-                                    <button @click="setPostContentFormat('richtext')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'richtext' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
+                                <div class="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-white/5">
+                                    <button @click="setPostContentFormat('richtext')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'richtext' ? 'bg-white text-brand-500 shadow-theme-sm dark:bg-gray-900 dark:text-white' : 'text-brand-500 dark:text-brand-300'">
                                         Mode Visual
                                     </button>
-                                    <button @click="setPostContentFormat('markdown')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'markdown' ? 'bg-white text-coffee-700 shadow-soft dark:bg-neutralwarm-900 dark:text-neutralwarm-50' : 'text-coffee-700 dark:text-coffee-100'">
+                                    <button @click="setPostContentFormat('markdown')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'markdown' ? 'bg-white text-brand-500 shadow-theme-sm dark:bg-gray-900 dark:text-white' : 'text-brand-500 dark:text-brand-300'">
                                         Mode Markdown
                                     </button>
                                 </div>
                             </div>
 
                             <div v-if="postEditor.content_format === 'markdown'" class="mt-4 flex flex-wrap gap-2">
-                                <button @click="applyPostFormatting('bold')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">B</button>
-                                <button @click="applyPostFormatting('italic')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">I</button>
-                                <button @click="applyPostFormatting('heading')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">H1</button>
-                                <button @click="applyPostFormatting('quote')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">Quote</button>
-                                <button @click="applyPostFormatting('list')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">UL</button>
-                                <button @click="applyPostFormatting('ordered')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">OL</button>
-                                <button @click="applyPostFormatting('link')" type="button" class="rounded-full border border-coffee-100 px-3 py-2 text-xs font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">Link</button>
+                                <button @click="applyPostFormatting('bold')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">B</button>
+                                <button @click="applyPostFormatting('italic')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">I</button>
+                                <button @click="applyPostFormatting('heading')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">H1</button>
+                                <button @click="applyPostFormatting('quote')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">Quote</button>
+                                <button @click="applyPostFormatting('list')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">UL</button>
+                                <button @click="applyPostFormatting('ordered')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">OL</button>
+                                <button @click="applyPostFormatting('link')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">Link</button>
                             </div>
 
                             <div class="mt-4 space-y-3">
-                                <div v-if="postEditor.content_format === 'richtext'" class="ngopi-tinymce overflow-hidden rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/50 dark:bg-neutralwarm-900">
+                                <div v-if="postEditor.content_format === 'richtext'" class="ngopi-tinymce overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
                                     <tiny-mce-editor
                                         :key="'tinymce-' + tinyMceTheme + '-' + tinyMceMountKey"
                                         v-model="postEditor.content"
@@ -1916,22 +1925,22 @@ createApp({
                                     ref="postContent"
                                     v-model="postEditor.content"
                                     rows="16"
-                                    class="w-full rounded-3xl border border-coffee-100 bg-white px-4 py-3 text-sm leading-7 text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
+                                    class="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-900 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                                     placeholder="# Judul artikel"></textarea>
 
-                                <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/60">
+                                <p class="text-xs text-gray-500 dark:text-gray-500">
                                     {{ postEditor.content_format === 'markdown' ? 'Markdown akan dirender dan disanitasi di server.' : 'Konten visual disimpan sebagai HTML yang sudah disanitasi di server.' }}
                                 </p>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
                             <div class="flex items-center justify-between gap-3">
                                 <div>
-                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Preview aman</p>
-                                    <p class="mt-1 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Preview ditarik dari server dan memakai HTML yang sudah disanitasi.</p>
+                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Preview aman</p>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Preview ditarik dari server dan memakai HTML yang sudah disanitasi.</p>
                                 </div>
-                                <button @click="previewPost" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                <button @click="previewPost" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                     Buka preview
                                 </button>
                             </div>
@@ -1939,13 +1948,13 @@ createApp({
                     </div>
 
                     <div class="space-y-6 xl:col-span-4">
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Meta & Status</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Meta & Status</p>
 
                             <div class="mt-4 space-y-4">
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Kategori</span>
-                                    <select v-model="postEditor.category_id" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Kategori</span>
+                                    <select v-model="postEditor.category_id" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                         <option value="">Pilih kategori</option>
                                         <option v-for="category in categories.items" :key="category.id" :value="category.id">
                                             {{ category.name }}
@@ -1954,66 +1963,66 @@ createApp({
                                 </label>
 
                                 <div class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Tag</span>
-                                    <div class="grid grid-cols-1 gap-2 rounded-2xl border border-coffee-100 p-4 dark:border-coffee-800/50">
-                                        <label v-for="tag in tags.items" :key="tag.id" class="flex items-center gap-3 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/75">
-                                            <input v-model="postEditor.tag_ids" :value="tag.id" type="checkbox" class="size-4 rounded border-coffee-300 text-coffee-700 focus:ring-coffee-300">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Tag</span>
+                                    <div class="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
+                                        <label v-for="tag in tags.items" :key="tag.id" class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                                            <input v-model="postEditor.tag_ids" :value="tag.id" type="checkbox" class="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-300">
                                             {{ tag.name }}
                                         </label>
-                                        <p v-if="tags.items.length === 0" class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada tag.</p>
+                                        <p v-if="tags.items.length === 0" class="text-sm text-gray-500 dark:text-gray-400">Belum ada tag.</p>
                                     </div>
                                 </div>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Status</span>
-                                    <select v-model="postEditor.status" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Status</span>
+                                    <select v-model="postEditor.status" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                         <option value="draft">Draft</option>
                                         <option value="published">Published</option>
                                         <option value="archived">Archived</option>
                                     </select>
                                 </label>
 
-                                <label class="flex items-center gap-3 rounded-2xl border border-coffee-100 px-4 py-3 text-sm text-neutralwarm-500 dark:border-coffee-800/50 dark:text-neutralwarm-100/70">
-                                    <input v-model="postEditor.is_featured" type="checkbox" class="size-4 rounded border-coffee-300 text-coffee-700 focus:ring-coffee-300">
+                                <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                                    <input v-model="postEditor.is_featured" type="checkbox" class="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-300">
                                     Jadikan featured
                                 </label>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Meta title</span>
-                                    <input v-model="postEditor.meta_title" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Meta title</span>
+                                    <input v-model="postEditor.meta_title" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional">
                                 </label>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Meta description</span>
-                                    <textarea v-model="postEditor.meta_description" rows="4" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional"></textarea>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Meta description</span>
+                                    <textarea v-model="postEditor.meta_description" rows="4" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional"></textarea>
                                 </label>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Published at</span>
-                                    <input v-model="postEditor.published_at" type="datetime-local" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Published at</span>
+                                    <input v-model="postEditor.published_at" type="datetime-local" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Featured image</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Featured image</p>
 
                             <div class="mt-4 space-y-4">
-                                <div class="overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                <div class="overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
                                     <img v-if="postEditor.featured_image_url" :src="postEditor.featured_image_url" class="h-56 w-full object-cover" :alt="postEditor.featured_image_alt || postEditor.title || 'Featured image'">
-                                    <div v-else class="flex h-56 items-center justify-center px-6 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                                    <div v-else class="flex h-56 items-center justify-center px-6 text-center text-sm text-gray-500 dark:text-gray-400">
                                         Belum ada featured image
                                     </div>
                                 </div>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Upload gambar</span>
-                                    <input ref="postFeaturedImage" @change="updatePostFeaturedImage" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Upload gambar</span>
+                                    <input ref="postFeaturedImage" @change="updatePostFeaturedImage" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                                 </label>
 
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Alt text</span>
-                                    <input v-model="postEditor.featured_image_alt" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Opsional">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Alt text</span>
+                                    <input v-model="postEditor.featured_image_alt" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional">
                                 </label>
 
                                 <div class="flex flex-wrap gap-2">
@@ -2024,13 +2033,13 @@ createApp({
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi cepat</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aksi cepat</p>
                             <div class="mt-4 flex flex-wrap gap-2">
-                                <button @click="promptPostAction('draft')" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
+                                <button @click="promptPostAction('draft')" class="rounded-full border border-gray-200 px-4 py-2.5 text-sm font-semibold text-brand-500 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-brand-300 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
                                     {{ postEditor.saving ? 'Memproses...' : 'Simpan Draft' }}
                                 </button>
-                                <button @click="promptPostAction('published')" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800 disabled:cursor-not-allowed disabled:opacity-60" :disabled="postEditor.loading || postEditor.saving">
+                                <button @click="promptPostAction('published')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60" :disabled="postEditor.loading || postEditor.saving">
                                     {{ postEditor.saving ? 'Memproses...' : 'Terbitkan' }}
                                 </button>
                                 <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="promptPostAction('archived', { id: postEditor.id, title: postEditor.title })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10" :disabled="postEditor.loading || postEditor.saving">
@@ -2048,56 +2057,56 @@ createApp({
             <section v-else-if="current === 'categories'" class="space-y-6">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Kategori untuk mengelompokkan tulisan.</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Kategori untuk mengelompokkan tulisan.</p>
                     </div>
-                    <button @click="openCategoryCreate" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                    <button @click="openCategoryCreate" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
                         Tambah Kategori
                     </button>
                 </div>
 
                 <div v-if="categories.loading" class="grid gap-4">
-                    <div v-for="n in 3" :key="n" class="h-24 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    <div v-for="n in 3" :key="n" class="h-24 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                 </div>
 
-                <div v-else-if="categories.items.length === 0" class="rounded-3xl border border-dashed border-coffee-200 bg-white px-6 py-12 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else-if="categories.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
                     <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada kategori</p>
-                        <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Tambahkan kategori pertama untuk mulai merapikan tulisan.</p>
-                        <button @click="openCategoryCreate" class="mt-6 inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada kategori</p>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Tambahkan kategori pertama untuk mulai merapikan tulisan.</p>
+                        <button @click="openCategoryCreate" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
                             Tambah Kategori
                         </button>
                     </div>
                 </div>
 
-                <div v-else class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-coffee-100 dark:divide-coffee-800/40">
-                            <thead class="bg-coffee-50/70 dark:bg-white/5">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                            <thead class="bg-gray-50 dark:bg-white/5">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Nama</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Slug</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Post</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Nama</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Slug</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Status</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Post</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-coffee-100 dark:divide-coffee-800/30">
-                                <tr v-for="item in categories.items" :key="item.id" class="transition hover:bg-coffee-50/70 dark:hover:bg-white/5">
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                                <tr v-for="item in categories.items" :key="item.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
                                     <td class="px-6 py-4">
-                                        <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ item.name }}</p>
-                                        <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.description || 'Tanpa deskripsi' }}</p>
+                                        <p class="font-semibold text-gray-900 dark:text-white">{{ item.name }}</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.description || 'Tanpa deskripsi' }}</p>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.slug }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.slug }}</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
-                                            :class="item.is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-neutralwarm-100'">
+                                            :class="item.is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-gray-300'">
                                             {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.posts_count }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.posts_count }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex justify-end gap-2">
-                                            <button @click="openCategoryEdit(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                            <button @click="openCategoryEdit(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                                 Ubah
                                             </button>
                                             <button @click="promptDelete('category', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
@@ -2115,48 +2124,48 @@ createApp({
             <section v-else-if="current === 'tags'" class="space-y-6">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Tag untuk memberi penanda ringan pada tulisan.</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Tag untuk memberi penanda ringan pada tulisan.</p>
                     </div>
-                    <button @click="openTagCreate" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                    <button @click="openTagCreate" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
                         Tambah Tag
                     </button>
                 </div>
 
                 <div v-if="tags.loading" class="grid gap-4">
-                    <div v-for="n in 3" :key="n" class="h-24 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    <div v-for="n in 3" :key="n" class="h-24 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                 </div>
 
-                <div v-else-if="tags.items.length === 0" class="rounded-3xl border border-dashed border-coffee-200 bg-white px-6 py-12 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else-if="tags.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
                     <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada tag</p>
-                        <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Tambahkan tag pertama untuk memberi penanda pada artikel.</p>
-                        <button @click="openTagCreate" class="mt-6 inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada tag</p>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Tambahkan tag pertama untuk memberi penanda pada artikel.</p>
+                        <button @click="openTagCreate" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
                             Tambah Tag
                         </button>
                     </div>
                 </div>
 
-                <div v-else class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-coffee-100 dark:divide-coffee-800/40">
-                            <thead class="bg-coffee-50/70 dark:bg-white/5">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
+                            <thead class="bg-gray-50 dark:bg-white/5">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Nama</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Slug</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Post</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aksi</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Nama</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Slug</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Post</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-coffee-100 dark:divide-coffee-800/30">
-                                <tr v-for="item in tags.items" :key="item.id" class="transition hover:bg-coffee-50/70 dark:hover:bg-white/5">
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                                <tr v-for="item in tags.items" :key="item.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
                                     <td class="px-6 py-4">
-                                        <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ item.name }}</p>
+                                        <p class="font-semibold text-gray-900 dark:text-white">{{ item.name }}</p>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.slug }}</td>
-                                    <td class="px-6 py-4 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.posts_count }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.slug }}</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.posts_count }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex justify-end gap-2">
-                                            <button @click="openTagEdit(item)" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                            <button @click="openTagEdit(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                                 Ubah
                                             </button>
                                             <button @click="promptDelete('tag', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
@@ -2174,44 +2183,44 @@ createApp({
             <section v-else-if="current === 'media'" class="space-y-6">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Semua gambar unggulan dari tulisan terkumpul di sini agar mudah dicek ulang.</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Semua gambar unggulan dari tulisan terkumpul di sini agar mudah dicek ulang.</p>
                     </div>
                 </div>
 
                 <div v-if="media.loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <div v-for="n in 6" :key="n" class="h-72 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                    <div v-for="n in 6" :key="n" class="h-72 animate-pulse rounded-3xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                 </div>
 
-                <div v-else-if="media.items.length === 0" class="rounded-3xl border border-dashed border-coffee-200 bg-white px-6 py-12 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <div v-else-if="media.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
                     <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-coffee-900 dark:text-neutralwarm-50">Belum ada media</p>
-                        <p class="mt-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Gambar unggulan dari tulisan akan muncul di sini setelah artikel menyimpan featured image.</p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada media</p>
+                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Gambar unggulan dari tulisan akan muncul di sini setelah artikel menyimpan featured image.</p>
                     </div>
                 </div>
 
                 <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    <article v-for="item in media.items" :key="item.id" class="overflow-hidden rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                        <div class="aspect-[16/10] overflow-hidden bg-coffee-50 dark:bg-white/5">
+                    <article v-for="item in media.items" :key="item.id" class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                        <div class="aspect-[16/10] overflow-hidden bg-gray-50 dark:bg-white/5">
                             <img :src="item.thumbnail_url" :alt="item.featured_image_alt || item.post_title" class="h-full w-full object-cover">
                         </div>
                         <div class="space-y-4 p-5">
                             <div class="space-y-1">
-                                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-coffee-700 dark:text-coffee-100">{{ item.status }}</p>
-                                <p class="font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ item.post_title }}</p>
-                                <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">{{ item.category_name || 'Tanpa kategori' }}</p>
+                                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-500 dark:text-brand-300">{{ item.status }}</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">{{ item.post_title }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.category_name || 'Tanpa kategori' }}</p>
                             </div>
 
-                            <div class="space-y-2 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
-                                <p><span class="font-medium text-coffee-900 dark:text-neutralwarm-50">Path:</span> {{ item.featured_image }}</p>
-                                <p><span class="font-medium text-coffee-900 dark:text-neutralwarm-50">Update:</span> {{ item.updated_at || '-' }}</p>
-                                <p><span class="font-medium text-coffee-900 dark:text-neutralwarm-50">Publish:</span> {{ item.published_at || '-' }}</p>
+                            <div class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                                <p><span class="font-medium text-gray-900 dark:text-white">Path:</span> {{ item.featured_image }}</p>
+                                <p><span class="font-medium text-gray-900 dark:text-white">Update:</span> {{ item.updated_at || '-' }}</p>
+                                <p><span class="font-medium text-gray-900 dark:text-white">Publish:</span> {{ item.published_at || '-' }}</p>
                             </div>
 
                             <div class="flex flex-wrap gap-2">
-                                <a :href="item.featured_image_url" target="_blank" rel="noreferrer noopener" class="rounded-full border border-coffee-100 px-3 py-2 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                <a :href="item.featured_image_url" target="_blank" rel="noreferrer noopener" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                     Buka URL
                                 </a>
-                                <button @click="openPostEdit({ id: item.post_id })" class="rounded-full bg-coffee-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-coffee-800">
+                                <button @click="openPostEdit({ id: item.post_id })" class="rounded-full bg-brand-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-600">
                                     Buka tulisan
                                 </button>
                             </div>
@@ -2222,151 +2231,151 @@ createApp({
 
             <section v-else-if="current === 'settings'" class="space-y-6">
                 <div class="flex items-center justify-between gap-3">
-                    <p class="text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Pengaturan ini langsung memengaruhi identitas public blog, SEO default, dan tema awal pembaca.</p>
-                    <button @click="saveSettings" class="inline-flex items-center gap-2 rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="settings.loading || settings.saving">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Pengaturan ini langsung memengaruhi identitas public blog, SEO default, dan tema awal pembaca.</p>
+                    <button @click="saveSettings" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600" :disabled="settings.loading || settings.saving">
                         {{ settings.saving ? 'Menyimpan...' : 'Simpan Pengaturan' }}
                     </button>
                 </div>
 
                 <div v-if="settings.loading" class="grid gap-6 xl:grid-cols-12">
                     <div class="xl:col-span-8 space-y-4">
-                        <div class="h-32 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
-                        <div class="h-48 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-32 animate-pulse rounded-3xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
+                        <div class="h-48 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                     </div>
                     <div class="xl:col-span-4 space-y-4">
-                        <div class="h-64 animate-pulse rounded-3xl border border-coffee-100 bg-white dark:border-coffee-800/40 dark:bg-neutralwarm-900"></div>
+                        <div class="h-64 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
                     </div>
                 </div>
 
                 <div v-else class="grid gap-6 xl:grid-cols-12">
                     <div class="space-y-6 xl:col-span-8">
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Identitas situs</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Identitas situs</p>
                             <div class="mt-4 grid gap-4 md:grid-cols-2">
                                 <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Nama situs</span>
-                                    <input v-model="settings.site_name" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Nama situs</span>
+                                    <input v-model="settings.site_name" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Tagline</span>
-                                    <input v-model="settings.site_tagline" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Tagline</span>
+                                    <input v-model="settings.site_tagline" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Deskripsi situs</span>
-                                    <textarea v-model="settings.site_description" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"></textarea>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Deskripsi situs</span>
+                                    <textarea v-model="settings.site_description" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"></textarea>
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Tema default</span>
-                                    <select v-model="settings.default_theme" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Tema default</span>
+                                    <select v-model="settings.default_theme" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                         <option value="terang">Terang</option>
                                         <option value="dark_espresso">Dark Espresso</option>
                                     </select>
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Teks footer</span>
-                                    <input v-model="settings.footer_note" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Teks footer</span>
+                                    <input v-model="settings.footer_note" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Hero homepage</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Hero homepage</p>
                             <div class="mt-4 grid gap-4">
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Badge</span>
-                                    <input v-model="settings.hero_badge" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Badge</span>
+                                    <input v-model="settings.hero_badge" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Judul hero</span>
-                                    <input v-model="settings.hero_heading" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Judul hero</span>
+                                    <input v-model="settings.hero_heading" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Subtitle hero</span>
-                                    <textarea v-model="settings.hero_subheading" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"></textarea>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Subtitle hero</span>
+                                    <textarea v-model="settings.hero_subheading" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"></textarea>
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Teks CTA</span>
-                                    <input v-model="settings.hero_cta_text" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Teks CTA</span>
+                                    <input v-model="settings.hero_cta_text" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">SEO default</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">SEO default</p>
                             <div class="mt-4 grid gap-4">
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">SEO title default</span>
-                                    <input v-model="settings.default_meta_title" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">SEO title default</span>
+                                    <input v-model="settings.default_meta_title" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">SEO description default</span>
-                                    <textarea v-model="settings.default_meta_description" rows="3" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"></textarea>
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">SEO description default</span>
+                                    <textarea v-model="settings.default_meta_description" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"></textarea>
                                 </label>
                             </div>
                         </div>
 
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Tautan sosial</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Tautan sosial</p>
                             <div class="mt-4 grid gap-4 md:grid-cols-2">
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Instagram</span>
-                                    <input v-model="settings.social_links.instagram" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Instagram</span>
+                                    <input v-model="settings.social_links.instagram" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">X / Twitter</span>
-                                    <input v-model="settings.social_links.x" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">X / Twitter</span>
+                                    <input v-model="settings.social_links.x" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">GitHub</span>
-                                    <input v-model="settings.social_links.github" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">GitHub</span>
+                                    <input v-model="settings.social_links.github" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">LinkedIn</span>
-                                    <input v-model="settings.social_links.linkedin" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">LinkedIn</span>
+                                    <input v-model="settings.social_links.linkedin" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                                 <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">YouTube</span>
-                                    <input v-model="settings.social_links.youtube" type="url" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">YouTube</span>
+                                    <input v-model="settings.social_links.youtube" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
                                 </label>
                             </div>
                         </div>
                     </div>
 
                     <div class="space-y-6 xl:col-span-4">
-                        <div class="rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Aset brand</p>
+                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aset brand</p>
                             <div class="mt-4 space-y-5">
                                 <div class="space-y-3">
-                                    <p class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Logo</p>
-                                    <div class="flex h-32 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Logo</p>
+                                    <div class="flex h-32 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
                                         <img v-if="settings.logo_url" :src="settings.logo_url" alt="Logo situs" class="h-full w-full object-contain p-4">
-                                        <p v-else class="px-4 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada logo</p>
+                                        <p v-else class="px-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada logo</p>
                                     </div>
-                                    <input ref="settings_logo" @change="updateSettingsAsset('logo', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <input ref="settings_logo" @change="updateSettingsAsset('logo', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                                     <button v-if="settings.logo_url" @click="clearSettingsAsset('logo')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
                                         Hapus logo
                                     </button>
                                 </div>
 
                                 <div class="space-y-3">
-                                    <p class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Favicon</p>
-                                    <div class="flex h-24 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Favicon</p>
+                                    <div class="flex h-24 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
                                         <img v-if="settings.favicon_url" :src="settings.favicon_url" alt="Favicon situs" class="size-16 object-contain">
-                                        <p v-else class="px-4 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada favicon</p>
+                                        <p v-else class="px-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada favicon</p>
                                     </div>
-                                    <input ref="settings_favicon" @change="updateSettingsAsset('favicon', $event)" type="file" accept=".ico,image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <input ref="settings_favicon" @change="updateSettingsAsset('favicon', $event)" type="file" accept=".ico,image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                                     <button v-if="settings.favicon_url" @click="clearSettingsAsset('favicon')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
                                         Hapus favicon
                                     </button>
                                 </div>
 
                                 <div class="space-y-3">
-                                    <p class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Default Open Graph image</p>
-                                    <div class="flex h-40 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-coffee-200 bg-coffee-50 dark:border-coffee-800/50 dark:bg-white/5">
+                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Default Open Graph image</p>
+                                    <div class="flex h-40 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
                                         <img v-if="settings.default_og_image_url" :src="settings.default_og_image_url" alt="Default OG image" class="h-full w-full object-cover">
-                                        <p v-else class="px-4 text-center text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">Belum ada gambar Open Graph</p>
+                                        <p v-else class="px-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada gambar Open Graph</p>
                                     </div>
-                                    <input ref="settings_default_og_image" @change="updateSettingsAsset('default_og_image', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 file:mr-4 file:rounded-full file:border-0 file:bg-coffee-700 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+                                    <input ref="settings_default_og_image" @change="updateSettingsAsset('default_og_image', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
                                     <button v-if="settings.default_og_image_url" @click="clearSettingsAsset('default_og_image')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
                                         Hapus OG image
                                     </button>
@@ -2379,56 +2388,56 @@ createApp({
 
             <div
                 v-if="editor.open"
-                class="fixed inset-0 z-[70] flex items-center justify-center bg-neutralwarm-950/50 px-4 py-8 backdrop-blur-sm">
-                <div class="w-full max-w-2xl rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                    <div class="flex items-center justify-between border-b border-coffee-100 px-6 py-4 dark:border-coffee-800/40">
+                class="fixed inset-0 z-[70] flex items-center justify-center bg-gray-900/50 px-4 py-8 backdrop-blur-sm">
+                <div class="w-full max-w-2xl rounded-3xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">
                                 {{ editor.kind === 'category' ? 'Kategori' : 'Tag' }}
                             </p>
-                            <h3 class="mt-1 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                            <h3 class="mt-1 font-lora text-2xl font-semibold text-gray-900 dark:text-white">
                                 {{ editor.mode === 'create' ? 'Tambah' : 'Ubah' }} {{ editor.kind === 'category' ? 'kategori' : 'tag' }}
                             </h3>
                         </div>
-                        <button @click="closeEditor" class="rounded-full border border-coffee-100 bg-white px-3 py-2 text-sm font-semibold text-coffee-700 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100">
+                        <button @click="closeEditor" class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                             Tutup
                         </button>
                     </div>
 
                     <div class="space-y-4 px-6 py-6">
                         <div v-if="editor.loading" class="space-y-4">
-                            <div class="h-11 animate-pulse rounded-2xl bg-coffee-50 dark:bg-white/5"></div>
-                            <div class="h-11 animate-pulse rounded-2xl bg-coffee-50 dark:bg-white/5"></div>
-                            <div v-if="editor.kind === 'category'" class="h-24 animate-pulse rounded-2xl bg-coffee-50 dark:bg-white/5"></div>
+                            <div class="h-11 animate-pulse rounded-2xl bg-gray-50 dark:bg-white/5"></div>
+                            <div class="h-11 animate-pulse rounded-2xl bg-gray-50 dark:bg-white/5"></div>
+                            <div v-if="editor.kind === 'category'" class="h-24 animate-pulse rounded-2xl bg-gray-50 dark:bg-white/5"></div>
                         </div>
 
                         <template v-else>
                             <div class="space-y-2">
-                                <label class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Nama</label>
-                                <input v-model="editor.name" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Contoh: Catatan Harian">
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-200">Nama</label>
+                                <input v-model="editor.name" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Contoh: Catatan Harian">
                             </div>
 
                             <div class="space-y-2">
-                                <label class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Slug</label>
-                                <input v-model="editor.slug" type="text" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="otomatis-dari-nama">
-                                <p class="text-xs text-neutralwarm-500 dark:text-neutralwarm-100/60">Boleh dikosongkan agar otomatis dibuat dari nama.</p>
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-200">Slug</label>
+                                <input v-model="editor.slug" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="otomatis-dari-nama">
+                                <p class="text-xs text-gray-500 dark:text-gray-500">Boleh dikosongkan agar otomatis dibuat dari nama.</p>
                             </div>
 
                             <div v-if="editor.kind === 'category'" class="space-y-2">
-                                <label class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Deskripsi</label>
-                                <textarea v-model="editor.description" rows="4" class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none transition focus:border-coffee-300 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50" placeholder="Deskripsi singkat kategori"></textarea>
+                                <label class="text-sm font-medium text-gray-700 dark:text-gray-200">Deskripsi</label>
+                                <textarea v-model="editor.description" rows="4" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Deskripsi singkat kategori"></textarea>
                             </div>
 
-                            <label v-if="editor.kind === 'category'" class="flex items-center gap-3 rounded-2xl border border-coffee-100 px-4 py-3 text-sm text-neutralwarm-500 dark:border-coffee-800/50 dark:text-neutralwarm-100/70">
-                                <input v-model="editor.is_active" type="checkbox" class="size-4 rounded border-coffee-300 text-coffee-700 focus:ring-coffee-300">
+                            <label v-if="editor.kind === 'category'" class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+                                <input v-model="editor.is_active" type="checkbox" class="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-300">
                                 Kategori aktif
                             </label>
 
                             <div class="flex items-center justify-end gap-3 pt-2">
-                                <button @click="closeEditor" type="button" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                                <button @click="closeEditor" type="button" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                                     Batal
                                 </button>
-                                <button @click="saveEditor" type="button" class="rounded-full bg-coffee-700 px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800" :disabled="editor.loading">
+                                <button @click="saveEditor" type="button" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600" :disabled="editor.loading">
                                     {{ editor.loading ? 'Menyimpan...' : 'Simpan' }}
                                 </button>
                             </div>
@@ -2439,18 +2448,18 @@ createApp({
 
             <div
                 v-if="actionConfirm.open"
-                class="fixed inset-0 z-[79] flex items-center justify-center bg-neutralwarm-950/45 px-4 py-8 backdrop-blur-sm">
-                <div class="w-full max-w-lg rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Konfirmasi aksi</p>
-                    <h3 class="mt-2 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                class="fixed inset-0 z-[79] flex items-center justify-center bg-gray-900/45 px-4 py-8 backdrop-blur-sm">
+                <div class="w-full max-w-lg rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Konfirmasi aksi</p>
+                    <h3 class="mt-2 font-lora text-2xl font-semibold text-gray-900 dark:text-white">
                         {{ actionConfirm.title }}
                     </h3>
-                    <p class="mt-3 text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                    <p class="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
                         {{ actionConfirm.message }}
                     </p>
 
                     <div class="mt-6 flex items-center justify-end gap-3">
-                        <button @click="closeActionConfirm" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5" :disabled="actionConfirm.loading">
+                        <button @click="closeActionConfirm" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white" :disabled="actionConfirm.loading">
                             Batal
                         </button>
                         <button @click="confirmPostAction" class="rounded-full px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60" :class="actionConfirm.confirm_class" :disabled="actionConfirm.loading">
@@ -2462,13 +2471,13 @@ createApp({
 
             <div
                 v-if="deleting.open"
-                class="fixed inset-0 z-[80] flex items-center justify-center bg-neutralwarm-950/50 px-4 py-8 backdrop-blur-sm">
-                <div class="w-full max-w-lg rounded-3xl border border-coffee-100 bg-white p-6 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Konfirmasi hapus</p>
-                    <h3 class="mt-2 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                class="fixed inset-0 z-[80] flex items-center justify-center bg-gray-900/50 px-4 py-8 backdrop-blur-sm">
+                <div class="w-full max-w-lg rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                    <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Konfirmasi hapus</p>
+                    <h3 class="mt-2 font-lora text-2xl font-semibold text-gray-900 dark:text-white">
                         Hapus {{ deleting.kind === 'category' ? 'kategori' : deleting.kind === 'post' ? 'artikel' : 'tag' }} ini?
                     </h3>
-                    <p class="mt-3 text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                    <p class="mt-3 text-sm leading-6 text-gray-500 dark:text-gray-400">
                         {{ deleting.kind === 'category'
                             ? 'Kategori yang masih dipakai artikel tidak dapat dihapus.'
                             : deleting.kind === 'post'
@@ -2477,7 +2486,7 @@ createApp({
                     </p>
 
                     <div class="mt-6 flex items-center justify-end gap-3">
-                        <button @click="closeDelete" class="rounded-full border border-coffee-100 px-4 py-2.5 text-sm font-semibold text-coffee-700 transition hover:bg-coffee-50 dark:border-coffee-800/50 dark:text-coffee-100 dark:hover:bg-white/5">
+                        <button @click="closeDelete" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
                             Batal
                         </button>
                         <button @click="confirmDelete" class="rounded-full bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700" :disabled="deleting.loading">
@@ -2489,22 +2498,22 @@ createApp({
 
             <div
                 v-if="postEditor.preview.open"
-                class="fixed inset-0 z-[85] flex items-center justify-center bg-neutralwarm-950/60 px-4 py-8 backdrop-blur-sm">
-                <div class="w-full max-w-5xl rounded-3xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
-                    <div class="flex items-center justify-between border-b border-coffee-100 px-6 py-4 dark:border-coffee-800/40">
+                class="fixed inset-0 z-[85] flex items-center justify-center bg-gray-900/60 px-4 py-8 backdrop-blur-sm">
+                <div class="w-full max-w-5xl rounded-3xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4 dark:border-gray-800">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">Preview aman</p>
-                            <h3 class="mt-1 font-lora text-2xl font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ postEditor.preview.title }}</h3>
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Preview aman</p>
+                            <h3 class="mt-1 font-lora text-2xl font-semibold text-gray-900 dark:text-white">{{ postEditor.preview.title }}</h3>
                         </div>
-                        <button @click="closePostPreview" class="rounded-full border border-coffee-100 bg-white px-3 py-2 text-sm font-semibold text-coffee-700 dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-coffee-100">
+                        <button @click="closePostPreview" class="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300">
                             Tutup
                         </button>
                     </div>
 
                     <div class="max-h-[75vh] overflow-y-auto px-6 py-6">
                         <div v-if="postEditor.preview.loading" class="space-y-4">
-                            <div class="h-8 animate-pulse rounded-2xl bg-coffee-50 dark:bg-white/5"></div>
-                            <div class="h-64 animate-pulse rounded-3xl bg-coffee-50 dark:bg-white/5"></div>
+                            <div class="h-8 animate-pulse rounded-2xl bg-gray-50 dark:bg-white/5"></div>
+                            <div class="h-64 animate-pulse rounded-3xl bg-gray-50 dark:bg-white/5"></div>
                         </div>
 
                         <article v-else class="prose prose-neutral max-w-none dark:prose-invert" v-html="postEditor.preview.html"></article>
@@ -2536,11 +2545,11 @@ createApp({
                         <div class="min-w-0 flex-1">
                             <div class="flex items-start justify-between gap-3">
                                 <div>
-                                    <p class="text-sm font-semibold text-coffee-900 dark:text-neutralwarm-50">{{ toast.title }}</p>
-                                    <p class="mt-1 text-sm leading-6 text-neutralwarm-600 dark:text-neutralwarm-100/75">{{ toast.message }}</p>
+                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ toast.title }}</p>
+                                    <p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-400">{{ toast.message }}</p>
                                 </div>
 
-                                <button @click="removeToast(toast.id)" type="button" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-coffee-100 text-neutralwarm-500 transition hover:bg-coffee-50 hover:text-coffee-900 dark:border-coffee-800/50 dark:text-neutralwarm-100/70 dark:hover:bg-white/5 dark:hover:text-neutralwarm-50">
+                                <button @click="removeToast(toast.id)" type="button" class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:bg-gray-50 hover:text-gray-900 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white">
                                     <span class="sr-only">Tutup notifikasi</span>
                                     <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 0 1 1.414 0L10 8.586l4.293-4.293a1 1 0 1 1 1.414 1.414L11.414 10l4.293 4.293a1 1 0 0 1-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 0 1-1.414-1.414L8.586 10 4.293 5.707a1 1 0 0 1 0-1.414Z" clip-rule="evenodd" />

@@ -34,12 +34,13 @@
                 updateTheme() {
                     const html = document.documentElement;
                     const body = document.body;
+                    const bodyClasses = ['dark', 'bg-gray-900'];
                     if (this.theme === 'dark') {
                         html.classList.add('dark');
-                        body.classList.add('dark', 'bg-neutralwarm-900');
+                        body.classList.add(...bodyClasses);
                     } else {
                         html.classList.remove('dark');
-                        body.classList.remove('dark', 'bg-neutralwarm-900');
+                        body.classList.remove(...bodyClasses);
                     }
                 }
             });
@@ -81,7 +82,7 @@
             const savedTheme = localStorage.getItem('theme');
             const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             const theme = savedTheme || systemTheme;
-            const bodyClasses = ['dark', 'bg-neutralwarm-900'];
+            const bodyClasses = ['dark', 'bg-gray-900'];
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
                 if (document.body) {
@@ -101,7 +102,7 @@
     </script>
 </head>
 
-<body x-data="{ 'loaded': true}" x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200" x-data="{ 'loaded': true}" x-init="$store.sidebar.isExpanded = window.innerWidth >= 1280;
 const checkMobile = () => {
     if (window.innerWidth < 1280) {
         $store.sidebar.setMobileOpen(false);

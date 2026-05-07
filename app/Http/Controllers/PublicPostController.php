@@ -32,6 +32,17 @@ class PublicPostController extends Controller
             ->limit(3)
             ->get();
 
+        if ($relatedPosts->isEmpty()) {
+            $relatedPosts = Post::query()
+                ->published()
+                ->withPublicRelations()
+                ->whereKeyNot($post->id)
+                ->latest('published_at')
+                ->latest('id')
+                ->limit(3)
+                ->get();
+        }
+
         return view('public.post', [
             'title' => $post->meta_title ?: $post->title,
             'metaTitle' => $post->meta_title ?: $post->title,

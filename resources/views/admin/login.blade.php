@@ -1,28 +1,28 @@
 @extends('layouts.fullscreen-layout')
 
 @section('content')
-    <main class="min-h-screen bg-neutralwarm-50 px-4 py-10 dark:bg-neutralwarm-900">
+    <main class="min-h-screen bg-gray-50 px-4 py-10 dark:bg-gray-900">
         <div class="mx-auto flex min-h-[calc(100vh-5rem)] max-w-6xl items-center">
             <div class="grid w-full gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-                <section class="space-y-6 rounded-[28px] border border-coffee-100 bg-white p-8 shadow-soft dark:border-coffee-800/40 dark:bg-neutralwarm-900">
+                <section class="space-y-6 rounded-[28px] border border-gray-200 bg-white p-8 shadow-soft dark:border-gray-800 dark:bg-gray-900">
                     <div class="flex items-start justify-between gap-4">
                         <div class="space-y-3">
-                            <span class="inline-flex items-center rounded-full border border-coffee-100 bg-coffee-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:border-coffee-700/40 dark:bg-coffee-500/10 dark:text-coffee-100">
+                            <span class="inline-flex items-center rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-300">
                                 Ngopi Dulur Admin
                             </span>
-                            <h1 class="font-lora text-4xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                            <h1 class="font-lora text-4xl font-semibold text-gray-900 dark:text-white">
                                 Masuk ke ruang tulis.
                             </h1>
-                            <p class="max-w-xl text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                            <p class="max-w-xl text-sm leading-6 text-gray-500 dark:text-gray-400">
                                 Gunakan akun admin untuk membuka dashboard, menulis, dan menjaga ritme publikasi tetap hangat.
                             </p>
                         </div>
 
                         <button type="button"
                             @click="$store.theme.toggle()"
-                            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-coffee-100 bg-white text-coffee-700 shadow-soft transition hover:bg-coffee-50 dark:border-coffee-700/50 dark:bg-neutralwarm-900 dark:text-coffee-100 dark:hover:bg-white/5"
-                            :aria-label="$store.theme.theme === 'dark' ? 'Ubah ke tema terang' : 'Ubah ke tema dark espresso'">
-                            <span class="sr-only" x-text="$store.theme.theme === 'dark' ? 'Ubah ke tema terang' : 'Ubah ke tema dark espresso'"></span>
+                            class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-theme-xs transition hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
+                            :aria-label="$store.theme.theme === 'dark' ? 'Ubah ke tema terang' : 'Ubah ke tema gelap'">
+                            <span class="sr-only" x-text="$store.theme.theme === 'dark' ? 'Ubah ke tema terang' : 'Ubah ke tema gelap'"></span>
                             <svg x-show="$store.theme.theme !== 'dark'" class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M12 3V5M12 19V21M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M3 12H5M19 12H21M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
                                 <circle cx="12" cy="12" r="4.25" stroke="currentColor" stroke-width="1.8" />
@@ -37,7 +37,7 @@
                         @csrf
 
                         <div class="space-y-2">
-                            <label for="email" class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Email</label>
+                            <label for="email" class="text-sm font-medium text-gray-700 dark:text-gray-200">Email</label>
                             <input
                                 id="email"
                                 name="email"
@@ -45,7 +45,7 @@
                                 value="{{ old('email') }}"
                                 required
                                 autocomplete="email"
-                                class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none ring-0 transition placeholder:text-neutralwarm-500 focus:border-coffee-300 focus:shadow-soft dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
+                                class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none ring-0 transition placeholder:text-gray-400 focus:border-brand-300 focus:shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
                                 placeholder="admin@ngopidulur.test"
                             >
                             @error('email')
@@ -54,23 +54,23 @@
                         </div>
 
                         <div class="space-y-2">
-                            <label for="password" class="text-sm font-medium text-neutralwarm-900 dark:text-neutralwarm-50">Kata sandi</label>
+                            <label for="password" class="text-sm font-medium text-gray-700 dark:text-gray-200">Kata sandi</label>
                             <input
                                 id="password"
                                 name="password"
                                 type="password"
                                 required
                                 autocomplete="current-password"
-                                class="w-full rounded-2xl border border-coffee-100 bg-white px-4 py-3 text-sm text-neutralwarm-900 outline-none ring-0 transition placeholder:text-neutralwarm-500 focus:border-coffee-300 focus:shadow-soft dark:border-coffee-800/50 dark:bg-neutralwarm-900 dark:text-neutralwarm-50"
+                                class="w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none ring-0 transition placeholder:text-gray-400 focus:border-brand-300 focus:shadow-theme-xs dark:border-gray-800 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-500"
                                 placeholder="password"
                             >
                         </div>
 
-                        <label class="flex items-center gap-3 text-sm text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                        <label class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
                             <input
                                 type="checkbox"
                                 name="remember"
-                                class="size-4 rounded border-coffee-300 text-coffee-700 focus:ring-coffee-300"
+                                class="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-300"
                             >
                             Ingat saya
                         </label>
@@ -83,21 +83,21 @@
 
                         <button
                             type="submit"
-                            class="inline-flex w-full items-center justify-center rounded-2xl bg-coffee-700 px-4 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-coffee-800">
+                            class="inline-flex w-full items-center justify-center rounded-2xl bg-brand-500 px-4 py-3 text-sm font-semibold text-white shadow-theme-xs transition hover:bg-brand-600">
                             Masuk
                         </button>
                     </form>
                 </section>
 
-                <aside class="rounded-[28px] border border-coffee-100 bg-coffee-50 p-8 shadow-soft dark:border-coffee-800/40 dark:bg-coffee-500/10">
+                <aside class="rounded-[28px] border border-gray-200 bg-brand-50 p-8 shadow-soft dark:border-gray-800 dark:bg-white/5">
                     <div class="space-y-4">
-                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-coffee-700 dark:text-coffee-100">
+                        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600 dark:text-brand-300">
                             Warm Coffee Meets Modern Tech
                         </p>
-                        <h2 class="font-lora text-3xl font-semibold text-coffee-900 dark:text-neutralwarm-50">
+                        <h2 class="font-lora text-3xl font-semibold text-gray-900 dark:text-white">
                             Fondasi sudah siap, cerita tinggal diisi.
                         </h2>
-                        <p class="text-sm leading-6 text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                        <p class="text-sm leading-6 text-gray-500 dark:text-gray-400">
                             TailAdmin tetap menjadi dasar tampilan admin, sementara bahasa visual Ngopi Dulur masuk lewat warna, typography, dan suasana.
                         </p>
                     </div>
