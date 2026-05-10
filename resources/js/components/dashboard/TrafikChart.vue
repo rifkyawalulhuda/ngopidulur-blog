@@ -17,9 +17,28 @@ const chartElement = ref(null);
 const isDark = ref(false);
 let chartInstance = null;
 let observer = null;
+let resizeHandler = null;
 
 const syncTheme = () => {
     isDark.value = document.documentElement.classList.contains('dark');
+};
+
+const visibleLabelIndexes = () => {
+    const total = props.labels.length;
+
+    if (total <= 6) {
+        return new Set(props.labels.map((_, index) => index));
+    }
+
+    const isCompactViewport = window.innerWidth < 768;
+    const step = isCompactViewport ? 6 : 4;
+    const indexes = new Set([0, total - 1]);
+
+    for (let index = step; index < total - 1; index += step) {
+        indexes.add(index);
+    }
+
+    return indexes;
 };
 
 const renderChart = async () => {
@@ -75,9 +94,22 @@ const renderChart = async () => {
                 show: false,
             },
             labels: {
+                hideOverlappingLabels: true,
+                rotate: 0,
+                trim: true,
+                minHeight: 48,
+                maxHeight: 48,
+                offsetY: 6,
+                formatter: (value, _timestamp, opts) => {
+                    const indexes = visibleLabelIndexes();
+                    const index = opts?.dataPointIndex ?? opts?.i ?? 0;
+
+                    return indexes.has(index) ? value : '';
+                },
                 style: {
                     colors: isDark.value ? '#98A2B3' : '#667085',
-                    fontSize: '12px',
+                    fontSize: '11px',
+                    fontWeight: 500,
                 },
             },
         },
@@ -124,6 +156,10 @@ onMounted(async () => {
         attributes: true,
         attributeFilter: ['class'],
     });
+    resizeHandler = async () => {
+        await renderChart();
+    };
+    window.addEventListener('resize', resizeHandler);
     await renderChart();
 });
 
@@ -137,6 +173,9 @@ watch(
 
 onBeforeUnmount(() => {
     observer?.disconnect();
+    if (resizeHandler) {
+        window.removeEventListener('resize', resizeHandler);
+    }
     chartInstance?.destroy();
 });
 </script>
