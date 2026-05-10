@@ -9,7 +9,7 @@ class AdminShellController extends Controller
     public function index(): View
     {
         if (request()->routeIs('admin.index') || request()->routeIs('admin.dashboard')) {
-            return view('pages.dashboard.ecommerce', [
+            return view('pages.dashboard.blog-dashboard', [
                 'title' => 'Dashboard',
             ]);
         }

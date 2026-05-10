@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PostView;
 use App\Models\Post;
 use App\Support\BlogSettings;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class PublicPostController extends Controller
 {
-    public function show(string $slug): View
+    public function show(Request $request, string $slug): View
     {
         $post = Post::query()
             ->published()
             ->withPublicRelations()
             ->where('slug', $slug)
             ->firstOrFail();
+
+        $this->trackView($request, $post);
 
         $relatedPosts = Post::query()
             ->published()
@@ -55,5 +60,32 @@ class PublicPostController extends Controller
             'defaultMetaDescription' => BlogSettings::get('default_meta_description', 'Personal blog CMS dengan nuansa hangat dan fondasi modern.'),
             'relatedPosts' => $relatedPosts,
         ]);
+    }
+
+    private function trackView(Request $request, Post $post): void
+    {
+        $session = $request->session();
+        $session->put('ngopi_dulur_last_seen_at', now()->timestamp);
+
+        $sessionId = $session->getId();
+        $visitorKey = hash('sha256', implode('|', [
+            $sessionId,
+            (string) $request->ip(),
+            (string) $request->userAgent(),
+        ]));
+
+        PostView::query()->updateOrCreate(
+            [
+                'post_id' => $post->id,
+                'visitor_key' => $visitorKey,
+                'viewed_on' => now()->toDateString(),
+            ],
+            [
+                'session_id' => $sessionId,
+                'ip_address' => $request->ip(),
+                'user_agent' => Str::limit((string) $request->userAgent(), 255, ''),
+                'viewed_at' => now(),
+            ],
+        );
     }
 }

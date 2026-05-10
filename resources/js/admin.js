@@ -1,7 +1,18 @@
 import { createApp, defineAsyncComponent } from 'vue';
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-const TinyMceEditor = defineAsyncComponent(() => import('./components/tinymce-vue-editor'));
+const lazyComponent = (loader) => defineAsyncComponent({
+    loader,
+    delay: 0,
+});
+
+const BlogDashboardPanel = lazyComponent(() => import('./components/dashboard/BlogDashboardPanel.vue'));
+const PostsPage = lazyComponent(() => import('./components/admin/PostsPage.vue'));
+const PostEditorPage = lazyComponent(() => import('./components/admin/PostEditorPage.vue'));
+const CategoriesPage = lazyComponent(() => import('./components/admin/CategoriesPage.vue'));
+const TagsPage = lazyComponent(() => import('./components/admin/TagsPage.vue'));
+const MediaPage = lazyComponent(() => import('./components/admin/MediaPage.vue'));
+const SettingsPage = lazyComponent(() => import('./components/admin/SettingsPage.vue'));
 
 const pageFromPath = (path) => {
     if (path.startsWith('/admin/posts/create')) {
@@ -117,9 +128,15 @@ function useApi(app) {
     };
 }
 
-createApp({
+const adminSpa = createApp({
     components: {
-        TinyMceEditor,
+        BlogDashboardPanel,
+        PostsPage,
+        PostEditorPage,
+        CategoriesPage,
+        TagsPage,
+        MediaPage,
+        SettingsPage,
     },
 
     data() {
@@ -538,10 +555,6 @@ createApp({
         },
 
         async loadCurrentPage() {
-            if (this.current === 'dashboard') {
-                await this.loadDashboard();
-            }
-
             if (this.current === 'posts') {
                 await this.loadPosts();
             }
@@ -1031,74 +1044,6 @@ createApp({
             }
         },
 
-        applyPostFormatting(type) {
-            const textarea = this.$refs.postContent;
-
-            if (this.postEditor.content_format !== 'markdown' || ! textarea) {
-                return;
-            }
-
-            const start = textarea.selectionStart ?? 0;
-            const end = textarea.selectionEnd ?? 0;
-            const selected = this.postEditor.content.slice(start, end) || this.getFormattingPlaceholder(type);
-
-            const insert = (before, after = '') => {
-                const value = `${before}${selected}${after}`;
-                this.postEditor.content = `${this.postEditor.content.slice(0, start)}${value}${this.postEditor.content.slice(end)}`;
-                this.$nextTick(() => {
-                    textarea.focus();
-                    const cursor = start + before.length;
-                    textarea.setSelectionRange(cursor, cursor + selected.length);
-                });
-            };
-
-            if (type === 'bold') {
-                insert('**', '**');
-            } else if (type === 'italic') {
-                insert('*', '*');
-            } else if (type === 'heading') {
-                insert('# ', '');
-            } else if (type === 'quote') {
-                insert('> ', '');
-            } else if (type === 'list') {
-                insert('- ', '');
-            } else if (type === 'ordered') {
-                insert('1. ', '');
-            } else if (type === 'link') {
-                const url = window.prompt('Masukkan URL tautan');
-
-                if (! url) {
-                    return;
-                }
-
-                insert('[', `](${url})`);
-            }
-        },
-
-        getFormattingPlaceholder(type) {
-            if (type === 'heading') {
-                return 'Judul kecil';
-            }
-
-            if (type === 'quote') {
-                return 'Kutipan hangat';
-            }
-
-            if (type === 'list') {
-                return 'Item daftar';
-            }
-
-            if (type === 'ordered') {
-                return 'Item daftar';
-            }
-
-            if (type === 'link') {
-                return 'Teks tautan';
-            }
-
-            return 'Teks';
-        },
-
         updatePostFeaturedImage(event) {
             const [file] = event.target.files || [];
 
@@ -1113,12 +1058,6 @@ createApp({
             this.postEditor.featured_image_file = null;
             this.postEditor.featured_image_url = '';
             this.postEditor.featured_image_alt = '';
-
-            const input = this.$refs.postFeaturedImage;
-
-            if (input) {
-                input.value = '';
-            }
         },
 
         closePostEditor() {
@@ -1186,12 +1125,6 @@ createApp({
             this.settings[urlField] = '';
             this.settings[pathField] = '';
             this.settings[removeField] = true;
-
-            const input = this.$refs[`settings_${kind}`];
-
-            if (input) {
-                input.value = '';
-            }
         },
 
         async saveSettings() {
@@ -1608,783 +1541,62 @@ createApp({
             </section>
 
             <section v-if="current === 'dashboard'" class="space-y-6">
-                <div v-if="dashboard.loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <div v-for="n in 6" :key="n" class="h-28 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                </div>
-
-                <template v-else>
-                    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Total Posts</p>
-                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.total_posts }}</p>
-                        </div>
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Published</p>
-                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.published_posts }}</p>
-                        </div>
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Draft</p>
-                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.draft_posts }}</p>
-                        </div>
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Archived</p>
-                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.archived_posts }}</p>
-                        </div>
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Kategori</p>
-                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.total_categories }}</p>
-                        </div>
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Tag</p>
-                            <p class="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{{ dashboard.stats.total_tags }}</p>
-                        </div>
-                    </div>
-
-                    <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
-                            <h3 class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Tulisan terbaru</h3>
-                        </div>
-
-                        <div v-if="dashboard.latest_posts.length === 0" class="px-6 py-12">
-                            <div class="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-white/5">
-                                <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada tulisan</p>
-                                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Dashboard akan menampilkan tulisan terbaru saat data sudah masuk.</p>
-                            </div>
-                        </div>
-
-                        <div v-else class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                                <thead class="bg-gray-50 dark:bg-white/5">
-                                    <tr>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Judul</th>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Kategori</th>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Status</th>
-                                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Publish</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                                    <tr v-for="post in dashboard.latest_posts" :key="post.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
-                                        <td class="px-6 py-4">
-                                            <div class="space-y-1">
-                                                <p class="font-semibold text-gray-900 dark:text-white">{{ post.title }}</p>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ post.author_name || 'Admin' }}</p>
-                                            </div>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ post.category_name || '-' }}</td>
-                                        <td class="px-6 py-4">
-                                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
-                                                :class="post.status === 'published' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : post.status === 'draft' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-gray-300'">
-                                                {{ post.status }}
-                                            </span>
-                                        </td>
-                                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ post.published_at || '-' }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </template>
+                <blog-dashboard-panel endpoint="/admin/api/dashboard" />
             </section>
 
-            <section v-if="current === 'posts'" class="space-y-6">
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                    <div class="flex flex-col gap-4 border-b border-gray-100 pb-4 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Daftar tulisan</h3>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Kelola artikel, filter cepat, dan aksi publikasi dari satu tempat.</p>
-                        </div>
-                        <button @click="openPostCreate" class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                            Tulis Artikel Baru
-                        </button>
-                    </div>
+            <posts-page
+                v-else-if="current === 'posts'"
+                :posts="posts"
+                :categories="categories"
+                @open-create="openPostCreate"
+                @load-posts="loadPosts"
+                @reset-filters="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at' })"
+                @preview-post="previewPostById"
+                @open-edit="openPostEdit"
+                @prompt-action="promptPostAction"
+                @prompt-delete="promptDelete" />
 
-                    <div class="mt-5 grid gap-4 lg:grid-cols-12 lg:items-end">
-                        <label class="space-y-2 lg:col-span-4">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Cari judul</span>
-                            <input
-                                v-model="posts.filters.search"
-                                @keyup.enter="loadPosts"
-                                type="search"
-                                class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
-                                placeholder="Cari tulisan...">
-                        </label>
+            <post-editor-page
+                v-else-if="current === 'post-create' || current === 'post-edit'"
+                :post-editor="postEditor"
+                :categories="categories"
+                :tags="tags"
+                :tiny-mce-theme="tinyMceTheme"
+                :tiny-mce-mount-key="tinyMceMountKey"
+                :tiny-mce-init="tinyMceInit"
+                @navigate-posts="navigate('/admin/posts')"
+                @preview-post="previewPost"
+                @prompt-action="promptPostAction"
+                @set-content-format="setPostContentFormat"
+                @update-featured-image="updatePostFeaturedImage"
+                @remove-featured-image="removePostFeaturedImage"
+                @prompt-delete="promptDelete" />
 
-                        <label class="space-y-2 lg:col-span-2">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Status</span>
-                            <select v-model="posts.filters.status" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
-                                <option value="">Semua</option>
-                                <option value="draft">Draft</option>
-                                <option value="published">Published</option>
-                                <option value="archived">Archived</option>
-                            </select>
-                        </label>
+            <categories-page
+                v-else-if="current === 'categories'"
+                :categories="categories"
+                @open-create="openCategoryCreate"
+                @open-edit="openCategoryEdit"
+                @prompt-delete="promptDelete" />
 
-                        <label class="space-y-2 lg:col-span-2">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Kategori</span>
-                            <select v-model="posts.filters.category" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
-                                <option value="">Semua</option>
-                                <option v-for="category in categories.items" :key="category.id" :value="category.slug">
-                                    {{ category.name }}
-                                </option>
-                            </select>
-                        </label>
+            <tags-page
+                v-else-if="current === 'tags'"
+                :tags="tags"
+                @open-create="openTagCreate"
+                @open-edit="openTagEdit"
+                @prompt-delete="promptDelete" />
 
-                        <label class="space-y-2 lg:col-span-2">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Urutkan</span>
-                            <select v-model="posts.filters.sort" class="w-full rounded-lg border border-gray-300 bg-transparent px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200">
-                                <option value="updated_at">Update terbaru</option>
-                                <option value="published_at">Tanggal publish</option>
-                            </select>
-                        </label>
+            <media-page
+                v-else-if="current === 'media'"
+                :media="media"
+                @open-post-edit="openPostEdit" />
 
-                        <div class="flex flex-wrap gap-2 lg:col-span-2 lg:justify-end">
-                            <button @click="loadPosts" class="inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                                Terapkan
-                            </button>
-                            <button @click="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at' }); loadPosts()" class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                Reset
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="posts.loading" class="grid gap-4">
-                    <div v-for="n in 3" :key="n" class="h-28 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                </div>
-
-                <div v-else-if="posts.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
-                    <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada artikel</p>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Mulai dengan draft pertama, lalu terbitkan saat kontennya siap.</p>
-                        <button @click="openPostCreate" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                            Tulis Artikel Baru
-                        </button>
-                    </div>
-                </div>
-
-                <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                    <div class="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-800">
-                        <div>
-                            <h3 class="text-base font-semibold text-gray-900 dark:text-white">Artikel terbaru</h3>
-                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ posts.meta.total }} artikel ditemukan</p>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                            <thead class="bg-gray-50 dark:bg-white/5">
-                                <tr>
-                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Judul</th>
-                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Slug</th>
-                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Kategori</th>
-                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Status</th>
-                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Tanggal Publish</th>
-                                    <th class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Update Terakhir</th>
-                                    <th class="px-5 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                                <tr v-for="item in posts.items" :key="item.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
-                                    <td class="px-5 py-4">
-                                        <div class="space-y-1">
-                                            <p class="font-medium text-gray-900 dark:text-white">{{ item.title }}</p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.author_name || 'Admin' }}</p>
-                                        </div>
-                                    </td>
-                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.slug }}</td>
-                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.category_name || '-' }}</td>
-                                    <td class="px-5 py-4">
-                                        <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium capitalize"
-                                            :class="item.status === 'published' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300' : item.status === 'draft' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300' : 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'">
-                                            {{ item.status }}
-                                        </span>
-                                    </td>
-                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.published_at || '-' }}</td>
-                                    <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.updated_at || '-' }}</td>
-                                    <td class="px-5 py-4">
-                                        <div class="flex justify-end gap-2">
-                                            <button @click="previewPostById(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                                Preview
-                                            </button>
-                                            <button @click="openPostEdit(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                                Ubah
-                                            </button>
-                                            <button v-if="item.status !== 'published'" @click="promptPostAction('published', item)" class="rounded-lg border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 dark:border-emerald-500/30 dark:text-emerald-300 dark:hover:bg-emerald-500/10">
-                                                Terbitkan
-                                            </button>
-                                            <button v-if="item.status !== 'archived'" @click="promptPostAction('archived', item)" class="rounded-lg border border-amber-200 px-3 py-2 text-sm font-medium text-amber-700 transition hover:bg-amber-50 dark:border-amber-500/30 dark:text-amber-300 dark:hover:bg-amber-500/10">
-                                                Arsipkan
-                                            </button>
-                                            <button @click="promptDelete('post', item)" class="rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10">
-                                                Hapus
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section v-else-if="current === 'post-create' || current === 'post-edit'" class="space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center gap-2">
-                        <button @click="navigate('/admin/posts')" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                            Kembali
-                        </button>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ postEditor.mode === 'create' ? 'Mode membuat draft baru' : 'Mode mengedit artikel' }}
-                        </span>
-                    </div>
-
-                    <div class="flex flex-wrap gap-2">
-                        <button @click="previewPost" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white" :disabled="postEditor.loading || postEditor.saving">
-                            Preview
-                        </button>
-                        <button @click="promptPostAction('draft')" class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white" :disabled="postEditor.loading || postEditor.saving">
-                            {{ postEditor.saving ? 'Menyimpan...' : 'Simpan Draft' }}
-                        </button>
-                        <button @click="promptPostAction('published')" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600" :disabled="postEditor.loading || postEditor.saving">
-                            {{ postEditor.saving ? 'Menyimpan...' : 'Terbitkan' }}
-                        </button>
-                    </div>
-                </div>
-
-                <div v-if="postEditor.loading" class="grid gap-4 xl:grid-cols-12">
-                    <div class="xl:col-span-8 space-y-4">
-                        <div class="h-16 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                        <div class="h-16 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                        <div class="h-64 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                    </div>
-                    <div class="xl:col-span-4 space-y-4">
-                        <div class="h-48 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                        <div class="h-64 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                    </div>
-                </div>
-
-                <div v-else class="grid gap-6 xl:grid-cols-12">
-                    <div class="space-y-6 xl:col-span-8">
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <div class="grid gap-4">
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Judul</span>
-                                    <input v-model="postEditor.title" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Contoh: Secangkir Pagi">
-                                </label>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Slug</span>
-                                    <input v-model="postEditor.slug" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="otomatis-dari-judul">
-                                    <p class="text-xs text-gray-500 dark:text-gray-500">Kosongkan untuk slug otomatis. Jika diisi manual, slug harus unik.</p>
-                                </label>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Ringkasan</span>
-                                    <textarea v-model="postEditor.excerpt" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional, untuk kartu artikel dan SEO"></textarea>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <div class="flex flex-wrap items-center justify-between gap-3">
-                                <div>
-                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Editor</p>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Mode Visual menyimpan HTML, Mode Markdown menyimpan markdown asli.</p>
-                                </div>
-                                <div class="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1 dark:border-gray-700 dark:bg-white/5">
-                                    <button @click="setPostContentFormat('richtext')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'richtext' ? 'bg-white text-brand-500 shadow-theme-sm dark:bg-gray-900 dark:text-white' : 'text-brand-500 dark:text-brand-300'">
-                                        Mode Visual
-                                    </button>
-                                    <button @click="setPostContentFormat('markdown')" class="rounded-full px-4 py-2 text-sm font-semibold transition" :class="postEditor.content_format === 'markdown' ? 'bg-white text-brand-500 shadow-theme-sm dark:bg-gray-900 dark:text-white' : 'text-brand-500 dark:text-brand-300'">
-                                        Mode Markdown
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div v-if="postEditor.content_format === 'markdown'" class="mt-4 flex flex-wrap gap-2">
-                                <button @click="applyPostFormatting('bold')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">B</button>
-                                <button @click="applyPostFormatting('italic')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">I</button>
-                                <button @click="applyPostFormatting('heading')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">H1</button>
-                                <button @click="applyPostFormatting('quote')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">Quote</button>
-                                <button @click="applyPostFormatting('list')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">UL</button>
-                                <button @click="applyPostFormatting('ordered')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">OL</button>
-                                <button @click="applyPostFormatting('link')" type="button" class="rounded-lg border border-gray-300 px-3 py-2 text-xs font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">Link</button>
-                            </div>
-
-                            <div class="mt-4 space-y-3">
-                                <div v-if="postEditor.content_format === 'richtext'" class="ngopi-tinymce overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-                                    <tiny-mce-editor
-                                        :key="'tinymce-' + tinyMceTheme + '-' + tinyMceMountKey"
-                                        v-model="postEditor.content"
-                                        license-key="gpl"
-                                        output-format="html"
-                                        tinymce-script-src="/vendor/tinymce/tinymce.min.js"
-                                        :init="tinyMceInit" />
-                                </div>
-                                <textarea
-                                    v-else
-                                    ref="postContent"
-                                    v-model="postEditor.content"
-                                    rows="16"
-                                    class="w-full rounded-3xl border border-gray-200 bg-white px-4 py-3 text-sm leading-7 text-gray-900 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                                    placeholder="# Judul artikel"></textarea>
-
-                                <p class="text-xs text-gray-500 dark:text-gray-500">
-                                    {{ postEditor.content_format === 'markdown' ? 'Markdown akan dirender dan disanitasi di server.' : 'Konten visual disimpan sebagai HTML yang sudah disanitasi di server.' }}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <div class="flex items-center justify-between gap-3">
-                                <div>
-                                    <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Preview aman</p>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Preview ditarik dari server dan memakai HTML yang sudah disanitasi.</p>
-                                </div>
-                                <button @click="previewPost" class="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                    Buka preview
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-6 xl:col-span-4">
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Meta & Status</p>
-
-                            <div class="mt-4 space-y-4">
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Kategori</span>
-                                    <select v-model="postEditor.category_id" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                        <option value="">Pilih kategori</option>
-                                        <option v-for="category in categories.items" :key="category.id" :value="category.id">
-                                            {{ category.name }}
-                                        </option>
-                                    </select>
-                                </label>
-
-                                <div class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Tag</span>
-                                    <div class="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 p-4 dark:border-gray-800">
-                                        <label v-for="tag in tags.items" :key="tag.id" class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                                            <input v-model="postEditor.tag_ids" :value="tag.id" type="checkbox" class="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-300">
-                                            {{ tag.name }}
-                                        </label>
-                                        <p v-if="tags.items.length === 0" class="text-sm text-gray-500 dark:text-gray-400">Belum ada tag.</p>
-                                    </div>
-                                </div>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Status</span>
-                                    <select v-model="postEditor.status" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                        <option value="draft">Draft</option>
-                                        <option value="published">Published</option>
-                                        <option value="archived">Archived</option>
-                                    </select>
-                                </label>
-
-                                <label class="flex items-center gap-3 rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
-                                    <input v-model="postEditor.is_featured" type="checkbox" class="size-4 rounded border-gray-300 text-brand-500 focus:ring-brand-300">
-                                    Jadikan featured
-                                </label>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Meta title</span>
-                                    <input v-model="postEditor.meta_title" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional">
-                                </label>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Meta description</span>
-                                    <textarea v-model="postEditor.meta_description" rows="4" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional"></textarea>
-                                </label>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Published at</span>
-                                    <input v-model="postEditor.published_at" type="datetime-local" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Featured image</p>
-
-                            <div class="mt-4 space-y-4">
-                                <div class="overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
-                                    <img v-if="postEditor.featured_image_url" :src="postEditor.featured_image_url" class="h-56 w-full object-cover" :alt="postEditor.featured_image_alt || postEditor.title || 'Featured image'">
-                                    <div v-else class="flex h-56 items-center justify-center px-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                                        Belum ada featured image
-                                    </div>
-                                </div>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Upload gambar</span>
-                                    <input ref="postFeaturedImage" @change="updatePostFeaturedImage" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                                </label>
-
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Alt text</span>
-                                    <input v-model="postEditor.featured_image_alt" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100" placeholder="Opsional">
-                                </label>
-
-                                <div class="flex flex-wrap gap-2">
-                                    <button @click="removePostFeaturedImage" type="button" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
-                                        Hapus gambar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aksi cepat</p>
-                            <div class="mt-4 flex flex-wrap gap-2">
-                                <button @click="promptPostAction('draft')" class="rounded-full border border-gray-200 px-4 py-2.5 text-sm font-semibold text-brand-500 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-brand-300 dark:hover:bg-white/5" :disabled="postEditor.loading || postEditor.saving">
-                                    {{ postEditor.saving ? 'Memproses...' : 'Simpan Draft' }}
-                                </button>
-                                <button @click="promptPostAction('published')" class="rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-60" :disabled="postEditor.loading || postEditor.saving">
-                                    {{ postEditor.saving ? 'Memproses...' : 'Terbitkan' }}
-                                </button>
-                                <button v-if="postEditor.id && postEditor.status !== 'archived'" @click="promptPostAction('archived', { id: postEditor.id, title: postEditor.title })" class="rounded-full border border-amber-200 px-4 py-2.5 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-amber-500/30 dark:text-amber-100 dark:hover:bg-amber-500/10" :disabled="postEditor.loading || postEditor.saving">
-                                    {{ postEditor.saving ? 'Memproses...' : 'Arsipkan' }}
-                                </button>
-                                <button v-if="postEditor.id" @click="promptDelete('post', { id: postEditor.id, slug: postEditor.slug || postEditor.id })" class="rounded-full border border-red-200 px-4 py-2.5 text-sm font-semibold text-red-700 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10" :disabled="postEditor.loading || postEditor.saving">
-                                    Hapus
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section v-else-if="current === 'categories'" class="space-y-6">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Kategori untuk mengelompokkan tulisan.</p>
-                    </div>
-                    <button @click="openCategoryCreate" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                        Tambah Kategori
-                    </button>
-                </div>
-
-                <div v-if="categories.loading" class="grid gap-4">
-                    <div v-for="n in 3" :key="n" class="h-24 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                </div>
-
-                <div v-else-if="categories.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
-                    <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada kategori</p>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Tambahkan kategori pertama untuk mulai merapikan tulisan.</p>
-                        <button @click="openCategoryCreate" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                            Tambah Kategori
-                        </button>
-                    </div>
-                </div>
-
-                <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                            <thead class="bg-gray-50 dark:bg-white/5">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Nama</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Slug</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Post</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                                <tr v-for="item in categories.items" :key="item.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-gray-900 dark:text-white">{{ item.name }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.description || 'Tanpa deskripsi' }}</p>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.slug }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em]"
-                                            :class="item.is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-100' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-gray-300'">
-                                            {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.posts_count }}</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex justify-end gap-2">
-                                            <button @click="openCategoryEdit(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                                Ubah
-                                            </button>
-                                            <button @click="promptDelete('category', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
-                                                Hapus
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section v-else-if="current === 'tags'" class="space-y-6">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Tag untuk memberi penanda ringan pada tulisan.</p>
-                    </div>
-                    <button @click="openTagCreate" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                        Tambah Tag
-                    </button>
-                </div>
-
-                <div v-if="tags.loading" class="grid gap-4">
-                    <div v-for="n in 3" :key="n" class="h-24 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                </div>
-
-                <div v-else-if="tags.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
-                    <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada tag</p>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Tambahkan tag pertama untuk memberi penanda pada artikel.</p>
-                        <button @click="openTagCreate" class="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600">
-                            Tambah Tag
-                        </button>
-                    </div>
-                </div>
-
-                <div v-else class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                            <thead class="bg-gray-50 dark:bg-white/5">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Nama</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Slug</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Post</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                                <tr v-for="item in tags.items" :key="item.id" class="transition hover:bg-gray-50 dark:hover:bg-white/5">
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-gray-900 dark:text-white">{{ item.name }}</p>
-                                    </td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.slug }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{ item.posts_count }}</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex justify-end gap-2">
-                                            <button @click="openTagEdit(item)" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                                Ubah
-                                            </button>
-                                            <button @click="promptDelete('tag', item)" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
-                                                Hapus
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section v-else-if="current === 'media'" class="space-y-6">
-                <div class="flex items-center justify-between gap-3">
-                    <div>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Semua gambar unggulan dari tulisan terkumpul di sini agar mudah dicek ulang.</p>
-                    </div>
-                </div>
-
-                <div v-if="media.loading" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                    <div v-for="n in 6" :key="n" class="h-72 animate-pulse rounded-3xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                </div>
-
-                <div v-else-if="media.items.length === 0" class="rounded-2xl border border-dashed border-gray-300 bg-white px-6 py-12 shadow-theme-sm dark:border-gray-700 dark:bg-gray-900">
-                    <div class="mx-auto max-w-xl text-center">
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">Belum ada media</p>
-                        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Gambar unggulan dari tulisan akan muncul di sini setelah artikel menyimpan featured image.</p>
-                    </div>
-                </div>
-
-                <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    <article v-for="item in media.items" :key="item.id" class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                        <div class="aspect-[16/10] overflow-hidden bg-gray-50 dark:bg-white/5">
-                            <img :src="item.thumbnail_url" :alt="item.featured_image_alt || item.post_title" class="h-full w-full object-cover">
-                        </div>
-                        <div class="space-y-4 p-5">
-                            <div class="space-y-1">
-                                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-brand-500 dark:text-brand-300">{{ item.status }}</p>
-                                <p class="font-semibold text-gray-900 dark:text-white">{{ item.post_title }}</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ item.category_name || 'Tanpa kategori' }}</p>
-                            </div>
-
-                            <div class="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                                <p><span class="font-medium text-gray-900 dark:text-white">Path:</span> {{ item.featured_image }}</p>
-                                <p><span class="font-medium text-gray-900 dark:text-white">Update:</span> {{ item.updated_at || '-' }}</p>
-                                <p><span class="font-medium text-gray-900 dark:text-white">Publish:</span> {{ item.published_at || '-' }}</p>
-                            </div>
-
-                            <div class="flex flex-wrap gap-2">
-                                <a :href="item.featured_image_url" target="_blank" rel="noreferrer noopener" class="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white">
-                                    Buka URL
-                                </a>
-                                <button @click="openPostEdit({ id: item.post_id })" class="rounded-full bg-brand-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-600">
-                                    Buka tulisan
-                                </button>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </section>
-
-            <section v-else-if="current === 'settings'" class="space-y-6">
-                <div class="flex items-center justify-between gap-3">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Pengaturan ini langsung memengaruhi identitas public blog, SEO default, dan tema awal pembaca.</p>
-                    <button @click="saveSettings" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-sm font-medium text-white shadow-theme-xs transition hover:bg-brand-600" :disabled="settings.loading || settings.saving">
-                        {{ settings.saving ? 'Menyimpan...' : 'Simpan Pengaturan' }}
-                    </button>
-                </div>
-
-                <div v-if="settings.loading" class="grid gap-6 xl:grid-cols-12">
-                    <div class="xl:col-span-8 space-y-4">
-                        <div class="h-32 animate-pulse rounded-3xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                        <div class="h-48 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                    </div>
-                    <div class="xl:col-span-4 space-y-4">
-                        <div class="h-64 animate-pulse rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"></div>
-                    </div>
-                </div>
-
-                <div v-else class="grid gap-6 xl:grid-cols-12">
-                    <div class="space-y-6 xl:col-span-8">
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Identitas situs</p>
-                            <div class="mt-4 grid gap-4 md:grid-cols-2">
-                                <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Nama situs</span>
-                                    <input v-model="settings.site_name" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Tagline</span>
-                                    <input v-model="settings.site_tagline" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Deskripsi situs</span>
-                                    <textarea v-model="settings.site_description" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"></textarea>
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Tema default</span>
-                                    <select v-model="settings.default_theme" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                        <option value="terang">Terang</option>
-                                        <option value="dark_espresso">Dark Espresso</option>
-                                    </select>
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Teks footer</span>
-                                    <input v-model="settings.footer_note" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Hero homepage</p>
-                            <div class="mt-4 grid gap-4">
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Badge</span>
-                                    <input v-model="settings.hero_badge" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Judul hero</span>
-                                    <input v-model="settings.hero_heading" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Subtitle hero</span>
-                                    <textarea v-model="settings.hero_subheading" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"></textarea>
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Teks CTA</span>
-                                    <input v-model="settings.hero_cta_text" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">SEO default</p>
-                            <div class="mt-4 grid gap-4">
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">SEO title default</span>
-                                    <input v-model="settings.default_meta_title" type="text" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">SEO description default</span>
-                                    <textarea v-model="settings.default_meta_description" rows="3" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"></textarea>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Tautan sosial</p>
-                            <div class="mt-4 grid gap-4 md:grid-cols-2">
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Instagram</span>
-                                    <input v-model="settings.social_links.instagram" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">X / Twitter</span>
-                                    <input v-model="settings.social_links.x" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">GitHub</span>
-                                    <input v-model="settings.social_links.github" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">LinkedIn</span>
-                                    <input v-model="settings.social_links.linkedin" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                                <label class="space-y-2 md:col-span-2">
-                                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">YouTube</span>
-                                    <input v-model="settings.social_links.youtube" type="url" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none transition focus:border-brand-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100">
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-6 xl:col-span-4">
-                        <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-theme-sm dark:border-gray-800 dark:bg-gray-900">
-                            <p class="text-sm font-semibold uppercase tracking-[0.24em] text-brand-500 dark:text-brand-300">Aset brand</p>
-                            <div class="mt-4 space-y-5">
-                                <div class="space-y-3">
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Logo</p>
-                                    <div class="flex h-32 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
-                                        <img v-if="settings.logo_url" :src="settings.logo_url" alt="Logo situs" class="h-full w-full object-contain p-4">
-                                        <p v-else class="px-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada logo</p>
-                                    </div>
-                                    <input ref="settings_logo" @change="updateSettingsAsset('logo', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                                    <button v-if="settings.logo_url" @click="clearSettingsAsset('logo')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
-                                        Hapus logo
-                                    </button>
-                                </div>
-
-                                <div class="space-y-3">
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Favicon</p>
-                                    <div class="flex h-24 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
-                                        <img v-if="settings.favicon_url" :src="settings.favicon_url" alt="Favicon situs" class="size-16 object-contain">
-                                        <p v-else class="px-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada favicon</p>
-                                    </div>
-                                    <input ref="settings_favicon" @change="updateSettingsAsset('favicon', $event)" type="file" accept=".ico,image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                                    <button v-if="settings.favicon_url" @click="clearSettingsAsset('favicon')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
-                                        Hapus favicon
-                                    </button>
-                                </div>
-
-                                <div class="space-y-3">
-                                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Default Open Graph image</p>
-                                    <div class="flex h-40 items-center justify-center overflow-hidden rounded-3xl border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-white/5">
-                                        <img v-if="settings.default_og_image_url" :src="settings.default_og_image_url" alt="Default OG image" class="h-full w-full object-cover">
-                                        <p v-else class="px-4 text-center text-sm text-gray-500 dark:text-gray-400">Belum ada gambar Open Graph</p>
-                                    </div>
-                                    <input ref="settings_default_og_image" @change="updateSettingsAsset('default_og_image', $event)" type="file" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 file:mr-4 file:rounded-full file:border-0 file:bg-brand-500 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white dark:border-gray-700 dark:bg-gray-900 dark:text-white">
-                                    <button v-if="settings.default_og_image_url" @click="clearSettingsAsset('default_og_image')" class="rounded-full border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-50 dark:border-red-500/30 dark:text-red-100 dark:hover:bg-red-500/10">
-                                        Hapus OG image
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <settings-page
+                v-else-if="current === 'settings'"
+                :settings="settings"
+                @save-settings="saveSettings"
+                @update-asset="updateSettingsAsset"
+                @clear-asset="clearSettingsAsset" />
 
             <div
                 v-if="editor.open"
@@ -2562,4 +1774,26 @@ createApp({
             </div>
         </div>
     `,
-}).mount('#ngopi-dulur-admin-app');
+});
+
+const adminRoot = document.getElementById('ngopi-dulur-admin-app');
+
+if (adminRoot) {
+    adminSpa.mount(adminRoot);
+}
+
+const dashboardRoot = document.getElementById('ngopi-dulur-blog-dashboard');
+
+if (dashboardRoot) {
+    createApp({
+        components: {
+            BlogDashboardPanel,
+        },
+        data() {
+            return {
+                endpoint: dashboardRoot.dataset.endpoint || '/admin/api/dashboard',
+            };
+        },
+        template: '<blog-dashboard-panel :endpoint="endpoint" />',
+    }).mount(dashboardRoot);
+}
