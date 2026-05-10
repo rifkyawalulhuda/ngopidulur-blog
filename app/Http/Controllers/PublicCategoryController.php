@@ -10,6 +10,27 @@ use Illuminate\View\View;
 
 class PublicCategoryController extends Controller
 {
+    public function index(): View
+    {
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->whereHas('posts', fn ($query) => $query->published())
+            ->withCount([
+                'posts as published_posts_count' => fn ($query) => $query->published(),
+            ])
+            ->orderByDesc('published_posts_count')
+            ->orderBy('name')
+            ->paginate(12);
+
+        return view('public.categories', [
+            'title' => 'Semua Kategori',
+            'metaTitle' => 'Semua Kategori | '.BlogSettings::get('site_name', 'Ngopi Dulur'),
+            'metaDescription' => 'Jelajahi semua kategori tulisan yang tersedia di Ngopi Dulur.',
+            'canonicalUrl' => route('category.index'),
+            'categories' => $categories,
+        ]);
+    }
+
     public function show(Request $request, Category $category): View
     {
         abort_unless($category->is_active, 404);

@@ -23,6 +23,8 @@ Route::bind('post', function (string $value) {
 });
 
 Route::get('/', [PublicHomeController::class, 'index'])->name('home');
+Route::get('/categories', [PublicCategoryController::class, 'index'])->name('category.index');
+Route::get('/articles', [PublicPostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{slug}', [PublicPostController::class, 'show'])->name('posts.show');
 Route::get('/category/{category}', [PublicCategoryController::class, 'show'])->name('category.show');
 Route::get('/tag/{tag}', [PublicTagController::class, 'show'])->name('tag.show');

@@ -216,7 +216,7 @@
                     </div>
 
                     @if ($hasCategories)
-                        <a href="{{ route('category.show', $categories->first()) }}" class="inline-flex items-center gap-2 text-lg font-semibold text-[#8b4a22] dark:text-coffee-100">
+                        <a href="{{ route('category.index') }}" class="inline-flex items-center gap-2 text-lg font-semibold text-[#8b4a22] dark:text-coffee-100">
                             Lihat semua kategori
                             <span aria-hidden="true">&rarr;</span>
                         </a>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\PostView;
 use App\Models\Post;
 use App\Support\BlogSettings;
@@ -11,6 +12,56 @@ use Illuminate\View\View;
 
 class PublicPostController extends Controller
 {
+    public function index(Request $request): View
+    {
+        $selectedCategory = null;
+        $selectedCategorySlug = trim((string) $request->query('category', ''));
+
+        if ($selectedCategorySlug !== '') {
+            $selectedCategory = Category::query()
+                ->where('is_active', true)
+                ->where('slug', $selectedCategorySlug)
+                ->firstOrFail();
+        }
+
+        $categories = Category::query()
+            ->where('is_active', true)
+            ->whereHas('posts', fn ($query) => $query->published())
+            ->withCount([
+                'posts as published_posts_count' => fn ($query) => $query->published(),
+            ])
+            ->orderByDesc('published_posts_count')
+            ->orderBy('name')
+            ->get();
+
+        $posts = Post::query()
+            ->published()
+            ->withPublicRelations()
+            ->when($selectedCategory, fn ($query) => $query->where('category_id', $selectedCategory->id))
+            ->latest('published_at')
+            ->latest('id')
+            ->paginate(9)
+            ->withQueryString();
+
+        $pageTitle = $selectedCategory
+            ? 'Artikel Kategori '.$selectedCategory->name
+            : 'Semua Artikel';
+
+        return view('public.articles', [
+            'title' => $pageTitle,
+            'metaTitle' => $pageTitle.' | '.BlogSettings::get('site_name', 'Ngopi Dulur'),
+            'metaDescription' => $selectedCategory
+                ? 'Kumpulan artikel published pada kategori '.$selectedCategory->name.'.'
+                : 'Jelajahi semua artikel published di Ngopi Dulur.',
+            'canonicalUrl' => route('posts.index', array_filter([
+                'category' => $selectedCategory?->slug,
+            ])),
+            'posts' => $posts,
+            'categories' => $categories,
+            'selectedCategory' => $selectedCategory,
+        ]);
+    }
+
     public function show(Request $request, string $slug): View
     {
         $post = Post::query()

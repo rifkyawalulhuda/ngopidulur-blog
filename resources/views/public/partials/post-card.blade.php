@@ -1,5 +1,5 @@
-<article class="group overflow-hidden rounded-[1.6rem] border border-coffee-100 bg-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-28px_rgba(59,36,20,0.48)] dark:border-coffee-700/40 dark:bg-neutralwarm-900">
-    <a href="{{ route('posts.show', $post->slug) }}" class="block h-full">
+<article class="group min-w-0 overflow-hidden rounded-[1.6rem] border border-coffee-100 bg-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-28px_rgba(59,36,20,0.48)] dark:border-coffee-700/40 dark:bg-neutralwarm-900">
+    <a href="{{ route('posts.show', $post->slug) }}" class="block h-full min-w-0">
         <div class="relative">
             @if ($post->featured_image_url)
                 <img src="{{ $post->featured_image_url }}" alt="{{ $post->featured_image_alt ?? $post->title }}" class="h-52 w-full object-cover">
@@ -17,14 +17,14 @@
         </div>
 
         <div class="space-y-3 p-5">
-            <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-neutralwarm-500 dark:text-neutralwarm-100/70">
-                <span class="rounded-full bg-coffee-100 px-2.5 py-1 text-coffee-700 dark:bg-coffee-500/20 dark:text-coffee-100">
+            <div class="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-neutralwarm-500 dark:text-neutralwarm-100/70">
+                <span class="max-w-full truncate rounded-full bg-coffee-100 px-2.5 py-1 text-coffee-700 dark:bg-coffee-500/20 dark:text-coffee-100">
                     {{ $post->category?->name ?? 'Artikel' }}
                 </span>
                 <span>{{ $post->published_at?->translatedFormat('d M Y') }}</span>
             </div>
 
-            <h3 class="font-lora text-xl font-semibold leading-tight text-coffee-900 transition group-hover:text-coffee-700 dark:text-neutralwarm-50 dark:group-hover:text-coffee-100">
+            <h3 class="line-clamp-3 font-lora text-xl font-semibold leading-tight text-coffee-900 transition group-hover:text-coffee-700 dark:text-neutralwarm-50 dark:group-hover:text-coffee-100">
                 {{ $post->title }}
             </h3>
 

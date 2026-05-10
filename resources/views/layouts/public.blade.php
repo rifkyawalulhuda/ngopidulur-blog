@@ -20,6 +20,10 @@
             'about' => $homeUrl.'#site-footer',
         ];
         $isHome = request()->routeIs('home');
+        $articlesUrl = route('posts.index');
+        $categoriesUrl = route('category.index');
+        $isArticles = request()->routeIs('posts.index');
+        $isCategories = request()->routeIs('category.index', 'category.show');
         $searchHref = $isHome ? '#home-search' : route('search');
         $socialGithub = data_get($blogSocialLinks ?? [], 'github', '#');
         $socialInstagram = data_get($blogSocialLinks ?? [], 'instagram', '#');
@@ -92,10 +96,10 @@
                     <a href="{{ $homeUrl }}" class="border-b-2 {{ $isHome ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:text-[#8b4a22] dark:hover:text-coffee-100">
                         Beranda
                     </a>
-                    <a href="{{ $homeSections['articles'] }}" class="border-b-2 border-transparent pb-2 text-sm font-semibold text-[#2f1c12] transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:text-neutralwarm-50 dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
+                    <a href="{{ $articlesUrl }}" class="border-b-2 {{ $isArticles ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
                         Artikel
                     </a>
-                    <a href="{{ $homeSections['categories'] }}" class="border-b-2 border-transparent pb-2 text-sm font-semibold text-[#2f1c12] transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:text-neutralwarm-50 dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
+                    <a href="{{ $categoriesUrl }}" class="border-b-2 {{ $isCategories ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
                         Kategori
                     </a>
                     <a href="{{ $homeSections['about'] }}" class="border-b-2 border-transparent pb-2 text-sm font-semibold text-[#2f1c12] transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:text-neutralwarm-50 dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
@@ -178,11 +182,11 @@
                             <span>Beranda</span>
                             <span aria-hidden="true">&rarr;</span>
                         </a>
-                        <a href="{{ $homeSections['articles'] }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
+                        <a href="{{ $articlesUrl }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
                             <span>Artikel</span>
                             <span aria-hidden="true">&rarr;</span>
                         </a>
-                        <a href="{{ $homeSections['categories'] }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
+                        <a href="{{ $categoriesUrl }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
                             <span>Kategori</span>
                             <span aria-hidden="true">&rarr;</span>
                         </a>
