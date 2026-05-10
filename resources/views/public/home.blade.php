@@ -32,7 +32,7 @@
                             </p>
                         </div>
 
-                        <form action="{{ route('search') }}" method="GET" class="ngopi-reveal max-w-3xl" style="animation-delay: 0.16s;">
+                        <form action="{{ route('search') }}" method="GET" class="ngopi-reveal relative max-w-3xl" style="animation-delay: 0.16s;" data-home-live-search-form data-search-endpoint="{{ route('search') }}">
                             <label for="home-search" class="sr-only">Cari artikel</label>
                             <div class="flex items-center gap-3 rounded-[1.65rem] border border-[#efddcc] bg-white/90 p-3 shadow-[0_26px_60px_-40px_rgba(90,46,22,0.45)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/78">
                                 <span class="inline-flex size-11 shrink-0 items-center justify-center rounded-[1.1rem] bg-[#fbf2e9] text-[#8b4a22] dark:bg-white/6 dark:text-coffee-100">
@@ -50,9 +50,22 @@
                                     class="min-w-0 flex-1 border-0 bg-transparent text-base text-[#2f1c12] outline-none placeholder:text-[#978378] focus:ring-0 dark:text-neutralwarm-50 dark:placeholder:text-neutralwarm-100/45"
                                 >
 
-                                <button type="submit" class="ngopi-solid-button shrink-0 px-6 sm:px-7">
+                                <button type="submit" class="ngopi-solid-button shrink-0 px-6 sm:px-7" data-home-live-search-submit>
                                     Cari
                                 </button>
+                            </div>
+
+                            <div class="mt-3 flex items-center justify-between gap-3 px-1">
+                                <p class="text-sm text-[#7c695d] dark:text-neutralwarm-100/70" data-home-live-search-status>
+                                    Ketik kata kunci seperti AI, Laravel, atau kopi dan hasil akan muncul otomatis.
+                                </p>
+                                <p class="hidden text-xs text-[#9b8476] dark:text-neutralwarm-100/55 sm:block">
+                                    Kamu tetap bisa tekan Cari untuk membuka halaman hasil lengkap.
+                                </p>
+                            </div>
+
+                            <div class="pointer-events-none absolute left-0 right-0 top-full z-30 mt-3 opacity-0 transition duration-200" data-home-live-search-panel hidden>
+                                <div data-home-live-search-results></div>
                             </div>
                         </form>
 

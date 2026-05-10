@@ -1,7 +1,30 @@
 @extends('layouts.public')
 
 @section('content')
-    <article class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+    <div
+        data-reading-progress-root
+        class="pointer-events-none fixed inset-x-0 top-0 z-[70] h-1.5 bg-transparent"
+        aria-hidden="true"
+    >
+        <div
+            data-reading-progress-bar
+            class="h-full w-0 rounded-r-full bg-[linear-gradient(90deg,#8b4a22_0%,#c67a3e_100%)] shadow-[0_8px_20px_-10px_rgba(139,74,34,0.75)] transition-[width] duration-150 dark:bg-[linear-gradient(90deg,#f0c8a8_0%,#c67a3e_100%)]"
+        ></div>
+    </div>
+
+    <button
+        type="button"
+        data-scroll-top
+        class="pointer-events-none fixed bottom-4 right-4 z-[65] inline-flex translate-y-4 items-center gap-2 rounded-full border border-coffee-100 bg-white/96 px-4 py-3 text-sm font-semibold text-coffee-700 opacity-0 shadow-[0_22px_45px_-24px_rgba(59,36,20,0.55)] backdrop-blur-sm transition duration-300 hover:-translate-y-0.5 hover:bg-[#fff8f1] dark:border-coffee-700/40 dark:bg-neutralwarm-900/92 dark:text-coffee-100 dark:hover:bg-white/8 sm:bottom-6 sm:right-6 sm:px-5"
+        aria-label="Kembali ke atas"
+    >
+        <svg class="size-4" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 15V5M10 5L5.5 9.5M10 5L14.5 9.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span class="hidden sm:inline">Ke atas</span>
+    </button>
+
+    <article data-reading-article class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div class="space-y-6">
             <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em]">
                 <a href="{{ route('category.show', $post->category) }}" class="rounded-full bg-coffee-100 px-3 py-1 text-coffee-700 dark:bg-coffee-500/20 dark:text-coffee-100">
