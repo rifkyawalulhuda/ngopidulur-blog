@@ -1,0 +1,148 @@
+- generic [ref=e2]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - link "Ngopi Dulur Ngopi Dulur Warm Coffee Meets Modern Tech" [ref=e5] [cursor=pointer]:
+        - /url: http://ngopidulur-blog.test
+        - img "Ngopi Dulur" [ref=e6]
+        - generic [ref=e7]:
+          - paragraph [ref=e8]: Ngopi Dulur
+          - paragraph [ref=e9]: Warm Coffee Meets Modern Tech
+      - navigation [ref=e10]:
+        - link "Beranda" [ref=e11] [cursor=pointer]:
+          - /url: http://ngopidulur-blog.test
+        - link "Artikel" [ref=e12] [cursor=pointer]:
+          - /url: http://ngopidulur-blog.test/articles
+        - link "Kategori" [ref=e13] [cursor=pointer]:
+          - /url: http://ngopidulur-blog.test/categories
+        - link "Tentang" [ref=e14] [cursor=pointer]:
+          - /url: http://ngopidulur-blog.test#site-footer
+      - generic [ref=e15]:
+        - link "Cari" [ref=e16] [cursor=pointer]:
+          - /url: "#home-search"
+        - button "Ganti tema" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+  - main [ref=e21]:
+    - generic [ref=e22]:
+      - generic [ref=e23]:
+        - img "Secangkir kopi hangat" [ref=e26]
+        - generic [ref=e28]:
+          - generic [ref=e29]:
+            - generic [ref=e30]: Ngopi Dulur
+            - generic [ref=e32]:
+              - heading "Cerita, catatan, dan pikiran ringan yang enak dibaca sambil ngopi." [level=1] [ref=e33]
+              - paragraph [ref=e34]: Seduh bacaan terbaru dari ruang tulis pribadi yang modern dan hangat.
+            - generic [ref=e35]:
+              - generic [ref=e36]: Cari artikel
+              - generic [ref=e37]:
+                - img [ref=e39]
+                - searchbox "Cari artikel" [active] [ref=e41]: sasa
+                - button "Cari" [ref=e42] [cursor=pointer]
+              - generic [ref=e43]:
+                - paragraph [ref=e44]: 1 artikel ditemukan
+                - paragraph [ref=e45]: Kamu tetap bisa tekan Cari untuk membuka halaman hasil lengkap.
+              - generic [ref=e143]:
+                - generic [ref=e144]:
+                  - paragraph [ref=e145]: Hasil cepat
+                  - paragraph [ref=e146]: 1 artikel relevan untuk "sasa"
+                - link "Bacaan Santai 02 May 2026 Lorem Ipsum Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellent..." [ref=e148] [cursor=pointer]:
+                  - /url: http://ngopidulur-blog.test/posts/lorem-ipsum
+                  - img [ref=e150]
+                  - generic [ref=e152]:
+                    - generic [ref=e153]:
+                      - generic [ref=e154]: Bacaan Santai
+                      - generic [ref=e155]: 02 May 2026
+                    - paragraph [ref=e156]: Lorem Ipsum
+                    - paragraph [ref=e157]: Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellent...
+                - link "Lihat semua hasil pencarian" [ref=e159] [cursor=pointer]:
+                  - /url: http://ngopidulur-blog.test/search?q=sasa
+                  - text: Lihat semua hasil pencarian
+                  - generic [ref=e160]: →
+            - generic [ref=e46]:
+              - link "Baca artikel" [ref=e47] [cursor=pointer]:
+                - /url: "#latest-articles"
+              - link "Jelajahi kategori" [ref=e48] [cursor=pointer]:
+                - /url: "#popular-categories"
+          - generic [ref=e49]:
+            - img "Secangkir kopi hangat" [ref=e51]
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - paragraph [ref=e56]: Artikel unggulan
+                - img [ref=e58]
+              - 'link "Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia Belajar Sambil Ngopi Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia Buku AI for Data Science bukan sekadar membahas Deep Learning. Review lengkap + takeaway utama dari buku yang mengajarkan framework AI holistik untuk data scientist. Lihat semua artikel" [ref=e60] [cursor=pointer]':
+                - /url: http://ngopidulur-blog.test/posts/ai-for-data-science
+                - 'img "Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia" [ref=e62]'
+                - generic [ref=e63]:
+                  - generic [ref=e64]: Belajar Sambil Ngopi
+                  - 'heading "Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia" [level=2] [ref=e65]'
+                  - paragraph [ref=e66]: Buku AI for Data Science bukan sekadar membahas Deep Learning. Review lengkap + takeaway utama dari buku yang mengajarkan framework AI holistik untuk data scientist.
+                  - generic [ref=e67]:
+                    - text: Lihat semua artikel
+                    - generic [ref=e68]: →
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - paragraph [ref=e73]: Kategori populer
+          - generic [ref=e74]:
+            - link "Bacaan Santai Topik bacaan hangat untuk dinikmati pelan-pelan. 1" [ref=e75] [cursor=pointer]:
+              - /url: http://ngopidulur-blog.test/category/bacaan-santai
+              - img [ref=e77]
+              - generic [ref=e79]:
+                - paragraph [ref=e80]: Bacaan Santai
+                - paragraph [ref=e81]: Topik bacaan hangat untuk dinikmati pelan-pelan.
+              - generic [ref=e82]:
+                - generic [ref=e83]: "1"
+                - img [ref=e84]
+            - link "Belajar Sambil Ngopi Topik bacaan hangat untuk dinikmati pelan-pelan. 1" [ref=e86] [cursor=pointer]:
+              - /url: http://ngopidulur-blog.test/category/belajar-sambil-kopi
+              - img [ref=e88]
+              - generic [ref=e91]:
+                - paragraph [ref=e92]: Belajar Sambil Ngopi
+                - paragraph [ref=e93]: Topik bacaan hangat untuk dinikmati pelan-pelan.
+              - generic [ref=e94]:
+                - generic [ref=e95]: "1"
+                - img [ref=e96]
+          - link "Lihat semua kategori" [ref=e98] [cursor=pointer]:
+            - /url: http://ngopidulur-blog.test/categories
+            - text: Lihat semua kategori
+            - generic [ref=e99]: →
+        - generic [ref=e100]:
+          - paragraph [ref=e102]: Artikel terbaru
+          - generic [ref=e103]:
+            - article [ref=e104]:
+              - 'link "Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia Belajar Sambil Ngopi 07 May 2026 Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia Buku AI for Data Science bukan sekadar membahas Deep Learning. Review lengkap + takeaway utama dari buku yang mengajarkan framework AI holistik untuk data scientist. Admin Ngopi Dulur Baca selengkapnya" [ref=e105] [cursor=pointer]':
+                - /url: http://ngopidulur-blog.test/posts/ai-for-data-science
+                - 'img "Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia" [ref=e107]'
+                - generic [ref=e108]:
+                  - generic [ref=e109]:
+                    - generic [ref=e110]: Belajar Sambil Ngopi
+                    - generic [ref=e111]: 07 May 2026
+                  - 'heading "Bedah Lengkap Buku “AI for Data Science”: Toolbox AI yang Jarang Dibahas di Indonesia" [level=3] [ref=e112]'
+                  - paragraph [ref=e113]: Buku AI for Data Science bukan sekadar membahas Deep Learning. Review lengkap + takeaway utama dari buku yang mengajarkan framework AI holistik untuk data scientist.
+                  - generic [ref=e114]:
+                    - generic [ref=e115]: Admin Ngopi Dulur
+                    - generic [ref=e116]:
+                      - text: Baca selengkapnya
+                      - generic [ref=e117]: →
+            - article [ref=e118]:
+              - link "Lorem Ipsum Bacaan Santai 02 May 2026 Lorem Ipsum Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus dui... Admin Ngopi Dulur Baca selengkapnya" [ref=e119] [cursor=pointer]:
+                - /url: http://ngopidulur-blog.test/posts/lorem-ipsum
+                - img "Lorem Ipsum" [ref=e121]
+                - generic [ref=e122]:
+                  - generic [ref=e123]:
+                    - generic [ref=e124]: Bacaan Santai
+                    - generic [ref=e125]: 02 May 2026
+                  - heading "Lorem Ipsum" [level=3] [ref=e126]
+                  - paragraph [ref=e127]: Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus dui...
+                  - generic [ref=e128]:
+                    - generic [ref=e129]: Admin Ngopi Dulur
+                    - generic [ref=e130]:
+                      - text: Baca selengkapnya
+                      - generic [ref=e131]: →
+  - contentinfo [ref=e133]:
+    - generic [ref=e134]:
+      - paragraph [ref=e136]: Dibuat dengan Laravel, Vue, dan secangkir kopi yang pelan-pelan habis.
+      - generic [ref=e137]:
+        - link "Github" [ref=e138] [cursor=pointer]:
+          - /url: https://github.com/ngopidulur
+        - link "Instagram" [ref=e139] [cursor=pointer]:
+          - /url: https://instagram.com/ngopidulur
+        - paragraph [ref=e140]: © 2026 Ngopi Dulur

@@ -9,7 +9,7 @@
     @endphp
 
     <div class="ngopi-shell">
-        <section class="relative overflow-hidden border-b border-[#ead8c8]/75 dark:border-coffee-700/35">
+        <section class="relative z-30 overflow-visible border-b border-[#ead8c8]/75 dark:border-coffee-700/35">
             <div class="absolute inset-y-0 right-0 hidden w-[56%] lg:block">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(255,248,241,0.95),rgba(255,248,241,0.28)_38%,transparent_70%)] dark:bg-[radial-gradient(circle_at_left,rgba(31,23,19,0.95),rgba(31,23,19,0.55)_42%,transparent_74%)]"></div>
                 <img src="{{ $heroImage }}" alt="Secangkir kopi hangat" class="h-full w-full object-cover object-center">
@@ -17,7 +17,7 @@
 
             <div class="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-16">
                 <div class="grid gap-7 lg:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)] lg:items-center xl:gap-12">
-                    <div class="relative z-10 max-w-3xl space-y-6 sm:space-y-7">
+                    <div class="relative z-30 max-w-3xl space-y-6 sm:space-y-7">
                         <div class="ngopi-reveal inline-flex items-center gap-2 rounded-full border border-[#efdfcf] bg-white/82 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#8b4a22] shadow-[0_18px_30px_-26px_rgba(90,46,22,0.45)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/65 dark:text-coffee-100">
                             <span class="size-2 rounded-full bg-[#8b4a22] dark:bg-coffee-100"></span>
                             {{ $heroBadge }}
@@ -32,7 +32,7 @@
                             </p>
                         </div>
 
-                        <form action="{{ route('search') }}" method="GET" class="ngopi-reveal relative max-w-3xl" style="animation-delay: 0.16s;" data-home-live-search-form data-search-endpoint="{{ route('search') }}">
+                        <form action="{{ route('search') }}" method="GET" class="ngopi-reveal relative z-40 max-w-3xl" style="animation-delay: 0.16s;" data-home-live-search-form data-search-endpoint="{{ route('search') }}">
                             <label for="home-search" class="sr-only">Cari artikel</label>
                             <div class="flex items-center gap-3 rounded-[1.65rem] border border-[#efddcc] bg-white/90 p-3 shadow-[0_26px_60px_-40px_rgba(90,46,22,0.45)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/78">
                                 <span class="inline-flex size-11 shrink-0 items-center justify-center rounded-[1.1rem] bg-[#fbf2e9] text-[#8b4a22] dark:bg-white/6 dark:text-coffee-100">
@@ -64,7 +64,7 @@
                                 </p>
                             </div>
 
-                            <div class="pointer-events-none absolute left-0 right-0 top-full z-30 mt-3 opacity-0 transition duration-200" data-home-live-search-panel hidden>
+                            <div class="pointer-events-none absolute left-0 right-0 top-full z-[120] mt-3 opacity-0 transition duration-200" data-home-live-search-panel hidden>
                                 <div data-home-live-search-results></div>
                             </div>
                         </form>
@@ -93,7 +93,7 @@
                         </div>
                     </div>
 
-                    <div class="relative hidden min-h-[520px] items-center justify-center lg:flex">
+                    <div class="relative z-10 hidden min-h-[520px] items-center justify-center lg:flex">
                         <div class="absolute inset-0 overflow-hidden rounded-[2.65rem] border border-[#efddcc] bg-[#fdf6ef] shadow-[0_30px_80px_-46px_rgba(90,46,22,0.4)] dark:border-coffee-700/35 dark:bg-neutralwarm-900/82">
                             <img src="{{ $heroImage }}" alt="Secangkir kopi hangat" class="h-full w-full object-cover object-center">
                             <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,249,244,0.86)_0%,rgba(255,249,244,0.12)_52%,rgba(255,249,244,0)_74%)] dark:bg-[linear-gradient(90deg,rgba(31,23,19,0.9)_0%,rgba(31,23,19,0.18)_54%,rgba(31,23,19,0)_76%)]"></div>
