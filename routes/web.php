@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminApi\PostController as AdminPostApiController;
 use App\Http\Controllers\AdminApi\CategoryController as AdminCategoryApiController;
 use App\Http\Controllers\AdminApi\DashboardController as AdminDashboardApiController;
+use App\Http\Controllers\AdminApi\ProfileController as AdminProfileApiController;
 use App\Http\Controllers\AdminApi\TagController as AdminTagApiController;
 use App\Http\Controllers\AdminShellController;
 use App\Http\Controllers\PublicCategoryController;
@@ -42,6 +43,8 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('admin/api')->group(function () {
         Route::get('/dashboard', [AdminDashboardApiController::class, 'index'])->name('admin.api.dashboard');
+        Route::get('/profile', [AdminProfileApiController::class, 'show'])->name('admin.api.profile.show');
+        Route::post('/profile', [AdminProfileApiController::class, 'update'])->name('admin.api.profile.update');
 
         Route::get('/posts', [AdminPostApiController::class, 'index'])->name('admin.api.posts.index');
         Route::post('/posts', [AdminPostApiController::class, 'store'])->name('admin.api.posts.store');

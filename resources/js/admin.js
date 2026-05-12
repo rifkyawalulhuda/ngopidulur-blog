@@ -300,7 +300,7 @@ const adminSpa = createApp({
             }
 
             if (this.current === 'media') {
-                return 'Media';
+                return 'Gambar';
             }
 
             if (this.current === 'settings') {
@@ -324,7 +324,7 @@ const adminSpa = createApp({
             }
 
             if (this.current === 'media') {
-                return 'Lihat gambar unggulan yang sudah terhubung ke tulisan tanpa membuat media library yang terlalu berat.';
+                return 'Koleksi gambar dari tulisan, featured image, dan konten artikel dengan tautan ke post terkait.';
             }
 
             if (this.current === 'settings') {

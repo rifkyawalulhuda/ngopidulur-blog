@@ -1,6 +1,6 @@
 # Context Project
 
-Last updated: 2026-05-11
+Last updated: 2026-05-12
 Repo: `D:\Github\ngopidulur-blog`
 
 ## 1. Ringkasan Produk
@@ -104,6 +104,7 @@ Admin API:
 - `GET /admin/api/posts/{post}/preview`
 - `POST /admin/api/posts/images`
 - `GET /admin/api/media`
+- `GET|POST /admin/api/profile`
 - `GET|PUT /admin/api/settings`
 
 ## 6. File Map Penting
@@ -170,6 +171,8 @@ Styling/build:
 - `resources/js/admin.js` sudah dipecah ke beberapa lazy-loaded module dengan `defineAsyncComponent`, jadi lebih ringan daripada state awal yang sepenuhnya eager
 - seluruh warna admin SPA sudah digeser dari palet coffee/custom ke palet TailAdmin gray + brand
 - login admin juga sudah diselaraskan ke nuansa TailAdmin light/dark
+- halaman admin `Media` sekarang berfungsi sebagai galeri `Gambar`, berisi gambar dari featured image dan konten tulisan dengan judul yang membuka tulisan terkait
+- header admin TailAdmin memiliki dropdown `Profile` yang membuka modal pengaturan foto profil, nama, email/username login, dan password login
 
 ### Public blog
 

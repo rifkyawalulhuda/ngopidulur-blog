@@ -1,0 +1,66 @@
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - link "TailAdmin Admin Dashboard" [ref=e7] [cursor=pointer]:
+      - /url: http://ngopidulur-blog.test/admin/dashboard
+      - img [ref=e9]
+      - generic [ref=e13]:
+        - paragraph [ref=e14]: TailAdmin
+        - paragraph [ref=e15]: Admin Dashboard
+    - generic [ref=e17]:
+      - heading "Menu" [level=2] [ref=e18]
+      - list [ref=e19]:
+        - listitem [ref=e20]:
+          - link "Dashboard" [ref=e21] [cursor=pointer]:
+            - /url: /admin/dashboard
+            - img [ref=e23]
+            - generic [ref=e25]: Dashboard
+        - listitem [ref=e26]:
+          - link "Tulisan" [ref=e27] [cursor=pointer]:
+            - /url: /admin/posts
+            - img [ref=e29]
+            - generic [ref=e31]: Tulisan
+        - listitem [ref=e32]:
+          - link "Kategori" [ref=e33] [cursor=pointer]:
+            - /url: /admin/categories
+            - img [ref=e35]
+            - generic [ref=e37]: Kategori
+        - listitem [ref=e38]:
+          - link "Tag" [ref=e39] [cursor=pointer]:
+            - /url: /admin/tags
+            - img [ref=e41]
+            - generic [ref=e43]: Tag
+        - listitem [ref=e44]:
+          - link "Media" [ref=e45] [cursor=pointer]:
+            - /url: /admin/media
+            - img [ref=e47]
+            - generic [ref=e49]: Media
+        - listitem [ref=e50]:
+          - link "Pengaturan" [ref=e51] [cursor=pointer]:
+            - /url: /admin/settings
+            - img [ref=e53]
+            - generic [ref=e55]: Pengaturan
+    - button "Keluar" [ref=e58] [cursor=pointer]:
+      - img [ref=e60]
+      - generic [ref=e62]: Keluar
+  - banner [ref=e64]:
+    - generic [ref=e65]:
+      - generic [ref=e66]:
+        - button "Sembunyikan sidebar" [ref=e67] [cursor=pointer]:
+          - img [ref=e68]
+        - generic [ref=e71]:
+          - generic:
+            - img
+          - textbox "Search or type command..." [ref=e72]
+          - generic [ref=e73]: ⌘ K
+      - generic [ref=e74]:
+        - button "Ubah ke tema gelap" [ref=e75] [cursor=pointer]:
+          - generic [ref=e76]: Ubah ke tema gelap
+          - img [ref=e77]
+        - button [ref=e80] [cursor=pointer]:
+          - img [ref=e83]
+        - button "User Admin Ngopi Dulur Administrator" [ref=e86] [cursor=pointer]:
+          - img "User" [ref=e88]
+          - generic [ref=e89]:
+            - generic [ref=e90]: Admin Ngopi Dulur
+            - generic [ref=e91]: Administrator
+          - img [ref=e92]

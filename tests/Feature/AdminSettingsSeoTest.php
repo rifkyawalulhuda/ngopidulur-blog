@@ -113,16 +113,18 @@ test('admin dapat memperbarui settings beserta aset brand', function () {
         ->assertSee('data-theme="dark"', false);
 });
 
-test('media api menampilkan featured image dari posts saja', function () {
+test('media api menampilkan koleksi gambar dari featured image dan konten post', function () {
     Storage::fake('public');
 
     Storage::disk('public')->put('posts/cover-one.webp', 'fake-image');
+    Storage::disk('public')->put('posts/content/inline-one.webp', 'fake-image');
 
     $withImage = makeSeoPost($this->admin, $this->category, [
         'title' => 'Artikel Dengan Gambar',
         'slug' => 'artikel-dengan-gambar',
         'featured_image' => 'posts/cover-one.webp',
         'featured_image_alt' => 'Sampul satu',
+        'rendered_content' => '<p>Isi artikel.</p><img src="/storage/posts/content/inline-one.webp" alt="Gambar isi">',
     ]);
 
     makeSeoPost($this->admin, $this->category, [
@@ -131,12 +133,17 @@ test('media api menampilkan featured image dari posts saja', function () {
         'featured_image' => null,
     ]);
 
-    $this->actingAs($this->admin)
+    $response = $this->actingAs($this->admin)
         ->getJson('/admin/api/media')
         ->assertOk()
-        ->assertJsonCount(1, 'items')
+        ->assertJsonCount(2, 'items')
         ->assertJsonPath('items.0.post_title', $withImage->title)
-        ->assertJsonPath('items.0.featured_image', 'posts/cover-one.webp');
+        ->assertJsonPath('items.0.image_path', 'posts/cover-one.webp')
+        ->assertJsonPath('items.0.source_label', 'Gambar unggulan');
+
+    expect($response->json('items.1.image_path'))->toBe('posts/content/inline-one.webp');
+    expect($response->json('items.1.source_label'))->toBe('Gambar konten');
+    expect($response->json('items.1.related_title'))->toBe($withImage->title);
 });
 
 test('sitemap hanya memuat homepage dan konten published yang valid', function () {
