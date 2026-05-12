@@ -55,14 +55,7 @@
                                 </button>
                             </div>
 
-                            <div class="mt-3 flex items-center justify-between gap-3 px-1">
-                                <p class="text-sm text-[#7c695d] dark:text-neutralwarm-100/70" data-home-live-search-status>
-                                    Ketik kata kunci seperti AI, Laravel, atau kopi dan hasil akan muncul otomatis.
-                                </p>
-                                <p class="hidden text-xs text-[#9b8476] dark:text-neutralwarm-100/55 sm:block">
-                                    Kamu tetap bisa tekan Cari untuk membuka halaman hasil lengkap.
-                                </p>
-                            </div>
+                            <p class="sr-only" data-home-live-search-status>Status pencarian artikel.</p>
 
                             <div class="pointer-events-none absolute left-0 right-0 top-full z-[120] mt-3 opacity-0 transition duration-200" data-home-live-search-panel hidden>
                                 <div data-home-live-search-results></div>

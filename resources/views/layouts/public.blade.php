@@ -24,6 +24,7 @@
         $categoriesUrl = route('category.index');
         $isArticles = request()->routeIs('posts.index');
         $isCategories = request()->routeIs('category.index', 'category.show');
+        $navigationCategories = collect($publicNavigationCategories ?? []);
         $searchHref = $isHome ? '#home-search' : route('search');
         $socialGithub = data_get($blogSocialLinks ?? [], 'github', '#');
         $socialInstagram = data_get($blogSocialLinks ?? [], 'instagram', '#');
@@ -99,9 +100,47 @@
                     <a href="{{ $articlesUrl }}" class="border-b-2 {{ $isArticles ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
                         Artikel
                     </a>
-                    <a href="{{ $categoriesUrl }}" class="border-b-2 {{ $isCategories ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
-                        Kategori
-                    </a>
+                    <div class="group relative">
+                        <a href="{{ $categoriesUrl }}" class="inline-flex items-center gap-1 border-b-2 {{ $isCategories ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] focus:outline-none focus-visible:border-[#8b4a22] dark:hover:border-coffee-100/40 dark:hover:text-coffee-100 dark:focus-visible:border-coffee-100">
+                            <span>Kategori</span>
+                            <svg class="size-3.5 transition group-hover:rotate-180 group-focus-within:rotate-180" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+
+                        <div class="invisible absolute left-1/2 top-full z-50 w-72 -translate-x-1/2 pt-4 opacity-0 transition duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                            <div class="overflow-hidden rounded-[1.35rem] border border-[#ead8c8] bg-white shadow-[0_28px_65px_-38px_rgba(90,46,22,0.45)] dark:border-coffee-700/40 dark:bg-neutralwarm-900">
+                                <a href="{{ $categoriesUrl }}" class="flex items-center justify-between gap-4 border-b border-[#f0dfcf] px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:bg-[#fff7ef] hover:text-[#8b4a22] dark:border-coffee-700/35 dark:text-neutralwarm-50 dark:hover:bg-white/5 dark:hover:text-coffee-100">
+                                    <span>Semua kategori</span>
+                                    <span aria-hidden="true">&rarr;</span>
+                                </a>
+
+                                @if ($navigationCategories->isNotEmpty())
+                                    <div class="max-h-[22rem] overflow-y-auto py-2">
+                                        @foreach ($navigationCategories as $navigationCategory)
+                                            <a href="{{ route('category.show', $navigationCategory) }}" class="flex items-start justify-between gap-4 px-4 py-3 text-sm transition hover:bg-[#fff7ef] dark:hover:bg-white/5">
+                                                <span class="min-w-0">
+                                                    <span class="block truncate font-semibold text-[#2f1c12] dark:text-neutralwarm-50">
+                                                        {{ $navigationCategory->name }}
+                                                    </span>
+                                                    <span class="mt-1 line-clamp-2 block text-xs leading-5 text-[#8a776b] dark:text-neutralwarm-100/65">
+                                                        {{ $navigationCategory->description ?: 'Kumpulan tulisan pada topik ini.' }}
+                                                    </span>
+                                                </span>
+                                                <span class="inline-flex min-w-7 justify-center rounded-full bg-[#f7ebdf] px-2 py-1 text-xs font-semibold text-[#8b4a22] dark:bg-coffee-500/18 dark:text-coffee-100">
+                                                    {{ $navigationCategory->published_posts_count }}
+                                                </span>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="px-4 py-4 text-sm leading-6 text-[#8a776b] dark:text-neutralwarm-100/70">
+                                        Belum ada kategori published.
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     <a href="{{ $homeSections['about'] }}" class="border-b-2 border-transparent pb-2 text-sm font-semibold text-[#2f1c12] transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:text-neutralwarm-50 dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
                         Tentang
                     </a>
@@ -186,10 +225,40 @@
                             <span>Artikel</span>
                             <span aria-hidden="true">&rarr;</span>
                         </a>
-                        <a href="{{ $categoriesUrl }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
-                            <span>Kategori</span>
-                            <span aria-hidden="true">&rarr;</span>
-                        </a>
+                        <div class="space-y-2">
+                            <button
+                                type="button"
+                                data-mobile-category-toggle
+                                aria-expanded="false"
+                                aria-controls="mobile-category-menu"
+                                class="flex w-full items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-left text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5"
+                            >
+                                <span>Kategori</span>
+                                <svg class="size-4 transition" data-mobile-category-icon viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                                    <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+
+                            <div id="mobile-category-menu" data-mobile-category-panel class="hidden space-y-2 pl-3">
+                                <a href="{{ $categoriesUrl }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
+                                    <span>Semua kategori</span>
+                                    <span aria-hidden="true">&rarr;</span>
+                                </a>
+                                @foreach ($navigationCategories as $navigationCategory)
+                                    <a href="{{ route('category.show', $navigationCategory) }}" data-mobile-menu-link class="flex items-center justify-between gap-4 rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
+                                        <span class="min-w-0">
+                                            <span class="block truncate font-semibold">{{ $navigationCategory->name }}</span>
+                                            <span class="mt-1 line-clamp-2 block text-xs leading-5 text-[#8a776b] dark:text-neutralwarm-100/65">
+                                                {{ $navigationCategory->description ?: 'Kumpulan tulisan pada topik ini.' }}
+                                            </span>
+                                        </span>
+                                        <span class="inline-flex min-w-7 shrink-0 justify-center rounded-full bg-[#f7ebdf] px-2 py-1 text-xs font-semibold text-[#8b4a22] dark:bg-coffee-500/18 dark:text-coffee-100">
+                                            {{ $navigationCategory->published_posts_count }}
+                                        </span>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
                         <a href="{{ $homeSections['about'] }}" data-mobile-menu-link class="flex items-center justify-between rounded-[1.2rem] border border-[#ead8c8] bg-white px-4 py-3 text-sm font-semibold text-[#2f1c12] transition hover:border-[#dcbca1] hover:bg-[#fff7ef] dark:border-coffee-700/40 dark:bg-neutralwarm-900 dark:text-neutralwarm-50 dark:hover:bg-white/5">
                             <span>Tentang</span>
                             <span aria-hidden="true">&rarr;</span>

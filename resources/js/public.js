@@ -25,6 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenuBackdrop = document.querySelector('[data-mobile-menu-backdrop]');
     const mobileMenuToggle = document.querySelector('[data-mobile-menu-toggle]');
     const mobileMenuCloseButtons = document.querySelectorAll('[data-mobile-menu-close], [data-mobile-menu-link]');
+    const mobileCategoryToggle = document.querySelector('[data-mobile-category-toggle]');
+    const mobileCategoryPanel = document.querySelector('[data-mobile-category-panel]');
+    const mobileCategoryIcon = document.querySelector('[data-mobile-category-icon]');
 
     const openMobileMenu = () => {
         if (!mobileMenu || !mobileMenuPanel || !mobileMenuBackdrop || !mobileMenuToggle) {
@@ -55,11 +58,28 @@ document.addEventListener('DOMContentLoaded', () => {
         window.setTimeout(() => {
             mobileMenu.classList.add('hidden', 'pointer-events-none');
         }, 220);
+
+        mobileCategoryPanel?.classList.add('hidden');
+        mobileCategoryToggle?.setAttribute('aria-expanded', 'false');
+        mobileCategoryIcon?.classList.remove('rotate-180');
     };
 
     mobileMenuToggle?.addEventListener('click', openMobileMenu);
     mobileMenuBackdrop?.addEventListener('click', closeMobileMenu);
     mobileMenuCloseButtons.forEach((button) => button.addEventListener('click', closeMobileMenu));
+
+    mobileCategoryToggle?.addEventListener('click', () => {
+        if (!mobileCategoryPanel || !mobileCategoryToggle || !mobileCategoryIcon) {
+            return;
+        }
+
+        const isOpen = mobileCategoryToggle.getAttribute('aria-expanded') === 'true';
+        const nextState = !isOpen;
+
+        mobileCategoryToggle.setAttribute('aria-expanded', nextState ? 'true' : 'false');
+        mobileCategoryPanel.classList.toggle('hidden', !nextState);
+        mobileCategoryIcon.classList.toggle('rotate-180', nextState);
+    });
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {

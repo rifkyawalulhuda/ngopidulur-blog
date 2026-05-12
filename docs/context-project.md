@@ -187,6 +187,7 @@ Styling/build:
 - query pendek seperti `AI` harus tetap bisa ditemukan; backend search akan fallback ke `LIKE` bila token pendek membuat full-text tidak cocok
 - homepage hero search sekarang juga punya realtime suggestion dropdown via AJAX ke endpoint `/search?ajax=1&context=hero`
 - dropdown suggestion pada hero search homepage harus tampil di atas kartu hero dan section berikutnya; stacking context form/section sudah disetel untuk mencegah popup ketutup komponen lain
+- menu `Kategori` pada navigasi public desktop memiliki dropdown kategori aktif yang punya artikel published; menu mobile menampilkan daftar kategori yang sama dalam accordion default tertutup
 - CTA "Lihat semua kategori" di homepage sekarang menuju halaman index kategori `/categories`, bukan terkunci ke satu kategori
 
 ## 8. Guardrails Penting
