@@ -12,6 +12,7 @@ use App\Http\Controllers\PublicRobotsController;
 use App\Http\Controllers\PublicSearchController;
 use App\Http\Controllers\PublicPostController;
 use App\Http\Controllers\PublicHomeController;
+use App\Http\Controllers\PublicAboutController;
 use App\Http\Controllers\PublicTagController;
 use App\Http\Controllers\PublicSitemapController;
 use App\Models\Post;
@@ -30,6 +31,7 @@ Route::get('/posts/{slug}', [PublicPostController::class, 'show'])->name('posts.
 Route::get('/category/{category}', [PublicCategoryController::class, 'show'])->name('category.show');
 Route::get('/tag/{tag}', [PublicTagController::class, 'show'])->name('tag.show');
 Route::get('/search', [PublicSearchController::class, 'index'])->name('search');
+Route::get('/tentang', [PublicAboutController::class, 'index'])->name('about');
 Route::get('/sitemap.xml', [PublicSitemapController::class, 'show'])->name('sitemap');
 Route::get('/robots.txt', [PublicRobotsController::class, 'show'])->name('robots');
 
@@ -73,6 +75,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/media', [\App\Http\Controllers\AdminApi\MediaController::class, 'index'])->name('admin.api.media.index');
         Route::get('/search', [\App\Http\Controllers\AdminApi\SearchController::class, 'index'])->name('admin.api.search');
+        Route::get('/resume', [\App\Http\Controllers\AdminApi\ResumeController::class, 'show'])->name('admin.api.resume.show');
+        Route::put('/resume', [\App\Http\Controllers\AdminApi\ResumeController::class, 'update'])->name('admin.api.resume.update');
     });
 
     Route::get('/admin', [AdminShellController::class, 'index'])->name('admin.index');

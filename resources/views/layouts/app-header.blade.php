@@ -161,6 +161,23 @@
                                 <span class="mt-0.5 block text-xs font-normal text-gray-500 dark:text-gray-400">Foto, nama, email, password</span>
                             </span>
                         </button>
+                        <a
+                            href="/admin/resume"
+                            @click="profileDropdownOpen = false"
+                            class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white"
+                            role="menuitem"
+                        >
+                            <span class="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M9 12H15M9 16H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L18.7071 8.70711C18.8946 8.89464 19 9.149 19 9.41421V19C19 20.1046 18.1046 21 17 21Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M13 3V8C13 8.55228 13.4477 9 14 9H19" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </span>
+                            <span>
+                                <span class="block">Resume</span>
+                                <span class="mt-0.5 block text-xs font-normal text-gray-500 dark:text-gray-400">Halaman Tentang / profil publik</span>
+                            </span>
+                        </a>
                     </div>
                 </div>
 

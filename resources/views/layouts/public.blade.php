@@ -17,7 +17,7 @@
         $homeSections = [
             'articles' => $homeUrl.'#latest-articles',
             'categories' => $homeUrl.'#popular-categories',
-            'about' => $homeUrl.'#site-footer',
+            'about' => route('about'),
         ];
         $isHome = request()->routeIs('home');
         $articlesUrl = route('posts.index');
@@ -141,7 +141,7 @@
                             </div>
                         </div>
                     </div>
-                    <a href="{{ $homeSections['about'] }}" class="border-b-2 border-transparent pb-2 text-sm font-semibold text-[#2f1c12] transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:text-neutralwarm-50 dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
+                    <a href="{{ $homeSections['about'] }}" class="border-b-2 {{ request()->routeIs('about') ? 'border-[#8b4a22] text-[#8b4a22] dark:border-coffee-100 dark:text-coffee-100' : 'border-transparent text-[#2f1c12] dark:text-neutralwarm-50' }} pb-2 text-sm font-semibold transition hover:border-[#8b4a22]/40 hover:text-[#8b4a22] dark:hover:border-coffee-100/40 dark:hover:text-coffee-100">
                         Tentang
                     </a>
                 </nav>

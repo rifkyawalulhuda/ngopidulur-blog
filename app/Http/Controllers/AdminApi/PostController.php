@@ -40,15 +40,6 @@ class PostController extends Controller
            $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category));
        }
 
-       $sort = $request->string('sort')->toString() ?: 'updated_at';
-
-       if ($sort === 'published_at') {
-           $query->orderByRaw('published_at IS NULL')
-               ->orderByDesc('published_at')
-               ->orderByDesc('updated_at');
-       } else {
-           $query->orderByDesc('updated_at');
-       }
         $sortColumn = $request->string('sort_column')->toString() ?: 'updated_at';
         $sortDirection = $request->string('sort_direction')->toString() ?: 'desc';
         $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
@@ -86,7 +77,9 @@ class PostController extends Controller
                 'search' => $search ?? '',
                 'status' => $status ?? '',
                 'category' => $category ?? '',
-                'sort' => $sort,
+                'sort' => $sortColumn,
+                'sort_column' => $sortColumn,
+                'sort_direction' => $sortDirection,
             ],
             'categories' => Category::query()
                 ->orderBy('name')
