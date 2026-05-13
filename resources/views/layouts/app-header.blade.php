@@ -283,6 +283,14 @@
 
                     const formData = new FormData(event.target);
 
+                    // Hapus field password dari request bila semua kosong
+                    // agar user bisa update nama/foto tanpa harus isi password
+                    if (!formData.get('password') && !formData.get('current_password') && !formData.get('password_confirmation')) {
+                        formData.delete('current_password');
+                        formData.delete('password');
+                        formData.delete('password_confirmation');
+                    }
+
                     try {
                         const response = await fetch('/admin/api/profile', {
                             method: 'POST',

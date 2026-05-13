@@ -30,8 +30,8 @@ class ProfileController extends Controller
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'remove_avatar' => ['nullable', 'boolean'],
-            'current_password' => ['required_with:password', 'current_password'],
-            'password' => ['nullable', 'confirmed', Password::defaults()],
+            'current_password' => ['nullable', 'required_with:password', 'current_password'],
+            'password' => ['nullable', 'string', 'confirmed', Password::defaults()],
         ], [
             'name.required' => 'Nama wajib diisi.',
             'email.required' => 'Email login wajib diisi.',
