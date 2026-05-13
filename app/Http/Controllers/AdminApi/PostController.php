@@ -37,20 +37,42 @@ class PostController extends Controller
         }
 
         if ($category = trim((string) $request->string('category'))) {
-            $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category));
-        }
+           $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $category));
+       }
 
-        $sort = $request->string('sort')->toString() ?: 'updated_at';
+       $sort = $request->string('sort')->toString() ?: 'updated_at';
 
-        if ($sort === 'published_at') {
-            $query->orderByRaw('published_at IS NULL')
-                ->orderByDesc('published_at')
-                ->orderByDesc('updated_at');
+       if ($sort === 'published_at') {
+           $query->orderByRaw('published_at IS NULL')
+               ->orderByDesc('published_at')
+               ->orderByDesc('updated_at');
+       } else {
+           $query->orderByDesc('updated_at');
+       }
+        $sortColumn = $request->string('sort_column')->toString() ?: 'updated_at';
+        $sortDirection = $request->string('sort_direction')->toString() ?: 'desc';
+        $sortDirection = in_array($sortDirection, ['asc', 'desc']) ? $sortDirection : 'desc';
+
+        $allowedSortColumns = ['title', 'published_at', 'updated_at'];
+        $sortColumn = in_array($sortColumn, $allowedSortColumns) ? $sortColumn : 'updated_at';
+
+        if ($sortColumn === 'published_at') {
+            if ($sortDirection === 'asc') {
+                $query->orderByRaw('published_at IS NULL DESC')
+                    ->orderBy('published_at', 'asc')
+                    ->orderBy('updated_at', 'asc');
+            } else {
+                $query->orderByRaw('published_at IS NULL')
+                    ->orderByDesc('published_at')
+                    ->orderByDesc('updated_at');
+            }
         } else {
-            $query->orderByDesc('updated_at');
+            $query->orderBy($sortColumn, $sortDirection);
         }
 
-        $items = $query->paginate(10)->through(fn (Post $post) => $this->transformList($post));
+        $items = $query->paginate(
+            min((int) $request->input('per_page', 15), 100)
+        )->through(fn (Post $post) => $this->transformList($post));
 
         return response()->json([
             'items' => $items->items(),

@@ -1,4 +1,4 @@
-import { createApp, defineAsyncComponent } from 'vue';
+﻿import { createApp, defineAsyncComponent } from 'vue';
 
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 const lazyComponent = (loader) => defineAsyncComponent({
@@ -225,7 +225,7 @@ const adminSpa = createApp({
                 meta: {
                     current_page: 1,
                     last_page: 1,
-                    per_page: 10,
+                    per_page: 15,
                     total: 0,
                 },
                 error: '',
@@ -657,44 +657,55 @@ const adminSpa = createApp({
         },
 
         async loadPosts() {
-            this.posts.loading = true;
-            this.posts.error = '';
+             this.posts.loading = true;
+             this.posts.error = '';
 
-            try {
-                const params = new URLSearchParams();
+             try {
+                 const params = new URLSearchParams();
 
-                if (this.posts.filters.search) {
-                    params.set('search', this.posts.filters.search);
-                }
+                 if (this.posts.filters.search) {
+                     params.set('search', this.posts.filters.search);
+                 }
 
-                if (this.posts.filters.status) {
-                    params.set('status', this.posts.filters.status);
-                }
+                 if (this.posts.filters.status) {
+                     params.set('status', this.posts.filters.status);
+                 }
 
-                if (this.posts.filters.category) {
-                    params.set('category', this.posts.filters.category);
-                }
+                 if (this.posts.filters.category) {
+                     params.set('category', this.posts.filters.category);
+                 }
 
-                if (this.posts.filters.sort) {
-                    params.set('sort', this.posts.filters.sort);
-                }
+                 if (this.posts.filters.sort) {
+                     params.set('sort', this.posts.filters.sort);
+                 }
 
-                const payload = await this.apiCall(`/admin/api/posts?${params.toString()}`);
-                this.posts.items = payload.items || [];
-                this.posts.meta = payload.meta || this.posts.meta;
-                this.categories.items = payload.categories || this.categories.items;
-                this.tags.items = payload.tags || this.tags.items;
-                this.posts.filters = {
-                    ...this.posts.filters,
-                    ...(payload.filters || {}),
-                };
-            } catch (error) {
-                this.posts.error = error.message;
-                this.toast(error.message, 'error');
-            } finally {
-                this.posts.loading = false;
-            }
-        },
+                 if (this.posts.filters.sort_column) {
+                     params.set('sort_column', this.posts.filters.sort_column);
+                 }
+
+                 if (this.posts.filters.sort_direction) {
+                     params.set('sort_direction', this.posts.filters.sort_direction);
+                 }
+
+                 params.set('page', this.posts.meta.current_page || 1);
+                 params.set('per_page', this.posts.meta.per_page || 15);
+
+                 const payload = await this.apiCall(`/admin/api/posts?${params.toString()}`);
+                 this.posts.items = payload.items || [];
+                 this.posts.meta = payload.meta || this.posts.meta;
+                 this.categories.items = payload.categories || this.categories.items;
+                 this.tags.items = payload.tags || this.tags.items;
+                 this.posts.filters = {
+                     ...this.posts.filters,
+                     ...(payload.filters || {}),
+                 };
+             } catch (error) {
+                 this.posts.error = error.message;
+                 this.toast(error.message, 'error');
+             } finally {
+                 this.posts.loading = false;
+             }
+         },
 
         async ensurePostOptionsLoaded() {
             const tasks = [];
@@ -840,11 +851,24 @@ const adminSpa = createApp({
         },
 
         changePostFilters(patch) {
-            this.posts.filters = {
-                ...this.posts.filters,
-                ...patch,
-            };
-        },
+             const updatedFilters = {
+                 ...this.posts.filters,
+                 ...patch,
+             };
+
+             // Sync sort_column and sort_direction when sort dropdown changes
+             if (patch.sort && !patch.sort_column) {
+                 if (patch.sort === 'updated_at') {
+                     updatedFilters.sort_column = 'updated_at';
+                     updatedFilters.sort_direction = 'desc';
+                 } else if (patch.sort === 'published_at') {
+                     updatedFilters.sort_column = 'published_at';
+                     updatedFilters.sort_direction = 'desc';
+                 }
+             }
+
+             this.posts.filters = updatedFilters;
+         },
 
         async submitPost(statusOverride = null) {
             this.postEditor.saving = true;
@@ -1545,16 +1569,19 @@ const adminSpa = createApp({
             </section>
 
             <posts-page
-                v-else-if="current === 'posts'"
-                :posts="posts"
-                :categories="categories"
-                @open-create="openPostCreate"
-                @load-posts="loadPosts"
-                @reset-filters="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at' })"
-                @preview-post="previewPostById"
-                @open-edit="openPostEdit"
-                @prompt-action="promptPostAction"
-                @prompt-delete="promptDelete" />
+                 v-else-if="current === 'posts'"
+                 :posts="posts"
+                 :categories="categories"
+                 @open-create="openPostCreate"
+                 @load-posts="() => { posts.meta.current_page = 1; loadPosts(); }"
+                 @reset-filters="changePostFilters({ search: '', status: '', category: '', sort: 'updated_at', sort_column: 'updated_at', sort_direction: 'desc' })"
+                 @preview-post="previewPostById"
+                 @open-edit="openPostEdit"
+                 @prompt-action="promptPostAction"
+                 @prompt-delete="promptDelete"
+                 @change-sort="changePostFilters"
+                 @change-page="(page) => { posts.meta.current_page = page; loadPosts(); }"
+                 @change-per-page="(perPage) => { posts.meta.per_page = perPage; posts.meta.current_page = 1; loadPosts(); }" />
 
             <post-editor-page
                 v-else-if="current === 'post-create' || current === 'post-edit'"
@@ -1797,3 +1824,4 @@ if (dashboardRoot) {
         template: '<blog-dashboard-panel :endpoint="endpoint" />',
     }).mount(dashboardRoot);
 }
+
