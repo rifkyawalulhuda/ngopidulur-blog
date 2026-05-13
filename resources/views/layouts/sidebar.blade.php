@@ -1,6 +1,9 @@
 @php
     use App\Helpers\MenuHelper;
+    use App\Support\BlogSettings;
     $menuGroups = MenuHelper::getMenuGroups();
+    $blogName = BlogSettings::get('site_name', 'Ngopi Dulur');
+    $blogLogoUrl = BlogSettings::assetUrl('logo');
 @endphp
 
 <aside
@@ -24,15 +27,19 @@
         class="flex h-20 items-center gap-3 px-5"
         :class="$store.theme.theme === 'dark' ? 'border-b border-gray-800' : 'border-b border-gray-200'">
         <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
-            <div class="flex size-11 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-theme-sm">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path d="M5.83337 3.9585C5.83337 3.49826 6.20647 3.12516 6.66671 3.12516C7.12694 3.12516 7.50004 3.49826 7.50004 3.9585V16.0418C7.50004 16.5021 7.12694 16.8752 6.66671 16.8752C6.20647 16.8752 5.83337 16.5021 5.83337 16.0418V3.9585Z" fill="currentColor"/>
-                    <path d="M9.16663 7.29183C9.16663 6.83159 9.53972 6.4585 9.99996 6.4585C10.4602 6.4585 10.8333 6.83159 10.8333 7.29183V16.0418C10.8333 16.5021 10.4602 16.8752 9.99996 16.8752C9.53972 16.8752 9.16663 16.5021 9.16663 16.0418V7.29183Z" fill="currentColor"/>
-                    <path d="M12.5 10.6252C12.5 10.165 12.8731 9.79183 13.3333 9.79183C13.7936 9.79183 14.1667 10.165 14.1667 10.6252V16.0418C14.1667 16.5021 13.7936 16.8752 13.3333 16.8752C12.8731 16.8752 12.5 16.5021 12.5 16.0418V10.6252Z" fill="currentColor"/>
-                </svg>
-            </div>
+            @if($blogLogoUrl)
+                <img src="{{ $blogLogoUrl }}" alt="{{ $blogName }}" class="size-11 rounded-2xl object-cover shadow-theme-sm">
+            @else
+                <div class="flex size-11 items-center justify-center rounded-2xl bg-brand-500 text-white shadow-theme-sm">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                        <path d="M5.83337 3.9585C5.83337 3.49826 6.20647 3.12516 6.66671 3.12516C7.12694 3.12516 7.50004 3.49826 7.50004 3.9585V16.0418C7.50004 16.5021 7.12694 16.8752 6.66671 16.8752C6.20647 16.8752 5.83337 16.5021 5.83337 16.0418V3.9585Z" fill="currentColor"/>
+                        <path d="M9.16663 7.29183C9.16663 6.83159 9.53972 6.4585 9.99996 6.4585C10.4602 6.4585 10.8333 6.83159 10.8333 7.29183V16.0418C10.8333 16.5021 10.4602 16.8752 9.99996 16.8752C9.53972 16.8752 9.16663 16.5021 9.16663 16.0418V7.29183Z" fill="currentColor"/>
+                        <path d="M12.5 10.6252C12.5 10.165 12.8731 9.79183 13.3333 9.79183C13.7936 9.79183 14.1667 10.165 14.1667 10.6252V16.0418C14.1667 16.5021 13.7936 16.8752 13.3333 16.8752C12.8731 16.8752 12.5 16.5021 12.5 16.0418V10.6252Z" fill="currentColor"/>
+                    </svg>
+                </div>
+            @endif
             <div x-show="$store.sidebar.isExpanded || $store.sidebar.isHovered || $store.sidebar.isMobileOpen" class="leading-tight">
-                <p class="text-xl font-semibold" :class="$store.theme.theme === 'dark' ? 'text-white' : 'text-gray-900'">TailAdmin</p>
+                <p class="text-xl font-semibold" :class="$store.theme.theme === 'dark' ? 'text-white' : 'text-gray-900'">{{ $blogName }}</p>
                 <p class="text-xs" :class="$store.theme.theme === 'dark' ? 'text-gray-400' : 'text-gray-500'">Admin Dashboard</p>
             </div>
         </a>
