@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/settings', [\App\Http\Controllers\AdminApi\SettingsController::class, 'update'])->name('admin.api.settings.update');
 
         Route::get('/media', [\App\Http\Controllers\AdminApi\MediaController::class, 'index'])->name('admin.api.media.index');
+        Route::get('/search', [\App\Http\Controllers\AdminApi\SearchController::class, 'index'])->name('admin.api.search');
     });
 
     Route::get('/admin', [AdminShellController::class, 'index'])->name('admin.index');
