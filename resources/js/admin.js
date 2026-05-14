@@ -13,6 +13,7 @@ const CategoriesPage = lazyComponent(() => import('./components/admin/Categories
 const TagsPage = lazyComponent(() => import('./components/admin/TagsPage.vue'));
 const MediaPage = lazyComponent(() => import('./components/admin/MediaPage.vue'));
 const SettingsPage = lazyComponent(() => import('./components/admin/SettingsPage.vue'));
+const ResumePage = lazyComponent(() => import('./components/admin/ResumePage.vue'));
 
 const pageFromPath = (path) => {
     if (path.startsWith('/admin/posts/create')) {
@@ -41,6 +42,10 @@ const pageFromPath = (path) => {
 
     if (path.startsWith('/admin/settings')) {
         return 'settings';
+    }
+
+    if (path.startsWith('/admin/resume')) {
+        return 'resume';
     }
 
     return 'dashboard';
@@ -137,6 +142,7 @@ const adminSpa = createApp({
         TagsPage,
         MediaPage,
         SettingsPage,
+        ResumePage,
     },
 
     data() {
@@ -211,6 +217,20 @@ const adminSpa = createApp({
                 remove_logo: false,
                 remove_favicon: false,
                 remove_default_og_image: false,
+            },
+            resume: {
+                loading: true,
+                saving: false,
+                name: '',
+                title: '',
+                location: '',
+                email: '',
+                summary: '',
+                experience: [],
+                projects: [],
+                skills: [],
+                education: { degree: '', institution: '', period: '', gpa: '' },
+                certifications: [],
             },
             posts: {
                 loading: true,
@@ -307,6 +327,10 @@ const adminSpa = createApp({
                 return 'Pengaturan';
             }
 
+            if (this.current === 'resume') {
+                return 'Resume';
+            }
+
             if (this.current === 'posts' || this.current === 'post-create' || this.current === 'post-edit') {
                 return 'Tulisan';
             }
@@ -329,6 +353,10 @@ const adminSpa = createApp({
 
             if (this.current === 'settings') {
                 return 'Atur identitas blog, aset brand, SEO default, dan nuansa public blog dari satu tempat.';
+            }
+
+            if (this.current === 'resume') {
+                return 'Edit data profil publik yang tampil di halaman Tentang.';
             }
 
             if (this.current === 'posts') {
@@ -582,6 +610,10 @@ const adminSpa = createApp({
             if (this.current === 'settings') {
                 await this.loadSettings();
             }
+
+            if (this.current === 'resume') {
+                await this.loadResume();
+            }
         },
 
         async loadDashboard() {
@@ -653,6 +685,61 @@ const adminSpa = createApp({
                 this.toast(error.message, 'error');
             } finally {
                 this.settings.loading = false;
+            }
+        },
+
+        async loadResume() {
+            this.resume.loading = true;
+
+            try {
+                const payload = await this.apiCall('/admin/api/resume');
+                const item = payload.item || {};
+                Object.assign(this.resume, {
+                    name: item.name || '',
+                    title: item.title || '',
+                    location: item.location || '',
+                    email: item.email || '',
+                    summary: item.summary || '',
+                    experience: item.experience || [],
+                    projects: item.projects || [],
+                    skills: item.skills || [],
+                    education: item.education || { degree: '', institution: '', period: '', gpa: '' },
+                    certifications: item.certifications || [],
+                });
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.resume.loading = false;
+            }
+        },
+
+        async saveResume() {
+            this.resume.saving = true;
+
+            try {
+                const body = {
+                    name: this.resume.name,
+                    title: this.resume.title,
+                    location: this.resume.location,
+                    email: this.resume.email,
+                    summary: this.resume.summary,
+                    experience: this.resume.experience,
+                    projects: this.resume.projects,
+                    skills: this.resume.skills,
+                    education: this.resume.education,
+                    certifications: this.resume.certifications,
+                };
+
+                const payload = await this.apiCall('/admin/api/resume', {
+                    method: 'PUT',
+                    body: JSON.stringify(body),
+                });
+
+                this.toast(payload.message || 'Resume berhasil disimpan.', 'success');
+            } catch (error) {
+                this.toast(error.message, 'error');
+            } finally {
+                this.resume.saving = false;
             }
         },
 
@@ -1624,6 +1711,12 @@ const adminSpa = createApp({
                 @save-settings="saveSettings"
                 @update-asset="updateSettingsAsset"
                 @clear-asset="clearSettingsAsset" />
+
+            <resume-page
+                v-else-if="current === 'resume'"
+                :resume="resume"
+                @save-resume="saveResume" />
+
 
             <div
                 v-if="editor.open"
