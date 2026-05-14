@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full {{ ($blogTheme ?? 'light') === 'dark' ? 'dark' : '' }}" data-theme="{{ $blogTheme ?? 'light' }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full overflow-x-hidden {{ ($blogTheme ?? 'light') === 'dark' ? 'dark' : '' }}" data-theme="{{ $blogTheme ?? 'light' }}">
 
 <head>
     @php
@@ -70,7 +70,7 @@
     @stack('head')
 </head>
 
-<body class="min-h-full bg-[#fbf6ef] font-sans text-[#2f1c12] dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
+<body class="min-h-full overflow-x-hidden bg-[#fbf6ef] font-sans text-[#2f1c12] dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
     <div class="flex min-h-screen flex-col overflow-x-hidden">
         <header class="sticky top-0 z-40 border-b border-[#ead8c8]/85 bg-[#fbf6ef]/92 backdrop-blur-xl dark:border-coffee-700/40 dark:bg-neutralwarm-900/88">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">

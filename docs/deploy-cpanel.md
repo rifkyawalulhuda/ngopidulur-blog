@@ -1,507 +1,370 @@
-# Panduan Deploy ke Shared Hosting cPanel
+# Panduan Deploy ke cPanel
 
-Last updated: 2026-05-14  
-Project: Ngopi Dulur Blog (Laravel 13 + Vue 3)
+Panduan ini khusus untuk proyek `ngopidulur-blog` dan mengikuti alur deploy yang paling aman untuk shared hosting cPanel dengan akses SSH.
 
----
+## 1. Persiapan Sebelum Upload
 
-## Prasyarat Hosting
+Pastikan hal berikut sudah siap:
 
-Pastikan shared hosting cPanel memenuhi:
+- domain `ngopidulur.my.id` sudah aktif di cPanel
+- akses SSH aktif
+- database MySQL sudah dibuat
+- user MySQL sudah dibuat dan diberi akses ke database
+- PHP versi hosting kompatibel dengan Laravel 13 (PHP 8.2+)
+- folder project Laravel sudah disiapkan di server
 
-- PHP **8.2 atau lebih tinggi** (cek di MultiPHP Manager)
-- MySQL 5.7+ atau MariaDB 10.3+
-- SSH access (sangat direkomendasikan)
-- Composer tersedia di server
-- Ekstensi PHP: `bcmath`, `ctype`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`, `xml`, `gd`
+Struktur yang disarankan:
 
-Cek ekstensi: cPanel > **Select PHP Version** > **Extensions**.
+- folder aplikasi: `/home/USERNAME/ngopidulur`
+- document root domain: `/home/USERNAME/ngopidulur/public`
 
----
+### Jika cPanel tidak mengizinkan custom document root
 
-## Langkah 1: Persiapan di Komputer Lokal
+Banyak shared hosting hanya mengizinkan document root ke `public_html`. Jika itu kasusnya, gunakan strategi berikut:
 
-### 1.1 Build Asset Frontend
+1. Taruh source code di luar public_html:
+   ```text
+   /home/USERNAME/ngopidulur/       ← source code Laravel
+   /home/USERNAME/public_html/      ← document root domain
+   ```
 
-```bash
-npm install
-npm run build
-```
+2. Pindahkan isi folder `public/` ke `public_html/`:
+   ```bash
+   cp -r ~/ngopidulur/public/* ~/public_html/
+   ```
 
-Hasil: folder `public/build/` berisi semua CSS dan JS yang sudah dikompilasi.
+3. Edit `public_html/index.php`, ubah path bootstrap:
+   ```php
+   require __DIR__.'/../ngopidulur/vendor/autoload.php';
+   $app = require_once __DIR__.'/../ngopidulur/bootstrap/app.php';
+   ```
 
-### 1.2 Install Composer untuk Production
+4. Pastikan `.htaccess` dari folder `public/` juga ada di `public_html/`.
 
-```bash
-composer install --optimize-autoloader --no-dev
-```
+## 2. File `.env` Produksi
 
-### 1.3 Siapkan File `.env` Production
-
-Buat file `.env` baru khusus production (jangan edit `.env` lokal):
+Buat file `.env` di folder aplikasi server, lalu isi dengan nilai berikut:
 
 ```env
 APP_NAME="Ngopi Dulur"
 APP_ENV=production
-APP_KEY=
 APP_DEBUG=false
-APP_URL=https://domainkamu.com
+APP_URL=https://ngopidulur.my.id
 
 APP_LOCALE=id
 APP_FALLBACK_LOCALE=en
 
-LOG_CHANNEL=stack
-LOG_LEVEL=error
-
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=cpanelusername_ngopidulur
-DB_USERNAME=cpanelusername_dbuser
-DB_PASSWORD=password_database_kamu
+DB_DATABASE=nama_database_cpanel
+DB_USERNAME=nama_user_cpanel
+DB_PASSWORD=password_database_cpanel
 
-SESSION_DRIVER=database
+SESSION_DRIVER=file
 SESSION_LIFETIME=120
 SESSION_SECURE_COOKIE=true
 
 FILESYSTEM_DISK=public
 CACHE_STORE=file
 QUEUE_CONNECTION=database
-
-MAIL_MAILER=smtp
-MAIL_HOST=mail.domainkamu.com
-MAIL_PORT=587
-MAIL_USERNAME=noreply@domainkamu.com
-MAIL_PASSWORD=password_email
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS="noreply@domainkamu.com"
-MAIL_FROM_NAME="Ngopi Dulur"
+MAIL_MAILER=log
 ```
 
-> **Penting:** `APP_DEBUG=false` wajib di production. `APP_KEY` akan di-generate di server.
+Catatan:
 
-### 1.4 Buat Zip Project
+- `APP_DEBUG=false` wajib di production
+- `APP_URL` harus pakai `https://` jika SSL sudah aktif
+- `SESSION_DRIVER=file` paling stabil untuk shared hosting (tidak butuh tabel tambahan)
+- jika nilai `.env` berubah, jalankan ulang cache config setelah update
 
-Zip folder-folder berikut (kecualikan yang tidak perlu):
+## 3. Upload Project ke Server
 
-**Sertakan:**
+Upload seluruh source code Laravel ke folder aplikasi:
+
+```text
+/home/USERNAME/ngopidulur
+```
+
+Jangan upload `node_modules` dan jangan mengandalkan file `public/hot` di production.
+
+Jika source code berasal dari Git, jalankan di server:
+
+```bash
+cd ~/ngopidulur
+git pull
+```
+
+Jika source code di-upload manual (via File Manager atau FTP), pastikan folder berikut ikut terbawa:
+
 - `app/`
 - `bootstrap/`
 - `config/`
 - `database/`
-- `public/` (termasuk `public/build/`)
+- `public/`
 - `resources/`
 - `routes/`
 - `storage/`
-- `vendor/`
-- `artisan`
-- `composer.json`
-- `composer.lock`
-- `.env` (file production yang sudah disiapkan)
+- `vendor/` (jika tidak mau install composer di server)
 
-**Jangan sertakan:**
-- `node_modules/`
-- `tests/`
-- `.git/`
-- `temp/`
+## 4. Set Permission
 
----
-
-## Langkah 2: Buat Database di cPanel
-
-1. Login ke **cPanel**
-2. Buka **MySQL Databases**
-3. Buat database baru, contoh: `cpanelusername_ngopidulur`
-4. Buat user database baru dengan password yang kuat
-5. Tambahkan user ke database dengan **ALL PRIVILEGES**
-6. Catat nama database, username, dan password untuk diisi di `.env`
-
----
-
-## Langkah 3: Upload File ke Server
-
-### Opsi A: File Manager cPanel
-
-1. Buka **File Manager** di cPanel
-2. Masuk ke folder `public_html`
-3. Upload file zip project
-4. Klik kanan zip > **Extract**
-
-### Opsi B: FTP (FileZilla)
-
-1. Buka FileZilla
-2. Masukkan host, username, password FTP dari cPanel
-3. Upload semua file ke `public_html`
-
-### Opsi C: SSH (Paling Direkomendasikan)
-
-```bash
-ssh cpanelusername@domainkamu.com
-cd ~/
-git clone https://github.com/username/ngopidulur-blog.git ngopidulur
-cd ngopidulur
-composer install --optimize-autoloader --no-dev
-```
-
----
-
-## Langkah 4: Atur Struktur Folder (Penting untuk Keamanan)
-
-Laravel hanya boleh mengekspos folder `public/` ke web. Struktur yang benar:
-
-```
-/home/cpanelusername/
-├── ngopidulur/              <- Laravel project (di luar public_html)
-│   ├── app/
-│   ├── bootstrap/
-│   ├── config/
-│   ├── database/
-│   ├── resources/
-│   ├── routes/
-│   ├── storage/
-│   ├── vendor/
-│   ├── artisan
-│   └── .env
-└── public_html/             <- Web root (hanya isi folder public/)
-    ├── build/
-    ├── images/
-    ├── storage -> symlink
-    ├── .htaccess
-    ├── favicon.ico
-    └── index.php
-```
-
-### 4.1 Pindahkan File via SSH
-
-```bash
-# Pindahkan project ke luar public_html
-cd ~
-mv public_html/ngopidulur-blog ngopidulur
-
-# Pindahkan isi folder public/ ke public_html/
-cp -r ngopidulur/public/. public_html/
-
-# Hapus folder public dari project (sudah dipindah)
-rm -rf ngopidulur/public
-```
-
-### 4.2 Edit `public_html/index.php`
-
-Buka file `public_html/index.php` dan ubah path:
-
-```php
-<?php
-
-use Illuminate\Foundation\Application;
-
-// Ubah path ini:
-define('LARAVEL_START', microtime(true));
-
-if (file_exists($maintenance = __DIR__.'/../ngopidulur/storage/framework/maintenance.php')) {
-    require $maintenance;
-}
-
-require __DIR__.'/../ngopidulur/vendor/autoload.php';
-
-$app = require_once __DIR__.'/../ngopidulur/bootstrap/app.php';
-
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-
-$response = $kernel->handle(
-    $request = Illuminate\Http\Request::capture()
-)->send();
-
-$kernel->terminate($request, $response);
-```
-
----
-
-## Langkah 5: Konfigurasi Laravel di Server
-
-### 5.1 Set Permission Folder
-
-Via SSH:
+Setelah upload, pastikan permission folder penting sudah benar:
 
 ```bash
 cd ~/ngopidulur
-find . -type f -exec chmod 644 {} \;
-find . -type d -exec chmod 755 {} \;
 chmod -R 775 storage bootstrap/cache
 ```
 
-Via File Manager: klik kanan folder `storage` dan `bootstrap/cache` > **Change Permissions** > set **755** (atau **775**).
+Jika hosting menggunakan user berbeda untuk web server, tambahkan:
 
-### 5.2 Generate APP_KEY
+```bash
+chown -R USERNAME:USERNAME storage bootstrap/cache
+```
 
-Via SSH:
+Ganti `USERNAME` dengan username cPanel kamu.
+
+## 5. Install Dependensi di Server
+
+Jika server memiliki Composer:
+
+```bash
+cd ~/ngopidulur
+composer install --no-dev --optimize-autoloader
+```
+
+Jika `vendor/` sudah di-upload dari lokal, langkah ini bisa dilewati, tetapi Composer tetap lebih disarankan karena menjamin dependensi sesuai platform server.
+
+## 6. Generate APP_KEY
+
+Jika belum ada `APP_KEY` di `.env`, jalankan:
 
 ```bash
 cd ~/ngopidulur
 php artisan key:generate
 ```
 
-Tanpa SSH, generate di lokal lalu copy ke `.env` server:
+Jika tidak bisa via SSH, generate di lokal lalu copy nilainya ke `.env` server:
 
 ```bash
 php artisan key:generate --show
-# Output: base64:xxxxxxxxxxxxx=
 ```
 
-Paste ke `.env` server: `APP_KEY=base64:xxxxxxxxxxxxx=`
+## 7. Build Frontend Asset
 
-### 5.3 Jalankan Migration
-
-Via SSH:
+Karena shared hosting biasanya tidak memakai Node.js di server, build asset dilakukan di lokal:
 
 ```bash
-cd ~/ngopidulur
+npm run build
+```
+
+Lalu upload folder:
+
+- `public/build/`
+
+Pastikan isi `public/build` lengkap, termasuk `manifest.json` dan semua file `.js` dan `.css` hasil build.
+
+Jika sebelumnya ada file `public/hot`, hapus file itu di server. File tersebut hanya untuk mode development.
+
+## 8. Jalankan Migrasi Database
+
+Setelah `.env` benar, jalankan:
+
+```bash
 php artisan migrate --force
+```
+
+Jika ingin pakai data seed default:
+
+```bash
 php artisan db:seed --force
 ```
 
-Tanpa SSH, export database dari lokal:
+Login admin default (jika seeder dijalankan):
+
+- email: `admin@ngopidulur.test`
+- password: `password`
+
+**Penting:** Segera ganti email dan password admin setelah login pertama melalui menu Profile di dashboard admin.
+
+## 9. Buat Storage Link
+
+Jalankan:
 
 ```bash
-# Di lokal
-mysqldump -u root -p nama_database_lokal > backup.sql
-```
-
-Lalu import `backup.sql` via **phpMyAdmin** di cPanel.
-
-### 5.4 Buat Storage Symlink
-
-Via SSH:
-
-```bash
-cd ~/ngopidulur
 php artisan storage:link
 ```
 
-Tanpa SSH, buat file PHP sementara di `public_html/symlink.php`:
-
-```php
-<?php
-symlink('/home/cpanelusername/ngopidulur/storage/app/public', __DIR__.'/storage');
-echo 'Symlink created!';
-```
-
-Akses `https://domainkamu.com/symlink.php` sekali, lalu **hapus file tersebut**.
-
-### 5.5 Cache untuk Performa
+Jika menggunakan strategi `public_html` terpisah, buat symlink manual:
 
 ```bash
-cd ~/ngopidulur
+ln -s /home/USERNAME/ngopidulur/storage/app/public /home/USERNAME/public_html/storage
+```
+
+Link ini diperlukan agar gambar featured image, avatar, dan media bisa diakses dari publik.
+
+## 10. Bersihkan dan Cache Konfigurasi
+
+Setelah deploy dan setelah `.env` selesai diisi, jalankan:
+
+```bash
+php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-php artisan event:cache
 ```
 
----
+Langkah ini penting supaya:
 
-## Langkah 6: Konfigurasi .htaccess
+- perubahan `.env` terbaca
+- route terbaru aktif
+- file view dan config lebih cepat dimuat
 
-Pastikan `public_html/.htaccess` berisi:
+## 11. Konfigurasi Cron Job
 
-```apache
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
+Tambahkan cron job di cPanel (menu Cron Jobs):
 
-    RewriteEngine On
-
-    # Force HTTPS
-    RewriteCond %{HTTPS} !=on
-    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Route ke index.php
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-
-# Gzip Compression
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json
-</IfModule>
-
-# Browser Cache
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-</IfModule>
+```bash
+* * * * * cd /home/USERNAME/ngopidulur && /usr/local/bin/php artisan schedule:run >> /dev/null 2>&1
 ```
 
----
+Sesuaikan:
+- `USERNAME` dengan username cPanel
+- path PHP (`/usr/local/bin/php`) dengan lokasi PHP di hosting (cek dengan `which php`)
 
-## Langkah 7: Aktifkan SSL (HTTPS)
+Cron ini menjalankan Laravel scheduler setiap menit. Jika aplikasi menggunakan queue, tambahkan juga:
 
-1. cPanel > **SSL/TLS Status**
-2. Pilih domain
-3. Klik **Run AutoSSL** (gratis, dari Let's Encrypt)
-4. Tunggu beberapa menit sampai status hijau
-5. Update `.env`: `APP_URL=https://domainkamu.com`
-6. Jalankan ulang: `php artisan config:cache`
+```bash
+* * * * * cd /home/USERNAME/ngopidulur && /usr/local/bin/php artisan queue:work --stop-when-empty --tries=3 >> /dev/null 2>&1
+```
 
----
+## 12. Konfigurasi Sitemap dan Robots
 
-## Langkah 8: Buat Admin User
+Pastikan setelah deploy, route berikut bisa diakses:
 
-Via SSH (Tinker):
+- `https://ngopidulur.my.id/sitemap.xml`
+- `https://ngopidulur.my.id/robots.txt`
+
+Kedua route tersebut auto-generate dari Laravel, tidak perlu file fisik.
+
+## 13. Checklist Setelah Deploy
+
+Setelah website dibuka di domain production, cek hal berikut:
+
+- [ ] halaman `/` (Beranda) bisa dibuka
+- [ ] halaman `/articles` bisa dibuka
+- [ ] halaman `/categories` bisa dibuka
+- [ ] halaman `/tentang` bisa dibuka
+- [ ] halaman `/search` bisa dibuka
+- [ ] halaman detail tulisan bisa dibuka
+- [ ] gambar/logo tampil normal
+- [ ] CSS dan JavaScript tidak 404
+- [ ] mobile view responsive
+- [ ] admin login bisa dibuka di `/admin/login`
+- [ ] dashboard admin bisa dimuat
+- [ ] create/edit tulisan berfungsi
+- [ ] upload featured image berfungsi
+- [ ] halaman Resume admin bisa diedit
+- [ ] global search di header admin berfungsi
+
+Jika muncul layar putih atau asset tidak tampil:
+
+- cek apakah `public/hot` masih ada (hapus jika ada)
+- cek apakah `public/build` lengkap
+- cek `storage/logs/laravel.log`
+- cek koneksi database di `.env`
+- cek permission `storage/` dan `bootstrap/cache/`
+
+## 14. Perintah Maintenance Saat Update
+
+Kalau ada perubahan aplikasi setelah website live, alur amannya:
 
 ```bash
 cd ~/ngopidulur
-php artisan tinker
+git pull
+composer install --no-dev --optimize-autoloader
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 ```
 
-Di dalam Tinker:
-
-```php
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
-User::create([
-    'name' => 'Admin',
-    'email' => 'admin@domainkamu.com',
-    'password' => Hash::make('password_kuat_disini'),
-    'role' => 'admin',
-]);
-```
-
-Tanpa SSH, insert langsung via **phpMyAdmin** ke tabel `users`.
-
----
-
-## Langkah 9: Setup Cron Job
-
-1. cPanel > **Cron Jobs**
-2. Set **Common Settings**: Every Minute
-3. Isi command:
-
-```
-/usr/local/bin/php /home/cpanelusername/ngopidulur/artisan schedule:run >> /dev/null 2>&1
-```
-
-> Ganti `cpanelusername` dengan username cPanel kamu.
-
----
-
-## Langkah 10: Test Aplikasi
-
-Buka browser dan test:
-
-- `https://domainkamu.com` - Halaman publik blog
-- `https://domainkamu.com/admin/login` - Login admin
-- Login dengan akun admin yang sudah dibuat
-- Buat artikel baru dan publish
-- Cek artikel tampil di halaman publik
-- Test upload gambar
-- Test halaman Tentang
-
----
-
-## Troubleshooting
-
-### Error 500
-
-```bash
-# Cek log error
-tail -f ~/ngopidulur/storage/logs/laravel.log
-```
-
-- Pastikan `APP_KEY` sudah di-set
-- Pastikan permission `storage/` dan `bootstrap/cache/` adalah 775
-- Pastikan PHP version >= 8.2
-
-### CSS/JS Tidak Load
-
-- Pastikan folder `public/build/` sudah di-upload
-- Cek `APP_URL` di `.env` sesuai domain
-- Jalankan: `php artisan config:cache`
-
-### Database Error
-
-- Gunakan `DB_HOST=localhost` (bukan 127.0.0.1)
-- Pastikan user database punya ALL PRIVILEGES
-- Cek nama database menggunakan prefix cPanel username
-
-### Gambar Tidak Tampil
-
-- Pastikan symlink storage sudah dibuat
-- Cek permission `storage/app/public/` adalah 755
-- Pastikan `FILESYSTEM_DISK=public` di `.env`
-
-### Halaman Admin Kosong/Blank
-
-- Jalankan `npm run build` di lokal, upload ulang `public/build/`
-- Jalankan `php artisan view:clear` di server
-
----
-
-## Update Aplikasi Setelah Deploy
+Jika ada perubahan frontend:
 
 ```bash
 # Di lokal
 npm run build
-git add .
-git commit -m "Update: deskripsi perubahan"
-git push
-
-# Di server via SSH
-cd ~/ngopidulur
-git pull
-composer install --optimize-autoloader --no-dev
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
 ```
 
-Jika ada perubahan asset frontend, upload juga folder `public/build/` yang baru.
+Lalu upload ulang `public/build/` ke server.
 
----
+Jika ada perubahan database:
 
-## Checklist Pre-Deploy
+```bash
+php artisan migrate --force
+```
 
-- [ ] PHP 8.2+ tersedia di hosting
-- [ ] Database MySQL sudah dibuat di cPanel
-- [ ] User database sudah ditambahkan dengan ALL PRIVILEGES
-- [ ] `npm run build` sudah dijalankan di lokal
-- [ ] `composer install --optimize-autoloader --no-dev` sudah dijalankan
-- [ ] File `.env` production sudah disiapkan
-- [ ] `APP_DEBUG=false` di `.env`
-- [ ] `APP_KEY` sudah di-generate
-- [ ] SSL/HTTPS aktif
-- [ ] Storage symlink sudah dibuat
-- [ ] Migration sudah dijalankan
-- [ ] Admin user sudah dibuat
-- [ ] Test login admin berhasil
-- [ ] Test publish artikel berhasil
-- [ ] Test halaman publik berhasil
-- [ ] Cron job sudah di-setup
+## 15. Troubleshooting Cepat
 
----
+### Tampilan putih / 500 error
 
-## Catatan Keamanan
+Biasanya karena salah satu dari ini:
 
-- Jangan pernah commit file `.env` ke git
-- `APP_DEBUG=false` wajib di production
-- Gunakan password yang kuat untuk admin dan database
-- Aktifkan SSL untuk semua route
-- Update Laravel dan dependencies secara berkala
-- Backup database minimal seminggu sekali via cPanel > **Backup**
-- Hapus file `symlink.php` setelah digunakan
+- permission `storage/` atau `bootstrap/cache/` kurang (jalankan `chmod -R 775`)
+- asset `public/build` belum lengkap
+- `public/hot` masih ada
+- document root belum mengarah ke `public`
+- ada error di `storage/logs/laravel.log`
+
+### Error database
+
+Periksa:
+
+- nama database (harus format `cpaneluser_namadb`)
+- username database (harus format `cpaneluser_namauser`)
+- password database
+- `DB_HOST=localhost`
+
+### Gambar tidak tampil
+
+Periksa:
+
+- symlink `public/storage` sudah dibuat lewat `php artisan storage:link`
+- permission folder `storage/app/public` minimal 755
+- `FILESYSTEM_DISK=public` di `.env`
+
+### Halaman admin kosong
+
+Periksa:
+
+- folder `public/build` lengkap
+- Vite manifest ada di `public/build/manifest.json`
+- jalankan `php artisan view:clear`
+- cek browser console untuk error JavaScript
+
+### Sitemap atau robots 404
+
+Periksa:
+
+- `php artisan route:clear` lalu `php artisan route:cache`
+- pastikan tidak ada `.htaccess` yang block route tersebut
+- pastikan tidak ada file fisik `sitemap.xml` atau `robots.txt` di `public/`
+
+## 16. Ringkasan Urutan Deploy
+
+Untuk deploy paling aman, ikuti urutan ini:
+
+1. Upload source code Laravel ke folder project
+2. Arahkan domain ke folder `public` (atau setup `public_html`)
+3. Set permission: `chmod -R 775 storage bootstrap/cache`
+4. Isi `.env` produksi
+5. Jalankan `composer install --no-dev --optimize-autoloader`
+6. Jalankan `php artisan key:generate`
+7. Jalankan `php artisan migrate --force`
+8. Jalankan `php artisan storage:link`
+9. Build frontend di lokal lalu upload `public/build/`
+10. Cache config: `php artisan config:cache && php artisan route:cache && php artisan view:cache`
+11. Set cron job untuk scheduler
+12. Test semua halaman
+
+Kalau semua langkah di atas beres, website production sudah siap dipakai.

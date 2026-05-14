@@ -16,26 +16,26 @@
             </div>
 
             <div class="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-16">
-                <div class="grid gap-7 lg:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)] lg:items-center xl:gap-12">
-                    <div class="relative z-30 max-w-3xl space-y-6 sm:space-y-7">
+                <div class="grid min-w-0 gap-7 lg:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)] lg:items-center xl:gap-12">
+                    <div class="relative z-30 w-full min-w-0 max-w-3xl space-y-6 sm:space-y-7">
                         <div class="ngopi-reveal inline-flex items-center gap-2 rounded-full border border-[#efdfcf] bg-white/82 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#8b4a22] shadow-[0_18px_30px_-26px_rgba(90,46,22,0.45)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/65 dark:text-coffee-100">
                             <span class="size-2 rounded-full bg-[#8b4a22] dark:bg-coffee-100"></span>
                             {{ $heroBadge }}
                         </div>
 
                         <div class="ngopi-reveal space-y-4" style="animation-delay: 0.08s;">
-                            <h1 class="max-w-2xl font-lora text-[2.35rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#2f1c12] dark:text-neutralwarm-50 sm:text-[3rem] lg:text-[4.05rem]">
+                            <h1 class="max-w-full break-words font-lora text-[1.6rem] font-semibold leading-[1.15] tracking-[-0.01em] text-[#2f1c12] dark:text-neutralwarm-50 sm:text-[2.5rem] sm:leading-[1.1] sm:tracking-[-0.02em] lg:text-[3.5rem] lg:tracking-[-0.03em] xl:text-[4.05rem]">
                                 {{ $heroHeading }}
                             </h1>
-                            <p class="max-w-xl text-lg leading-8 text-[#7c695d] dark:text-neutralwarm-100/72">
+                            <p class="max-w-full text-base leading-7 text-[#7c695d] dark:text-neutralwarm-100/72 sm:max-w-xl sm:text-lg sm:leading-8">
                                 {{ $heroSubheading }}
                             </p>
                         </div>
 
-                        <form action="{{ route('search') }}" method="GET" class="ngopi-reveal relative z-40 max-w-3xl" style="animation-delay: 0.16s;" data-home-live-search-form data-search-endpoint="{{ route('search') }}">
+                        <form action="{{ route('search') }}" method="GET" class="ngopi-reveal relative z-40 w-full max-w-full sm:max-w-3xl" style="animation-delay: 0.16s;" data-home-live-search-form data-search-endpoint="{{ route('search') }}">
                             <label for="home-search" class="sr-only">Cari artikel</label>
-                            <div class="flex items-center gap-3 rounded-[1.65rem] border border-[#efddcc] bg-white/90 p-3 shadow-[0_26px_60px_-40px_rgba(90,46,22,0.45)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/78">
-                                <span class="inline-flex size-11 shrink-0 items-center justify-center rounded-[1.1rem] bg-[#fbf2e9] text-[#8b4a22] dark:bg-white/6 dark:text-coffee-100">
+                            <div class="flex w-full items-center gap-2 rounded-[1.65rem] border border-[#efddcc] bg-white/90 p-2 shadow-[0_26px_60px_-40px_rgba(90,46,22,0.45)] backdrop-blur-sm dark:border-coffee-700/40 dark:bg-neutralwarm-900/78 sm:gap-3 sm:p-3">
+                                <span class="hidden size-11 shrink-0 items-center justify-center rounded-[1.1rem] bg-[#fbf2e9] text-[#8b4a22] dark:bg-white/6 dark:text-coffee-100 sm:inline-flex">
                                     <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M21 21L16.65 16.65M18 10.5C18 14.6421 14.6421 18 10.5 18C6.35786 18 3 14.6421 3 10.5C3 6.35786 6.35786 3 10.5 3C14.6421 3 18 6.35786 18 10.5Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
@@ -46,11 +46,11 @@
                                     name="q"
                                     value="{{ $searchTerm ?? '' }}"
                                     type="search"
-                                    placeholder="Cari cerita, catatan, atau topik tertentu"
-                                    class="min-w-0 flex-1 border-0 bg-transparent text-base text-[#2f1c12] outline-none placeholder:text-[#978378] focus:ring-0 dark:text-neutralwarm-50 dark:placeholder:text-neutralwarm-100/45"
+                                    placeholder="Cari artikel..."
+                                    class="min-w-0 flex-1 border-0 bg-transparent px-3 py-2 text-sm text-[#2f1c12] outline-none placeholder:text-[#978378] focus:ring-0 dark:text-neutralwarm-50 dark:placeholder:text-neutralwarm-100/45 sm:px-0 sm:py-0 sm:text-base"
                                 >
 
-                                <button type="submit" class="ngopi-solid-button shrink-0 px-6 sm:px-7" data-home-live-search-submit>
+                                <button type="submit" class="ngopi-solid-button shrink-0 px-4 py-2 text-sm sm:px-7 sm:py-3" data-home-live-search-submit>
                                     Cari
                                 </button>
                             </div>
@@ -168,7 +168,7 @@
 
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
             <div class="grid min-w-0 gap-7 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)] lg:items-start">
-                <div id="popular-categories" class="space-y-5">
+                <div id="popular-categories" class="min-w-0 space-y-5">
                     <div class="space-y-2">
                         <p class="ngopi-section-label">Kategori populer</p>
                     </div>
@@ -197,10 +197,10 @@
                                 </span>
 
                                 <div class="min-w-0 flex-1">
-                                    <p class="text-[1.35rem] font-semibold leading-tight text-[#2f1c12] dark:text-neutralwarm-50">
+                                    <p class="text-base font-semibold leading-tight text-[#2f1c12] dark:text-neutralwarm-50 sm:text-[1.2rem] lg:text-[1.35rem]">
                                         {{ $category->name }}
                                     </p>
-                                    <p class="mt-1 truncate text-base leading-7 text-[#7c695d] dark:text-neutralwarm-100/72">
+                                    <p class="mt-1 truncate text-sm leading-6 text-[#7c695d] dark:text-neutralwarm-100/72 sm:text-base sm:leading-7">
                                         {{ $category->description ?: 'Topik bacaan hangat untuk dinikmati pelan-pelan.' }}
                                     </p>
                                 </div>
@@ -229,19 +229,19 @@
                     @endif
                 </div>
 
-                <div id="latest-articles" class="space-y-5">
+                <div id="latest-articles" class="min-w-0 space-y-5">
                     <div class="space-y-2">
                         <p class="ngopi-section-label">Artikel terbaru</p>
                     </div>
 
                     @if ($hasLatestPosts)
-                        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-2">
+                        <div class="grid min-w-0 gap-5 md:grid-cols-2 xl:grid-cols-2">
                             @foreach ($latestPosts as $post)
                                 @include('public.partials.post-card', ['post' => $post])
                             @endforeach
                         </div>
 
-                        <div class="pt-1">
+                        <div class="overflow-x-auto pt-1">
                             {{ $latestPosts->links() }}
                         </div>
                     @else
