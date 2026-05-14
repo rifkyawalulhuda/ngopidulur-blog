@@ -59,8 +59,8 @@
             </div>
         @endif
 
-        <div class="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
-            <div>
+        <div class="mt-8 grid min-w-0 gap-8 sm:mt-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
+            <div class="min-w-0">
                 <div class="post-content">
                     {!! $post->rendered_content !!}
                 </div>
