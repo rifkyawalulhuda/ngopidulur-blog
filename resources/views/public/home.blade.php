@@ -9,8 +9,8 @@
     @endphp
 
     <div class="ngopi-shell">
-        <section class="relative z-30 overflow-hidden border-b border-[#ead8c8]/75 dark:border-coffee-700/35">
-            <div class="absolute inset-y-0 right-0 hidden w-[56%] lg:block">
+        <section class="relative z-30 border-b border-[#ead8c8]/75 dark:border-coffee-700/35">
+            <div class="absolute inset-y-0 right-0 hidden w-[56%] overflow-hidden lg:block">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(255,248,241,0.95),rgba(255,248,241,0.28)_38%,transparent_70%)] dark:bg-[radial-gradient(circle_at_left,rgba(31,23,19,0.95),rgba(31,23,19,0.55)_42%,transparent_74%)]"></div>
                 <img src="{{ $heroImage }}" alt="Secangkir kopi hangat" class="h-full w-full object-cover object-center">
             </div>
