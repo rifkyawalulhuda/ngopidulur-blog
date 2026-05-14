@@ -71,7 +71,7 @@
 </head>
 
 <body class="min-h-full bg-[#fbf6ef] font-sans text-[#2f1c12] dark:bg-neutralwarm-900 dark:text-neutralwarm-50">
-    <div class="flex min-h-screen flex-col">
+    <div class="flex min-h-screen flex-col overflow-x-hidden">
         <header class="sticky top-0 z-40 border-b border-[#ead8c8]/85 bg-[#fbf6ef]/92 backdrop-blur-xl dark:border-coffee-700/40 dark:bg-neutralwarm-900/88">
             <div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
                 <a href="{{ $homeUrl }}" class="flex min-w-0 items-center gap-3 transition hover:opacity-95">
@@ -289,7 +289,7 @@
             </div>
         </header>
 
-        <main class="flex-1">
+        <main class="flex-1 overflow-x-hidden">
             @yield('content')
         </main>
 

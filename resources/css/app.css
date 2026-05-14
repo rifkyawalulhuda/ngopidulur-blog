@@ -206,7 +206,9 @@
       overflow-x: hidden;
       -webkit-text-size-adjust: 100%;
     }
-
+    body {
+      overflow-x: clip;
+    }
     /* Ensure images never overflow their container */
     img, video, iframe, embed, object {
       max-width: 100%;

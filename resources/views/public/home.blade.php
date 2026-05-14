@@ -9,7 +9,7 @@
     @endphp
 
     <div class="ngopi-shell">
-        <section class="relative z-30 overflow-visible border-b border-[#ead8c8]/75 dark:border-coffee-700/35">
+        <section class="relative z-30 overflow-hidden border-b border-[#ead8c8]/75 dark:border-coffee-700/35">
             <div class="absolute inset-y-0 right-0 hidden w-[56%] lg:block">
                 <div class="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(255,248,241,0.95),rgba(255,248,241,0.28)_38%,transparent_70%)] dark:bg-[radial-gradient(circle_at_left,rgba(31,23,19,0.95),rgba(31,23,19,0.55)_42%,transparent_74%)]"></div>
                 <img src="{{ $heroImage }}" alt="Secangkir kopi hangat" class="h-full w-full object-cover object-center">
@@ -167,7 +167,7 @@
         </section>
 
         <section class="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-            <div class="grid gap-7 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)] lg:items-start">
+            <div class="grid min-w-0 gap-7 lg:grid-cols-[minmax(280px,0.72fr)_minmax(0,1.28fr)] lg:items-start">
                 <div id="popular-categories" class="space-y-5">
                     <div class="space-y-2">
                         <p class="ngopi-section-label">Kategori populer</p>
