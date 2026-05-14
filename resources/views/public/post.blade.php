@@ -25,8 +25,8 @@
     </button>
 
     <article data-reading-article class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <div class="space-y-6">
-            <div class="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em]">
+        <div class="space-y-5 sm:space-y-6">
+            <div class="flex flex-wrap items-center gap-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] sm:gap-3 sm:text-xs sm:tracking-[0.22em]">
                 <a href="{{ route('category.show', $post->category) }}" class="rounded-full bg-coffee-100 px-3 py-1 text-coffee-700 dark:bg-coffee-500/20 dark:text-coffee-100">
                     {{ $post->category?->name ?? 'Artikel' }}
                 </a>
@@ -41,12 +41,12 @@
                 @endif
             </div>
 
-            <div class="space-y-4">
-                <h1 class="font-lora text-4xl font-semibold leading-tight text-coffee-900 dark:text-neutralwarm-50 sm:text-5xl">
+            <div class="space-y-3 sm:space-y-4">
+                <h1 class="font-lora text-2xl font-semibold leading-tight text-coffee-900 dark:text-neutralwarm-50 sm:text-4xl lg:text-5xl">
                     {{ $post->title }}
                 </h1>
                 @if ($post->excerpt)
-                    <p class="max-w-3xl text-lg leading-8 text-neutralwarm-500 dark:text-neutralwarm-100/75">
+                    <p class="max-w-3xl text-base leading-7 text-neutralwarm-500 dark:text-neutralwarm-100/75 sm:text-lg sm:leading-8">
                         {{ $post->excerpt }}
                     </p>
                 @endif
@@ -54,12 +54,12 @@
         </div>
 
         @if ($post->featured_image_url)
-            <div class="mt-8 overflow-hidden rounded-[2rem] border border-coffee-100 bg-white shadow-soft dark:border-coffee-700/40 dark:bg-neutralwarm-900">
+            <div class="mt-6 overflow-hidden rounded-2xl border border-coffee-100 bg-white shadow-soft dark:border-coffee-700/40 dark:bg-neutralwarm-900 sm:mt-8 sm:rounded-[2rem]">
                 <img src="{{ $post->featured_image_url }}" alt="{{ $post->featured_image_alt ?? $post->title }}" class="h-auto w-full object-cover">
             </div>
         @endif
 
-        <div class="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div class="mt-8 grid gap-8 sm:mt-10 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-10">
             <div>
                 <div class="post-content">
                     {!! $post->rendered_content !!}

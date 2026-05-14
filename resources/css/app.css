@@ -189,17 +189,33 @@
   color utility to any element that depends on these defaults.
 */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-  button:not(:disabled),
-  [role='button']:not(:disabled) {
-    cursor: pointer;
-  }
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+      border-color: var(--color-gray-200, currentColor);
+    }
+    button:not(:disabled),
+    [role='button']:not(:disabled) {
+      cursor: pointer;
+    }
+
+    /* Prevent horizontal overflow on mobile */
+    html, body {
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* Ensure images never overflow their container */
+    img, video, iframe, embed, object {
+      max-width: 100%;
+    }
+
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
   body {
     @apply relative z-1 bg-neutralwarm-50 font-normal font-sans text-neutralwarm-900;
   }
@@ -260,6 +276,41 @@
 
   .post-content p {
     @apply text-base leading-8 text-neutralwarm-500 dark:text-neutralwarm-100/85;
+  }
+
+  /* Mobile responsive post content */
+  @media (max-width: 639px) {
+    .post-content {
+      @apply text-[0.9375rem] leading-7;
+    }
+    .post-content h2 {
+      @apply mt-7 text-2xl;
+    }
+    .post-content h3 {
+      @apply mt-6 text-xl;
+    }
+    .post-content h4 {
+      @apply mt-5 text-lg;
+    }
+    .post-content p {
+      @apply text-[0.9375rem] leading-7;
+    }
+    .post-content pre {
+      @apply rounded-2xl px-4 py-3 text-xs;
+    }
+    .post-content table {
+      @apply block overflow-x-auto rounded-2xl text-sm;
+    }
+    .post-content img {
+      @apply rounded-2xl;
+    }
+    .post-content blockquote {
+      @apply px-4 py-3 text-sm;
+    }
+    .post-content ul,
+    .post-content ol {
+      @apply ml-4;
+    }
   }
 
   .post-content p.lead {
