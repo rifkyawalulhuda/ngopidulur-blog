@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -97,6 +98,26 @@ class Post extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function resolveRouteBinding($value, $field = null): self
+    {
+        $field ??= $this->getRouteKeyName();
+
+        $post = static::query()
+            ->withTrashed()
+            ->when(
+                is_numeric($value),
+                fn (Builder $query) => $query->whereKey((int) $value),
+                fn (Builder $query) => $query->where($field, $value)
+            )
+            ->first();
+
+        if ($post) {
+            return $post;
+        }
+
+        throw (new ModelNotFoundException())->setModel(static::class, [$value]);
     }
 
     public function getFeaturedImageUrlAttribute(): ?string

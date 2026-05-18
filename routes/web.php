@@ -15,14 +15,7 @@ use App\Http\Controllers\PublicHomeController;
 use App\Http\Controllers\PublicAboutController;
 use App\Http\Controllers\PublicTagController;
 use App\Http\Controllers\PublicSitemapController;
-use App\Models\Post;
 use Illuminate\Support\Facades\Route;
-
-Route::bind('post', function (string $value) {
-    return Post::withTrashed()
-        ->when(is_numeric($value), fn ($query) => $query->whereKey((int) $value), fn ($query) => $query->where('slug', $value))
-        ->firstOrFail();
-});
 
 Route::get('/', [PublicHomeController::class, 'index'])->name('home');
 Route::get('/categories', [PublicCategoryController::class, 'index'])->name('category.index');
